@@ -1,0 +1,58 @@
+<nav  class="bg-header fixed-top" id="header">
+ <div class="col-12">
+  <div class="d-flex align-items-center float-start">
+    <!-- <img src="assets/images/tata-steel-logo.svg" class="logo" alt=""> -->
+    <!-- <button id="toggle" class="btn primary" (click)="toggleSidebar()" > -->
+      <fa-icon (click)="toggleSidebar()" class="d-flex align-items-center" id="slider" icon="bars" class="p-3"></fa-icon>
+     <!-- </button> -->
+  </div>
+    <div class="float-end p-3">
+      <!-- <ul class="navbar-nav me-auto">
+         <li class="nav-item dropdown" ngbDropdown>
+           <a class="nav-link dropdown-toggle" id="id01" ngbDropdownToggle>
+             <fa-icon icon="user-circle" flip="horizontal" size="lg" class="text-brand"></fa-icon>
+           </a>
+           <div class="dropdown-menu" aria-labelledby="id01" ngbDropdownMenu>
+           
+             <a class="dropdown-item p-2"  (click)="Logout()" >
+               <fa-icon icon="power-off" class="me-2"></fa-icon>Logout
+             </a>
+
+           </div>
+         </li>
+       </ul>     -->
+       <div id="logout" routerLinkActive="active" (click)="LogoutModal(logout)" class="logout">                
+        <fa-icon icon="arrow-right-from-bracket"  class="me-2"></fa-icon>
+
+         </div>
+        
+
+      </div>
+ </div>
+</nav>
+
+<ng-template let-modal #logout>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="modal-header flex-column">
+          <!-- <div class="icon-box"> -->
+            <i class="material-icons">
+              <fa-icon icon="arrow-right-from-bracket"  size="2x" class="me-2 text-custome"></fa-icon>
+            </i>
+          <!-- </div> -->
+          <h4 class="modal-title w-100">Are you sure?</h4>
+          <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+        </div>
+        <div class="modal-body">
+          <p>Do you really want to Logout?</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+            data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn default" (click)="Logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

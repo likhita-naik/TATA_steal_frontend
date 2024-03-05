@@ -1,0 +1,349 @@
+<div class="container-fluid dashboard-content" id="page">
+    <div class="page-header mb-3">
+        <h3>Job Settings</h3>
+    </div>
+    <div class="row" id="info-card" *ngIf="currentData!=null">
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Job Type</h5>
+                <h5>{{currentData.type?currentData.type:'--'}}</h5>
+            </div>
+        </div>
+
+
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Job Number</h5>
+                <h5>{{currentData.jobNo?currentData.jobNo:currentData.job_no?currentData.job_no:'--'}}</h5>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">IP Address</h5>
+                <h5>{{currentData.ip_address?currentData.ip_address:'--'}}</h5>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Camera ID</h5>
+                <h5>{{currentData.camera_id?currentData.camera_id:'--'}}</h5>
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Sub Area</h5>
+                <h5>{{currentData.area?currentData.area:currentData.sub_area?currentData.sub_area:'--'}}</h5>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Department</h5>
+                <h5>{{currentData.department?currentData.department:'--'}}</h5>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="card card-body mb-2" id="data-card">
+        <div class="row">
+            <div class="col-7">
+                <div class="">
+                    <div class="row me-2 ms-2 mt-2">
+                        <div class="col-12">
+                            <div class="row">
+                                <button class="me-2  btn success" style="width:inherit;"
+                                    (click)="AddNewPanel()"><fa-icon icon="plus" class="me-1"></fa-icon>Add ROI</button>
+
+                                <div class="col-4">
+                                    <button class="me-2 btn danger" style="width:inherit;"
+                                        (click)="DeleteNewPanel()">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-5">
+                <!-- <button class="btn danger" *ngIf="isEdit||isChanges" (click)="SaveEditedChanges()">Save changes</button> -->
+                <div class="float-end">
+                    <button class="float-end btn primary" (click)="Back()">Back</button>
+                </div>
+                <div class="float-end">
+                    <button class="btn default me-2" *ngIf="(isEdit||isChanges)&&!(isAddRW||isAddPanel) "
+                        (click)="SaveEditedChanges()">Save changes</button>
+                    <button *ngIf="(!(isEdit||isChanges))&&((isAddPanel) && newPanelPoints.length>2)"
+                        class="btn default me-2" (click)="PanelName()">Confirm Panel</button>
+                    <button *ngIf="!(isEdit||isChanges)&&(isAddRW && newRWPoints.length>2) " class="btn default me-2"
+                        (click)="OnAddingNewRw()">Confirm RW</button>
+                </div>
+
+
+                <!-- <div class="col-1">
+                        <button class="btn default">Edit</button>
+                    </div> -->
+                <div class="col-1">
+                </div>
+            </div>
+            <!-- <div class="col-3 alert alert-secondary">Right click to confirm the roi</div> -->
+        </div>
+    </div>
+    <div class="col-12 mb-3">
+        <div class="card card-body" id="data-card">
+            <div id="canvas-container" class="d-flex justify-content-center" #canvasContainer>
+                <canvas id="canvasROI" class="canvas-class" height="auto" width="auto"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card" id="data-card">
+                <div class="card-header">
+                    <h4> {{'Job Details'}}</h4>
+                </div>
+                <p-tabView>
+                    <p-tabPanel header="Planned Job's Panels">
+                        <table class="table" *ngIf="jobType=='HT'">
+                            <thead>
+                                <tr>
+                                    <th scope="col">S.No</th>
+                                    <th scope="col">Panel Number</th>
+                                    <th scope="col">Settings</th>
+                                    <th scope="col">Unplanned Job</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let panels of (FilterAllocated(allPanelData))">
+                                    <td>{{panels.index+1}}</td>
+                                    <td (dblclick)="AlterPanelName(panels.index)">
+                                        {{panels.panel_id}}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm mr-2 text-custome" (click)="Edit(panels.index)">Edit
+                                            Panel</button>
+                                        <button class="btn btn-sm mr-2 text-custome" *ngIf="panels.rw.length>0"
+                                            (click)="EditRW(panels.index)">Edit
+                                            RW</button>
+                                        <button class="btn btn-sm text-custome" (click)=AddNewRW(panels.index)>Add
+                                            RW</button>
+                                        <button class="btn btn-sm mr-2 text-danger"
+                                            (click)="isDelete(panels.index)">Delete</button>
+                                        <button class="btn btn-sm mr-2 text-danger" *ngIf="panels.rw.length>0"
+                                            (click)="DeletePanelRW(panels.index)">Delete RW</button>
+
+                                    </td>
+                                    <td>
+                                        <div class="">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input"
+                                                    (change)="UnallocatedJobConfig($event,panels.index)"
+                                                    [checked]="panels.roi_data.roi_data.unallocated_job_status"
+                                                    style="color:var(--label-color);" type="checkbox" role="switch"
+                                                    id="flexSwitchCheckDefault">
+                                                <!-- <label class="form-check-label" for="flexSwitchCheckDefault">Unallocated Job</label> -->
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </p-tabPanel>
+
+                    <p-tabPanel header="Unplanned Job's Region">
+                        <table class="table" *ngIf="jobType=='HT'">
+                            <thead>
+                                <tr>
+                                    <th scope="col">S.No</th>
+                                    <th scope="col">ROI Name</th>
+                                    <th scope="col">Settings</th>
+                                    <th scope="col">Unplanned Job</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let panels of (FilterUnallocated(allPanelData))">
+                                    <td>{{panels.index+1}}</td>
+                                    <td (dblclick)="AlterPanelName(panels.index)">
+                                        {{panels.panel_id}}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm mr-2 text-custome" (click)="Edit(panels.index)">Edit
+                                            Panel</button>
+                                        <!-- <button class="btn btn-sm mr-2 text-custome" *ngIf="panels.rw.length>0"
+                                            (click)="EditRW(panels.index)">Edit
+                                            RW</button> -->
+                                        <!-- <button class="btn btn-sm text-custome" (click)=AddNewRW(panels.index)>Add RW</button> -->
+                                        <button class="btn btn-sm mr-2 text-danger"
+                                            (click)="isDelete(panels.index)">Delete ROI</button>
+                                        <!-- <button class="btn btn-sm mr-2 text-danger" *ngIf="panels.rw.length>0"
+                        (click)="DeletePanelRW(panels.index)">Delete RW</button> -->
+
+                                    </td>
+                                    <td>
+                                        <div class="float-center">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input"
+                                                    (change)="UnallocatedJobConfig($event,panels.index)"
+                                                    [checked]="panels.roi_data.roi_data.unallocated_job_status"
+                                                    style="color:var(--label-color);" type="checkbox" role="switch"
+                                                    id="flexSwitchCheckDefault">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </p-tabPanel>
+                </p-tabView>
+
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="offset-9">
+                <div class="col-3">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template let-modal #panelNameChangeModal>
+    <div class="card">
+        <div class="card-header">
+            <h4> Change Panel No</h4>
+        </div>
+        <div class="card-body p-4">
+            <form>
+                <input type="text" id="panel" class="form-control mb-3" [formControl]="tempPanelID">
+                <button class="btn success ms-2 float-end" [disabled]="(tempPanelID.value=='')"
+                    (click)="ChangePanelName()" type="submit">Submit</button>
+                <button class="btn danger me-2 float-end" (click)="modal.close('Cross click')">cancel</button>
+            </form>
+        </div>
+
+    </div>
+</ng-template>
+<ng-template let-modal #panelNameModal>
+    <div class="card">
+        <div class="card-header">
+            <h4 class="float-start">Enter Panel Name</h4>
+
+            <div class="float-end">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" (change)="onChange($event)" [checked]="unallocatedJobStatus"
+                        style="color:var(--label-color);" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Unallocated Job</label>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <form>
+                <input type="text" id="panel"
+                    [ngClass]="{'is-invalid': (panelNameControl.invalid && panelNameControl.touched && panelNameControl.dirty)}"
+                    class="form-control mb-3" [formControl]="panelNameControl">
+                <div id="validationServerUsernameFeedback"
+                    [ngClass]="(panelNameControl.invalid && panelNameControl.touched && panelNameControl.dirty)?'invalid-feedback':'visually-hidden'">
+                    Please enter roi name.
+                </div>
+                <button class="btn success ms-2 float-end" [disabled]="panelNameControl.invalid" (click)="nameSubmit()"
+                    type="submit">Submit</button>
+                <button class="btn danger me-2 float-end" (click)="modal.close('Cross click')">cancel</button>
+            </form>
+        </div>
+
+    </div>
+</ng-template>
+
+
+
+<ng-template let-modal #alertRW>
+    <div class="modal-body">
+        <div class="modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <!-- <div class="icon-box">
+                    <i class="material-icons">&#xE5CD;</i>
+                  </div> -->
+                    <h4 class="modal-title w-100">Please draw the rack window for respective panels.</h4>
+                    <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+                </div>
+                <div class="modal-body">
+                    <p>Otherwise you will not get the proper output.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                        data-dismiss="modal">Cancel</button>
+                    <button type="button" (click)="modal.close('Cross click')" class="btn default">Got
+                        it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template let-modal #roiType>
+    <div class="modal-body">
+        <div class="modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <!-- <div class="icon-box">
+                    <i class="material-icons">&#xE5CD;</i>
+                  </div> -->
+                    <h4 class="modal-title w-100">Please Select the ROI Type</h4>
+                    <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+                </div>
+                <div class="modal-body">
+
+
+                    <div class="container">
+                        <h1> </h1>
+                        <form class="form cf">
+                            <section class="plan cf">
+                                <input type="radio" name="radio1" id="free" value="free"><label
+                                    class="free-label four col" for="free">HT</label>
+                                <input type="radio" name="radio1" id="basic" value="basic" checked><label
+                                    class="basic-label four col" for="basic">Hydraulic</label>
+                                <!-- <input type="radio" name="radio1" id="premium" value="premium"><label class="premium-label four col" for="premium">Premium</label> -->
+                            </section>
+                        </form>
+                    </div>
+                </div>
+                <!-- <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                            data-dismiss="modal">Cancel</button>
+                        <button type="button" (click)="modal.close('Cross click')" class="btn default">Got it</button>
+                    </div> -->
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template let-modal #deleteModal>
+    <div class="modal-body">
+        <div class="modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon-box">
+                        <i class="material-icons">&#xE5CD;</i>
+                    </div>
+                    <h4 class="modal-title w-100">Are you sure?</h4>
+                    <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+                </div>
+                <div class="modal-body">
+                    <p>Do you really want to delete these ROI? This process cannot be undone.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                        data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn danger" (click)="DeletePanel()">Delete</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

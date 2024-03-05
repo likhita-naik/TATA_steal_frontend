@@ -1,0 +1,68 @@
+.image{
+    margin-left: 0px;
+    margin-right: 0px;
+    height: 174px;
+    width: 330px;
+    border-radius: 5px 5px 5px  5px !important;
+    object-fit:cover;
+    border: 2px solid #ccc !important;
+}
+
+.card.analytics.card-body{
+   
+  display: flex !important;
+  justify-content: center !important;
+ align-items: center !important;  
+overflow-x: auto !important;
+/* padding-left:10px !important;
+padding-right:10px !important; */
+
+ 
+}  
+  
+
+  ngb-pagination ::ng-deep ul > li:not(.active) > a {
+    background-color:  #f8f8f8 !important;
+    border-radius: 5px !important;
+    box-shadow: none;
+  }
+  
+  ngb-pagination ::ng-deep ul > li.active > a {
+    background-color: hsl(212, 50%, 35%) !important;
+    border-radius: 5px!important;
+    box-shadow: none;
+
+  }
+  
+
+ngb-pagination ::ng-deep ul > li:not(.active) > a {
+  background-color:  #f8f8f8 !important;
+  border-radius: 5px !important;
+  /* border: 1px solid var(--label-color) !important; */
+  color: var(--label-color) !important;
+  box-shadow: none;
+}
+
+ngb-pagination ::ng-deep ul > li.active > a {
+  background-color: var(--label-color) !important;
+  border-radius: 5px !important;
+  border: 1px solid var(--label-color) !important;
+
+  box-shadow: none;
+
+}
+#violationCount .card.card-body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+th {
+  text-align: center;
+  /* border: 1px solid rgb(217, 214, 214); */
+}
+td {
+  text-align:center !important;
+  height: 2rem !important;
+ 
+}

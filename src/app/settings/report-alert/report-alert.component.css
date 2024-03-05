@@ -1,0 +1,288 @@
+.container{
+    width: 100%;
+    line-height:2em ;
+    border-left:3px solid var(--primary-color);
+    margin: 0.25em;
+    padding:1em;
+    padding-left:1.5em;
+    border-top: 1px solid #ccc ;
+    border-right: 1px solid #ccc ;
+    border-bottom: 1px solid #ccc ;
+   border-radius: 4px;
+    display:grid;
+    /* flex: 1fr 1fr 1fr; */
+    align-items: center;
+    justify-content: space-between;
+    
+    
+}
+
+.row
+{
+    /* display: flex;
+    flex-direction: row; */
+    /* width: 80%; */
+
+}
+.switch {
+  display: inline-block;
+  position: relative;
+  width: 50px;
+  height: 25px;
+  border-radius: 20px;
+  background: #dfd9ea;
+  transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  vertical-align: middle;
+  cursor: pointer;
+}
+.switch::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background: #fafafa;
+  border-radius: 50%;
+  transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.switch:active::before {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.28), 0 0 0 20px rgba(128,128,128,0.1);
+}
+input:checked + .switch {
+  background:var(--prime-color);
+}
+input:checked + .switch::before {
+  left: 27px;
+  background: #fff;
+}
+input:checked + .switch:active::before {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.28), 0 0 0 20px rgba(0,150,136,0.2);
+}
+
+
+#submit button
+{
+  background-color: var(--label-color);
+  border: none;
+  color: white;
+  padding: 15px 80px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  text-transform: uppercase;
+  font-size: 13px;
+  -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
+  box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  margin: 5px 20px 40px 20px;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+button:disabled{
+  background-color: var(--label-color);
+  border: none;
+  color: white;
+  /* padding: 15px 80px; */
+  cursor:not-allowed;
+  opacity: 0.7;
+  text-align: center;
+  text-decoration: none;
+  /* display: inline-block; */
+  text-transform: uppercase;
+  font-size: 13px;
+  -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
+  box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  /* margin: 5px 20px 40px 20px; */
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+
+
+#submit button:hover
+{
+  background-color: var(--label-color);
+}
+
+#submit button:active
+ {
+  -moz-transform: scale(0.95);
+  -webkit-transform: scale(0.95);
+  -o-transform: scale(0.95);
+  -ms-transform: scale(0.95);
+
+  transform: scale(0.95);
+}
+
+#emails-input .p-inputtext{
+  border: 2px solid var(--label-color) !important; 
+ box-shadow: none !important;
+ width:5rem !important;
+ display:block;
+}
+
+.p-inputtext{
+  box-shadow:none !important;
+}
+#emails-input .p-chips{
+  display: block !important;
+  overflow: hidden !important;
+}
+#emails-input .p-chips-multiple-container:not(.p-disabled).p-focus{
+  border: 2px solid var(--label-color) !important; 
+ box-shadow: none !important;
+}
+
+#emails-input .p-component{
+  width: 100% !important;
+}
+
+#emails-input .p-component{
+  width:100% !important;
+ border-radius: 10px !important;
+}
+
+#emails-input  .p-element.p-inputwrapper.p-inputwrapper-filled{
+width: 100% !important;}
+
+.radio-container{
+  padding:0.5rem;
+  margin:0.25rem;
+  border-radius: 7px;
+  /* border:1px solid #eee; */
+  position:relative;  
+
+}
+
+.data-card{
+  min-height: 100%;
+  max-height: 100%;
+}
+
+.radio-container .header{
+  /* position: absolute; */
+  top:0;
+  display: block;
+  width:100%;
+  color: var(--primary-color);
+  padding:2rem;
+  border:var(border);
+  border-radius: 7px;
+
+
+}
+
+.radio-container.selected{
+  padding:0.5rem;
+  margin:0.25rem;
+  border-radius: 7px;
+  border:5px solid #eee;
+  transition:background-color 0.3s ;
+}
+
+
+.radio-option{
+  display: inline-block;
+  margin:0.2rem;
+ cursor:pointer;
+ position: relative;
+ border-radius: 7px;
+ border:2px solid #f0f1f2;
+ text-align: center;
+
+}
+.radio-option label{
+  text-align: center;
+  cursor: pointer;
+}
+.radio-option label .img{
+  height:50px;
+  width:50px;
+  border-radius: 10px;
+  margin:10px;
+  padding:0.2rem ;
+  border:2px solid #FFFFFF;
+  transition:border-color 0.3s ;
+  text-align: center !important;
+
+}
+
+.radio-option input[type=radio] {
+  display:none
+}
+
+.radio-option::before {
+  content: '\2713'; /* Unicode checkmark character */
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  font-size: 24px;
+  color: white;
+  opacity: 0;
+  padding:0.03em;
+  border-radius: 50%;
+  background-color: var(--bg-success);
+  transition: opacity 0.3s ease;
+}
+
+
+
+.radio-option.checked{
+  border-color: var(--label-color);
+  border:3px solid var(--bg-success);
+  text-align: center;
+  border-radius: 7px;
+}
+.radio-option.checked::before{
+opacity: 1;
+}
+
+.custome-chips .p-focus{
+  border:none !important; 
+}
+.custome-chips .p-inputtext.p-chips.p-chips-multiple-container.p-focus{
+  border: 2px solid var(--label-color) !important; 
+ box-shadow: none !important;
+ width:5rem !important;
+ display:block;
+}
+
+
+.p-focus{
+ border:none !important;
+}
+
+.grid-3{
+  width:100%;
+  display: grid;
+  grid-template-columns:1fr  1fr 1fr ;
+overflow-x: auto;
+}
+.grid-item{
+  max-width: inherit;
+  min-width: inherit;
+  overflow-x: auto;
+}
+.wrapper-two {
+  display: flex;
+  /* flex-wrap: wrap;
+  flex-direction: row; */
+  flex-grow: 1;
+  height: 100%;
+ 
+  /* width: auto; */
+}
+.wrapper-item{
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow-y: scroll !important;
+}

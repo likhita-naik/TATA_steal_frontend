@@ -1,0 +1,59 @@
+<div class="row card card-body" id="data-card">
+    <div class="card-header">
+        <div>
+            <span class="float-start">
+                <h4 class="text-xl"> All Violation Details </h4>
+            </span>
+            <!-- <span class="float-end"><button class="btn" (click)="BackToLive()">Back To Live</button></span> -->
+        </div>
+    </div>
+    <div *ngIf="allViolations.length>0;else noData">
+        <div class="" *ngFor="let violationData of allViolations;let in=index">
+            <div  class="card"*ngIf="violationData.analytics_details.length>0">
+                <ngb-carousel >
+                    <ng-container *ngFor="let violation of (violationData.analytics_details);let i=index"
+                        class="m-4 d-flex justify-centent-center align-items-center">
+
+                        <ng-template ngbSlide class="w-100">
+                            <div class="d-flex justify-centent-center align-items-center">
+                                <div class="container alert alert-danger m-3 p-3">
+                                    <div>
+                                        <img [src]="IP +'/STEAMVIOLATIONIMAGE/' + violation.image_name"
+                                            class="violation-img" alt="Image" />
+                                    </div>
+
+                                    <div class="me-3 d-flex column-flex">
+                                        <span class="me-2">{{i+1+'.'}}</span> <span class="m-2 alert alert-danger"><span
+                                                class="text-muted">
+                                            </span>{{violation.message}}</span><br />
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </ngb-carousel>
+            </div>
+            </div>
+        </div>
+        <ng-template #noData>
+            <div class="row card card-body" id="data-card">
+                <div class="d-flex justify-content-center align-items-center"
+                    *ngIf="dataFetchStatus=='success'">
+                    <h4> No violation details found.</h4>
+                </div>
+                <div class="d-flex justify-content-center align-items-center"
+                    *ngIf="dataFetchStatus=='fail'">
+                    <h4 class="text-muted"> {{responseMessage}}</h4>
+                </div>
+                <div class="d-flex justify-content-center align-items-center"
+                    *ngIf="dataFetchStatus=='init'">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" ></span>
+                    Loading...
+                </div>
+                <div class="d-flex justify-content-center align-items-center"
+                    *ngIf="dataFetchStatus=='Error'">Error
+                    while fetching data</div>
+
+            </div>
+        </ng-template>
+    </div>

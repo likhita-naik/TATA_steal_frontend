@@ -1,0 +1,46 @@
+.card.analytics.card-body{
+   
+    display: flex !important;
+    justify-content: center !important;
+   /* align-items: center !important;   */
+  overflow-x: scroll !important;
+  padding-left:10px !important;
+  padding-right:10px !important;
+
+   
+ }
+ #info-card .card{
+   max-height: 7rem !important;
+   min-height: 7rem !important;
+   overflow-y: auto !important;
+ }
+ 
+ #info-card .card h4{
+   max-width: inherit !important;
+   text-overflow: ellipsis !important;
+   overflow-x: auto !important;
+   
+ }
+ .card.analytics.card-body .title{
+    width:100%;
+    max-width:100%;
+    overflow-x: auto;
+ }
+
+ .card.analytics.card-body .value{
+    width:100%;
+    max-width:100%;
+    overflow-x: auto;
+ }
+#panel input{
+   padding: 5px;
+   border: 1px solid gainsboro;
+}
+
+#panel input:focus{
+   box-shadow: none;
+}
+#analytic .card {
+   max-height: 10em;
+   min-height: 10em;
+ }

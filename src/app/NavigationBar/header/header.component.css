@@ -1,0 +1,29 @@
+.user{
+    font-size: 30px;
+    cursor: pointer;
+    color: rgb(129, 8, 8);
+}
+
+.logo{
+    width: 253px;
+    margin: 0px !important;
+    height: 5rem;
+   
+}
+
+#logout{
+    cursor: pointer;
+    font-size:x-large;
+    color: var(--label-color);
+}
+
+#logout:hover{
+    cursor: pointer;
+    font-size:x-large;
+    color: var(--label-color);
+}
+
+#slider{
+    cursor: pointer;
+    font-size: x-large;
+}
