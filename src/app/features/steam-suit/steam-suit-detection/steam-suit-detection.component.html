@@ -1,0 +1,17 @@
+<div class="container-fluid dashboard-content">
+  <div class="mb-4">
+  <h3 class="page-header">Steam Suit Detection </h3>  
+</div>
+
+  <div class="card card-body" id="data-card">
+  <p-tabView (onChange)="OnTabChange($event)" [(activeIndex)]="activeIndex">
+    <p-tabPanel header="Details">
+      <router-outlet *ngIf="activeIndex==0"></router-outlet>
+    </p-tabPanel>
+    <p-tabPanel header="Settings">
+      <router-outlet *ngIf="activeIndex==1"></router-outlet>
+  </p-tabPanel>
+  </p-tabView>
+  
+  </div>
+</div>

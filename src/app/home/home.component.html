@@ -1,0 +1,40 @@
+<div>
+
+    <div>
+        <app-sidebar></app-sidebar>
+    </div>
+
+    <main style="width:100%;max-height:calc(100vh-30px) !important;">
+
+             
+
+            <!-- <app-header></app-header> -->
+            <!-- <ng-scrollbar #scrollable track="vertical" pointerEventsMethod="scrollbar" [autoHeightDisabled]="true"
+            [disabled]="false"> -->
+            <div class="dashboard-wrapper" style="width:100%;max-height:100% !important;">
+               
+                    <!-- <header style="height: 6em;">
+               <app-header></app-header>
+           </header> -->
+                    <div class="dashboard-content" style="max-height:100% !important;">
+
+                        <router-outlet></router-outlet>
+
+                    </div>
+                 
+            <!-- </ng-scrollbar> -->
+
+            </div>
+        <!-- </ng-scrollbar> -->
+
+
+            <nav class="bg-white fixed-bottom" id="footer">
+                <app-footer></app-footer>
+            </nav>
+
+
+    </main>
+
+</div>
+
+<!-- </div> -->

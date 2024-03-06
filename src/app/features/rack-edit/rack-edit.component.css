@@ -1,0 +1,86 @@
+.image{
+    margin-left: 0px;
+    margin-right: 0px;
+    height: 174px;
+    width: 330px;
+    border-radius: 5px 5px 5px  5px !important;
+    object-fit:contain;
+}
+.card.analytics.card-body{
+   
+  display: flex !important;
+  justify-content: center !important;
+ align-items: center !important;  
+overflow-x: auto !important;
+/* padding-left:10px !important;
+padding-right:10px !important; */
+
+ 
+}
+  
+  
+#info-card .card{
+  max-height: 7rem !important;
+  min-height: 7rem !important;
+  overflow-y: auto !important;
+}
+
+#info-card .card h4{
+  max-width: inherit !important;
+  text-overflow: ellipsis !important;
+  overflow-x: auto !important;
+  
+}
+  ngb-pagination ::ng-deep ul > li:not(.active) > a {
+    background-color:  #f8f8f8 !important;
+    border-radius: 5px !important;
+    box-shadow: none;
+  }
+  
+  ngb-pagination ::ng-deep ul > li.active > a {
+    background-color: hsl(212, 50%, 35%) !important;
+    border-radius: 5px!important;
+    box-shadow: none;
+
+  }
+  
+
+ngb-pagination ::ng-deep ul > li:not(.active) > a {
+  background-color:  #f8f8f8 !important;
+  border-radius: 5px !important;
+  /* border: 1px solid var(--label-color) !important; */
+  color: var(--label-color) !important;
+  box-shadow: none;
+}
+
+ngb-pagination ::ng-deep ul > li.active > a {
+  background-color: var(--label-color) !important;
+  border-radius: 5px !important;
+  border: 1px solid var(--label-color) !important;
+
+  box-shadow: none;
+
+}
+#violationCount .card.card-body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+td{
+  text-align: center !important;
+  align-content: center !important;
+}
+
+td > div,span,button{
+  display: flex !important;
+  justify-content:center !important;
+  align-items: center !important;
+
+}
+
+.image-container{
+  max-width:inherit !important;
+  overflow-x: scroll !important;
+}

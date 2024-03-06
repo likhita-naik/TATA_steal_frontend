@@ -1,0 +1,355 @@
+<div class="container-fluid dashboard-content">
+    <div class="row">
+        <h4 class="sub-header">Lock History</h4>
+    </div>
+    <div class="row mb-3">
+        <div class="">
+            <button class="btn primary float-end" (click)="Back()">Back</button>
+        </div>
+    </div>
+    <div class="row mt-2 mx-auto" id="info-card">
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+            <div class="align-items-center justify-centent-center">
+                <h5 class="text-muted">Valve Number</h5>
+                <h5>{{currentData.common_no?currentData.common_no:'--'}}</h5>
+            </div>
+        </div>
+        </div>
+       
+
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Job Number</h5>
+                <h5>{{currentData.jobNo?currentData.jobNo:'--'}}</h5>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Camera ID</h5>
+                <h5>{{currentData.camera_id?currentData.camera_id:'Not Set'}}</h5>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">IP Address</h5>
+                <h5>{{currentData.ip_address?currentData.ip_address:'--'}}</h5>
+            </div>
+        </div>
+       
+       
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Sub Area</h5>
+                <h5>{{currentData.area?currentData.area:'--'}}</h5>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Department</h5>
+                <h5>{{currentData.department?currentData.department:'--'}}</h5>
+            </div>
+        </div>
+        <!-- <div class="col-3">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Plant</h5>
+                <h4>{{currentPlant?currentPlant:'--'}}</h4>
+            </div>
+        </div> -->
+    </div>
+
+ 
+
+    <div class="col-12">
+        <div class="card p-0" id="dataTable">
+            <div class="card-header">
+                <!-- <h4 class="float-start text-muted">Job Card Details</h4> -->
+                <div class="row">
+                    <div class="float-end">
+                        <div class="col-xl-3 col-xs-12 col-md-12 col-lg-2 col-sm-12 float-end">
+                            <!-- <ng-multiselect-dropdown [placeholder]="&nbsp;'Hide Column' &nbsp;" [settings]="dropdownSettings"
+                    [data]="dataHeaders" [(ngModel)]="selectedColumn" (onSelect)="onHideColumn($event)"
+                    (onDeSelect)="onShowColumn($event)">
+                  </ng-multiselect-dropdown> -->
+                        </div>
+                        <!-- </div>
+                    <div class="col-xl-2 col-xs-12 col-md-12 col-lg-2 col-sm-12 float-end"> -->
+                        <div class="me-2 float-end">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+            <div class="">
+                <table class="table" style="width:100%;overflow: auto;"  >
+                    <thead class="headers">
+                        <tr>
+                            <!-- <th scope="col" *ngFor="let header of headers"   (click)="header.showColumn=!header.showColumn">{{header.columnName}}</th> -->
+                            <th scope="col">SI.no <span></span> </th>
+
+                            <th scope="col">Lock Image</th>
+                            <th scope="col"  style="width:8rem !important;">Lock Time</th>
+
+
+                            <th scope="col">Unlock Image</th>
+                            <th scope="col" style="width:8rem !important;">Unlock Time</th>
+                            <th scope="col"></th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr scope="row" *ngFor="let data of panelData|async;let i=index" [ngClass]="">
+                            <td scope="col" style="text-align:center;"> 
+                                {{data.SNo}}
+                            </td>
+
+                            <td scope=col style="text-align:center;">
+                                <div *ngIf="data.lock_on_details.Image!=null;else elsePart">
+                                    <img class="image" (click)="RemarkModal(editRack,data,'Lock')" *ngIf="true"
+                                        [src]="IP+'/hydralockimage/'+data.lock_on_details.Image" alt="">
+                                </div>
+                            </td>
+                            <td scope="col" style="text-align:center;">
+                                <div style="width:8rem !important" *ngIf="data.lock_on_details!=null;else elsePart" >{{data.lock_on_details.timestamp|dateFormater}}</div>
+                            </td>
+                            <td scope=col style="text-align:center;">
+                                <div *ngIf="data.lock_off_details!=null;else elsePart">
+                                <img class="image" (click)="RemarkModal(editRack,data,'Unlock')" *ngIf="true"
+                                    [src]="IP+'/hydralockimage/'+data.lock_off_details.Image" alt="">
+                                </div>
+
+                            </td>
+                            <td scope="col"style="text-align:center;">
+                                <div style="width:8rem" *ngIf="data.lock_off_details;else elsePart">{{data.lock_off_details.timestamp|dateFormater}}</div>
+                            </td>
+
+                            <td scope="col" style="text-align:center;">
+                                <button class="btn" (click)="RirDeleteModal(deleteField,data)">
+                                    <fa-icon class="text-danger" icon="trash"></fa-icon>
+                                </button>
+                            </td>
+
+
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="d-flex mx-auto justify-content-center p-1">
+                    <ngb-pagination [collectionSize]="total|async" [(page)]="page" [pageSize]="pageSize"
+                        style="width: 95vw;overflow-x: auto;" (pageChange)="sliceData()">
+                    </ngb-pagination>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #elsePart>
+ ---
+</ng-template>
+
+<ng-template let-modal #addRemark>
+    <div class="modal-body">
+        <div class="modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <!-- <div class="icon-box">
+                <i class="material-icons">&#xE5CD;</i>
+              </div> -->
+                    <h4 class="modal-title w-100">Add the remark</h4>
+                    <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+                </div>
+                <div class="modal-body">
+                    <form action="">
+                        <textarea rows="5" [formControl]="remarkControl" class="form-control">
+
+                  </textarea>
+                    </form>
+                    <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                        data-dismiss="modal">Cancel</button>
+                    <button type="button" [disabled]="!remarkControl.valid" class="btn default"
+                        (click)="SaveRemark()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template let-modal #editRack>
+    <div class="modal-body">
+        <div class="modal-confirm">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <div class="row mb-5">
+                        <h5 class="sub-header mb-3">{{editField}} Image</h5>
+                      
+                        <div class="col-12">
+                            <div class="">
+                                <div class="" *ngIf="editField=='Lock'">
+                                    <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                                        [thumbImage]="IP+'/hydralockimage/'+ selectedRiro.lock_on_details.Image"
+                                        [fullImage]="IP+'/hydralockimage/'+ selectedRiro.lock_on_details.Image">
+                                    </lib-ngx-image-zoom>
+                                </div>
+                                <div class="card-img-top" *ngIf="editField=='Unlock'">
+                                    <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                                        [thumbImage]="IP+'/hydralockimage/'+ selectedRiro.lock_on_details.Image"
+                                        [fullImage]="IP+'/hydralockimage/'+ selectedRiro.lock_on_details.Image">
+                                    </lib-ngx-image-zoom>
+                                </div>
+                                <div class="mt-3">
+
+                                    <p class="text-dark" *ngIf="editField=='Lock'"><span class="me-2 text-muted">Time
+                                            :</span><b>{{selectedRiro.lock_on_details.timestamp|dateFormater}}</b></p>
+                                    <p class="text-dark" *ngIf="editField=='Unlock'"><span class="me-2 text-muted">Time
+                                            :</span><b>{{selectedRiro.lock_off_details.timestamp|dateFormater}} </b></p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
+                </div>
+                <!-- <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                        data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn default" (click)="SaveRackChanges()">Save</button>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</ng-template>
+<!-- template to edit the all fields -->
+<ng-template let-modal #EditField>
+    <div class="modal-body">
+        <div class="modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <!-- <div class="icon-box">
+                <i class="material-icons">&#xE5CD;</i>
+              </div> -->
+                    <h4 class="modal-title w-100">Edit the {{editField}}</h4>
+                    <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+                </div>
+                <div class="modal-body">
+                    <form action="" *ngIf="editField=='rack_method'" id="custome">
+                        <div class="form-check form-check-inline">
+                            <input rows="5" value="automatic" id="1" type="radio" [formControl]="tempField"
+                                class="form-check-input">
+
+                            <label for="1" class="form-check-label">Automatic</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input rows="5" value="manual" id="2" type="radio" [formControl]="tempField"
+                                class="form-check-input">
+
+                            <label for="2">Manual</label>
+
+                        </div>
+                    </form>
+
+                    <form action="" *ngIf="editField=='tag'" id="custome">
+
+                        <div class="card mb-3">
+                            <div class="card-img-top">
+                                <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                                    [thumbImage]="IP+'/taglock_image/'+ selectedRiro.lock_tag_image"
+                                    [fullImage]="IP+'/taglock_image/'+ selectedRiro.lock_tag_image">
+                                </lib-ngx-image-zoom>
+
+                                <p class="text-dark mt-3">Time: {{selectedRiro.tag_time}} </p>
+                            </div>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input rows="5" value="tag" id="1" type="radio" [formControl]="tempField"
+                                class="form-check-input">
+
+                            <label for="1" class="form-check-label">tag</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input rows="5" value="untag" id="2" type="radio" [formControl]="tempField"
+                                class="form-check-input">
+
+                            <label for="2">untag</label>
+
+                        </div>
+                    </form>
+
+                    <form action="" *ngIf="editField=='lock'" id="custome">
+                        <div class="card mb-3">
+                            <div class="card-img-top">
+                                <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                                    [thumbImage]="IP+'/taglock_image/'+ selectedRiro.lock_tag_image"
+                                    [fullImage]="IP+'/taglock_image/'+ selectedRiro.lock_tag_image">
+                                </lib-ngx-image-zoom>
+
+                                <p class="text-dark mt-3">Time: {{selectedRiro.lock_time}} </p>
+                            </div>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input rows="5" value="lock" id="1" type="radio" [formControl]="tempField"
+                                class="form-check-input">
+
+                            <label for="1" class="form-check-label">lock</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input rows="5" value="unlock" id="2" type="radio" [formControl]="tempField"
+                                class="form-check-input">
+
+                            <label for="2">unlock</label>
+
+                        </div>
+                    </form>
+                    <form action="" *ngIf="editField=='five_meter'" id="custome">
+                        <div class="form-check form-check-inline">
+                            <input rows="5" value="Yes" id="1" type="radio" [formControl]="tempField"
+                                class="form-check-input">
+
+                            <label for="1" class="form-check-label">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input rows="5" value="No" id="2" type="radio" [formControl]="tempField"
+                                class="form-check-input">
+
+                            <label for="2">No</label>
+
+                        </div>
+                    </form>
+                    <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                        data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn default" (click)="SaveFieldChanges()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template let-modal #deleteField>
+    <div class="modal-body">
+        <div class="modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <!-- <div class="icon-box">
+                <i class="material-icons">&#xE5CD;</i>
+              </div> -->
+                    <h4 class="modal-title w-100">Are you sure?</h4>
+                    <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+                </div>
+                <div class="modal-body">
+                    <p>Do you really want to delete this details? This process cannot be undone.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                        data-dismiss="modal">Cancel</button>
+                    <button type="button" (click)=" RiroDelete()" class="btn danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,24 @@
+<form id="file-upload-form" class="col-12 uploader">
+  <input id="file-upload" type="file" name="fileUpload"
+    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+
+  <label for="file-upload" id="file-drag">
+    <img id="file-image" src="#" alt="Preview" class="hidden">
+    <div id="start">
+      <fa-icon icon="file-arrow-up"></fa-icon>
+      <div>Select a jobsheet or drag here</div>
+      <span id="file-upload-btn" class="btn btn-primary" *ngIf="!excelFile">Select a jobsheet</span>
+
+    </div>
+    <div id="response" class="hidden">
+      <div id="messages"></div>
+      <progress class="progress" id="file-progress" value="0">
+        <span>0</span>%
+      </progress>
+    </div>
+    <br/>
+    <!-- <div id="submit" class="hidden">
+    <span *ngIf="excelFile"><button class="btn btn-primary" (click)="OnFileSubmit()">Submit Jobsheet</button></span>
+  </div> -->
+  </label>
+</form>

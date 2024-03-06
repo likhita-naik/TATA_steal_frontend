@@ -1,0 +1,913 @@
+<div class="container-fluid dashboard-content">
+  <div class="row">
+    <h4 class="sub-header">Rack Process History</h4>
+  </div>
+  <div class="row">
+    <div class="">
+      <button class="btn primary float-end" (click)="Back()">
+        <fa-icon icon="chevron-left" class="me-1"></fa-icon>Back
+      </button>
+    </div>
+  </div>
+  <div class="row mt-2 mx-auto" id="info-card">
+    <div class="col-2">
+      <div class="card analytics card-body" id="data-card">
+        <div class="align-items-center justify-centent-center">
+          <h5 class="text-muted">FeedeNumber</h5>
+          <h5>{{ currentData.panel ? currentData.panel : "--" }}</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-2">
+      <div class="card analytics card-body" id="data-card">
+        <h5 class="text-muted">Job Number</h5>
+        <h5>{{ currentData.jobNo ? currentData.jobNo : "--" }}</h5>
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="card analytics card-body" id="data-card">
+        <h5 class="text-muted">Camera ID</h5>
+        <h5>{{ currentData.camera_id ? currentData.camera_id : "Not Set" }}</h5>
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="card analytics card-body" id="data-card">
+        <h5 class="text-muted">IP Address</h5>
+        <h5>{{ currentData.ip_address ? currentData.ip_address : "--" }}</h5>
+      </div>
+    </div>
+
+    <div class="col-2">
+      <div class="card analytics card-body" id="data-card">
+        <h5 class="text-muted">Sub Area</h5>
+        <h5>{{ currentData.area ? currentData.area : "--" }}</h5>
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="card analytics card-body" id="data-card">
+        <h5 class="text-muted">Department</h5>
+        <h5>{{ currentData.department ? currentData.department : "--" }}</h5>
+      </div>
+    </div>
+    <!-- <div class="col-3">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Plant</h5>
+                <h4>{{currentPlant?currentPlant:'--'}}</h4>
+            </div>
+        </div> -->
+  </div>
+
+  <div class="col-12">
+    <div class="card p-0" id="data-card">
+      <div class="card-header">
+        <h4 class="float-start text-muted">Rack Process Details</h4>
+        <div class="row">
+          <div class="float-end">
+            <div
+              class="col-xl-3 col-xs-12 col-md-12 col-lg-2 col-sm-12 float-end"
+            >
+          
+            </div>
+        
+            <div class="me-2 float-end"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="d-flex justify-content-space-between">
+        
+        </div>
+      </div>
+      <div class="table-responsive" style="width: 100%; overflow: auto">
+        <table class="table" style="width: 100%; overflow: auto" id="dataTable">
+          <thead class="headers">
+            <tr>
+              <th scope="col">S.No</th>
+
+              <th scope="col">Riro Image</th>
+
+              <th scope="col">Rack Process</th>
+              <th scope="col">
+                <div class="">Time</div>
+              </th>
+              <th scope="col">Rack Method</th>
+              <th scope="col" style="width: 4rem !important">
+                &nbsp;Tag&nbsp;
+              </th>
+              <th scope="col">Lock</th>
+              <th scope="col">Magnetic Sticker</th>
+              <th scope="col">PPE Violations</th>
+
+              <th scope="col">5 Meter Violation</th>
+              <th scope="col">Remark</th>
+
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              scope="row"
+              *ngFor="let data of panelData | async; let i = index"
+              [ngClass]=""
+            >
+              <td>{{ data.SNo }}</td>
+
+              <td scope="col">
+                <div>
+                  <img
+                    class="image"
+                    imageLoader
+                    (click)="RemarkModal(editRack, data, 'rack_process')"
+                    *ngIf="data.riro_merged_image != null"
+                    [src]="IP + '/riro_image/' + data.riro_merged_image"
+                    alt=""
+                  />
+                </div>
+              </td>
+              <td scope="col" id="success">
+                <div
+                  class="cursor-pointer"
+                  (click)="RemarkModal(editRack, data, 'rack_process')"
+                  *ngIf="data.rack_process != null; else elsep"
+                >
+                    <div
+                      class="editable-text cursor-pointer"
+                      *ngIf="data.rack_process === 'rack_in'"
+                    >
+                      <label class="form-check-label" [for]="'rackIn' + i"
+                        >Rack In</label
+                      ><fa-icon
+                        icon="pen-to-square"
+                        class="ms-2 cursor-pointer"
+                      ></fa-icon>
+                      <div class="mt-2"></div>
+                    </div>
+                    <div
+                      class="editable-text"
+                      *ngIf="data.rack_process === 'rack_out'"
+                    >
+                      <label class="form-check-label" [for]="'rackOut' + i"
+                        >Rack Out</label
+                      ><fa-icon
+                        icon="pen-to-square"
+                        class="ms-2 cursor-pointer"
+                      ></fa-icon>
+                    </div>
+                    <div class="editable-text" *ngIf="data.rack_process === 'maintenance'">
+                    
+                      <label class="form-check-label" [for]="'maintenance' + i"
+                        >Maintenance
+                      </label>
+                      <fa-icon
+                        icon="pen-to-square"
+                        class="ms-2 cursor-pointer"
+                      ></fa-icon>
+                    </div>
+                    <div
+                      class=""
+                      *ngIf="data.rack_process === 'not_recognised'"
+                    >
+                      
+                      <div class="danger-badge"><b><fa-icon icon="image"></fa-icon> Not Recognized</b></div>
+                    </div>
+                </div>
+                <ng-template #elsep>---</ng-template>
+              </td>
+              <!-- <td>
+                            <div   [ngClass]="{'success-badge':data.five_meter!=null?data.five_meter.violation:false,'danger-badge':data.five_meter!=null?!data.five_meter.violation:false}">
+                                {{data.five_meter!=null?
+                                    data.five_meter.violation?'Yes':'No':'--'}}
+                            </div>
+                          </td> -->
+              <td scope="col">
+                <div class="mt-2" *ngIf="data.rack_process != null">
+                  <span>{{ data.irrd_in_time | dateFormater }}</span> <br />-
+                  <br /><span>{{ data.irrd_out_time | dateFormater }}</span>
+                </div>
+              </td>
+
+              <td scope="col">
+                <div 
+                  class=""
+                  *ngIf="data.rack_method != null"
+                  (click)="
+                    data.riro_key_id
+                      ? selectEditField(EditField, data, 'rack_method')
+                      : ''
+                  "
+                >
+                  <div style="width: 7rem !important;"
+                    *ngIf="data.rack_method === 'manual'"
+                    class="danger-badge"
+                  >
+                    {{ data.rack_method ? data.rack_method : "---" }}
+                  </div>
+                  <div style="width: 7rem !important;"
+                    *ngIf="data.rack_method != 'manual'"
+                    class="success-badge"
+                  >
+                   <fa-icon icon="image"></fa-icon> {{ data.rack_method ? data.rack_method : "---" }}
+                  </div>
+                </div>
+              </td>
+
+              <!-- lock in lock out process has to implement -->
+              <td scope="col" id="success">
+                <!-- <button *ngIf="panel" class="btn default btn default-tertiary">
+                                                    <a [routerLink]="['/app/jobsheetViolation']"
+                                                        [queryParams]="{ id:data['_id'].$oid,type:data['plant'],image_name:data.image_name}"
+                                                        target="_blank">
+                                                        Rack in</a>
+                                                </button> -->
+                <div
+                  class=""
+                  (click)="
+                    data.riro_key_id
+                      ? selectEditField(EditField, data, 'tag')
+                      : ''
+                  "
+                  style="width: 6rem; cursor: pointer"
+                  *ngIf="data.tag != null; else elsep"
+                  [ngClass]="{
+                    'danger-badge':
+                      (data.rack_process == 'rack_out' &&
+                        data.tag == 'untag') ||
+                      (data.rack_process == 'rack_in' && data.tag == 'tag'),
+                    'warning-badge':
+                      data.rack_process == 'rack_out' &&
+                      data.tag == 'tag' &&
+                      !data.within_15_min &&
+                      data.within_15_min != null,
+                    'success-badge':
+                      (data.rack_process == 'rack_out' &&
+                        data.tag == 'tag' &&
+                        data.within_15_min &&
+                        data.within_15_min != null) ||
+                      (data.rack_process == 'rack_in' && data.tag == 'untag')
+                  }"
+                >
+                  <fa-icon class="me-2" icon="image"></fa-icon>
+
+                  {{ data.tag }}
+                </div>
+                <ng-template #elsep>---</ng-template>
+              </td>
+              <!-- tag in tag out process has to implement -->
+              <td scope="col" id="success">
+                <!-- <button *ngIf="panel" class="btn default btn default-tertiary">
+                                                <a [routerLink]="['/app/jobsheetViolation']"
+                                                    [queryParams]="{ id:data['_id'].$oid,type:data['plant'],image_name:data.image_name}"
+                                                    target="_blank">
+                                                    Rack in</a>
+                                            </button> -->
+
+                <div
+                  class=""
+                  style="width: 6rem; cursor: pointer"
+                  (click)="
+                    data.riro_key_id
+                      ? selectEditField(EditField, data, 'lock')
+                      : ''
+                  "
+                  [ngClass]="{
+                    'danger-badge':
+                      (data.rack_process == 'rack_out' &&
+                        data.lock == 'unlock') ||
+                      (data.rack_process == 'rack_in' && data.lock == 'lock'),
+                    'warning-badge':
+                      data.rack_process == 'rack_out' &&
+                      data.lock == 'lock' &&
+                      !data.within_15_min &&
+                      data.within_15_min != null,
+                    'success-badge':
+                      (data.rack_process == 'rack_out' &&
+                        data.lock == 'lock' &&
+                        data.within_15_min &&
+                        data.within_15_min != null) ||
+                      (data.rack_process == 'rack_in' && data.lock == 'unlock')
+                  }"
+                  *ngIf="data.lock != null; else elsep"
+                >
+                  <fa-icon class="me-2" icon="image"></fa-icon>
+                  {{ data.lock }}
+                </div>
+                <ng-template #elsep>---</ng-template>
+              </td>
+
+              <td scope="col">
+                <div class="column-flex">
+                  <div
+                    (click)="FlasherImage(data)"
+                    style="width: 5rem; cursor: pointer"
+                    *ngIf="data.magnetic_flasher != null; else elsep"
+                    [ngClass]="{
+                      'success-badge': data.magnetic_flasher.status == 'yes',
+                      'danger-badge': data.magnetic_flasher.status == 'no'
+                    }"
+                  >
+                    <fa-icon
+                      class="me-2"
+                      icon="image"
+                      *ngIf="data.magnetic_flasher.flasher_image"
+                    ></fa-icon
+                    >{{ data.magnetic_flasher.status }}<br />
+                  </div>
+                  <span
+                    *ngIf="data.magnetic_flasher.status == 'yes'"
+                    class="mt-1"
+                    >{{
+                      data.magnetic_flasher.flasher_time | dateFormater
+                    }}</span
+                  >
+                </div>
+
+                <ng-template #elsep>---</ng-template>
+              </td>
+              <td scope="col">
+                <div id="danger" style="width: 5rem">
+                  <!-- <input type="checkbox" [checked]="data.violation" style="pointer-events: none;"
+                                    class="ppe form-check-input is-invalid" name="RackIn" id="ppe"><label
+                                    class="form-check-label" style="cursor:pointer;">&nbsp;
+                                    PPE</label> -->
+                  <button
+                    (click)="ToPPE()"
+                    style="width: 6rem"
+                    class=""
+                    *ngIf="data.violation"
+                    class="btn btn-sm danger"
+                  >
+                    Show Data
+                  </button>
+                </div>
+              </td>
+              <td scope="col" style="width: 5rem">
+                <div
+                  *ngIf="
+                    data.five_meter != null ? !data.five_meter.violation : false
+                  "
+                  (click)="
+                    data.riro_key_id
+                      ? selectEditField(EditField, data, 'five_meter')
+                      : ''
+                  "
+                  [ngClass]="{
+                    'success-badge':
+                      data.five_meter != null
+                        ? !data.five_meter.violation
+                        : false,
+                    'danger-badge':
+                      data.five_meter != null
+                        ? data.five_meter.violation
+                        : false
+                  }"
+                >
+                  {{
+                    data.five_meter != null
+                      ? data.five_meter.violation
+                        ? "Yes"
+                        : "No"
+                      : "--"
+                  }}
+                </div>
+                <div>
+                  <span
+
+
+                    style="width: inherit"
+                    *ngIf="
+                      data.five_meter != null
+                        ? data.five_meter.violation
+                        : false
+                    "
+                    (click)="
+                      data.riro_key_id
+                        ? selectEditField(EditField, data, 'five_meter')
+                        : ''
+                    "
+                    class="danger-badge"
+                  >
+                    <fa-icon class="me-2" icon="image"></fa-icon>Yes
+                </span>
+                </div>
+                <ng-template #elsePart>--</ng-template>
+              </td>
+
+              <td scope="col">
+                <div *ngIf="data.riro_key_id">
+                  <button
+                    class="btn btn-sm default-outline"
+                    (click)="EditRemark(addRemark, data, 'remarks')"
+                  >
+                    <fa-icon
+                      *ngIf="!data.remarks"
+                      icon="plus"
+                      class="me-2"
+                    ></fa-icon>
+                    <fa-icon
+                      *ngIf="data.remarks"
+                      icon="eye"
+                      class="me-2"
+                    ></fa-icon>
+                    Remark
+                  </button>
+                </div>
+              </td>
+
+              <td scope="col">
+                <div>
+                  <button
+                    class="btn"
+                    (click)="RirDeleteModal(deleteField, data.riro_key_id)"
+                  >
+                    <fa-icon class="text-danger" icon="trash"></fa-icon>
+                  </button>
+                </div>
+              </td>
+              <!-- <td>ROI<br/>
+                    <button class="btn default">
+                        <a [routerLink]="['/app/jobsheetViolation']" 
+                        [queryParams]="{ id:data['_id'].$oid,type:data['plant'],image_name:ip.image_name}" target="_blank">
+                        Edit</a>
+                    </button></td> -->
+            </tr>
+          </tbody>
+        </table>
+        <div class="d-flex mx-auto justify-content-center p-1">
+          <ngb-pagination
+            [collectionSize]="total | async"
+            [(page)]="page"
+            [pageSize]="pageSize"
+            style="width: 95vw; overflow-x: auto"
+            (pageChange)="sliceData()"
+          >
+          </ngb-pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template let-modal #addRemark>
+  <div class="modal-header">
+    <h4>
+      {{ selectedRiro.remarks ? "Edit " : "Add " }} the
+      {{ editField }}
+    </h4>
+    <button
+      type="button"
+      class="btn btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form action="">
+            <textarea
+              rows="5"
+              [formControl]="remarkControl"
+              class="form-control"
+            >
+            </textarea>
+          </form>
+          <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button
+            type="button"
+            class="btn danger"
+            (click)="DeleteRemark()"
+            *ngIf="selectedRiro?.remarks"
+            (click)="modal.close('Cross click')"
+            data-dismiss="modal"
+          >
+            Delete Remark
+          </button>
+          <button
+            type="button"
+            [disabled]="remarkControl.invalid"
+            class="btn default"
+            (click)="SaveRemark()"
+          >
+            Save Remark
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template let-modal #editRack>
+  <div class="modal-header">
+    <h4 class="modal-title">Rack Process Details</h4>
+    <button
+      type="button"
+      aria-label="Close"
+      class="btn btn-close"
+      (click)="modal.dismiss('Cross click')"
+      aria-hidden="true"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="row mb-5">
+            <!-- if two images of rack will come il iwll enable this -->
+            <!-- <div class="col-6">
+                            <div class="card">
+                                <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                                    thumbImage="http://192.168.1.72:5000/image/PPE_type1_TSK_2_4045_20221202_122829.jpg"
+                                    fullImage="http://192.168.1.72:5000/image/PPE_type1_TSK_2_4045_20221202_122829.jpg">
+                                </lib-ngx-image-zoom>
+                                <div class="card-body">
+                                    <p><span class="text-muted me-2">Rack Process:</span>Rack In</p>
+                                </div>
+                            </div>
+                        </div> -->
+            <div class="col-12">
+              <div class="card">
+                <div class="card-img-top">
+                  <lib-ngx-image-zoom
+                    class="card-img-top"
+                    [enableScrollZoom]="true"
+                    [thumbImage]="
+                      IP + '/riro_image/' + selectedRiro.riro_merged_image
+                    "
+                    [fullImage]="
+                      IP + '/riro_image/' + selectedRiro.riro_merged_image
+                    "
+                  >
+                  </lib-ngx-image-zoom>
+                </div>
+                <div class="card-body">
+                  <p class="text-dark">
+                    <span class="text-muted me-2">Rack Process:</span
+                    >{{
+                      selectedRiro.rack_process == "rack_in"
+                        ? "Rack
+                                        In"
+                        : selectedRiro.rack_process == "rack_out"
+                        ? "Rack Out"
+                        : "No Process"
+                    }}
+                  </p>
+                  <p class="text-dark">
+                    <span class="text-muted me-2">Time :</span
+                    ><b
+                      >{{ selectedRiro.irrd_in_time | dateFormater }} -
+                      {{ selectedRiro.irrd_out_time | dateFormater }}</b
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <form action="">
+            <div class="form-check form-check-inline" id="custome">
+              <input
+                type="radio"
+                [formControl]="rackProcess"
+                value="rack_in"
+                (change)="EditRack($event)"
+                defaultValue="rack_in"
+                id="rackin"
+                class="form-check-input"
+              />
+              <label for="rackin" class="form-check-label text-muted"
+                >Rack in</label
+              >
+            </div>
+            <div class="form-check form-check-inline" id="custome">
+              <input
+                type="radio"
+                [formControl]="rackProcess"
+                value="rack_out"
+                (change)="EditRack($event)"
+                defaultValue="rack_out"
+                id="rackout"
+                class="form-check-input"
+              />
+              <label for="rackout" class="form-check-label text-muted"
+                >Rack Out
+              </label>
+            </div>
+            <div class="form-check form-check-inline" id="custome">
+              <input
+                type="radio"
+                [formControl]="rackProcess"
+                value="maintenance"
+                (change)="EditRack($event)"
+                defaultValue="maintenance"
+                id="maintenance"
+                class="form-check-input"
+              />
+              <label for="maintenance" class="form-check-label text-muted"
+                >Maintenance</label
+              >
+            </div>
+            <div class="form-check form-check-inline" id="custome">
+              <input
+                type="radio"
+                [formControl]="rackProcess"
+                value="not_recognised"
+                (change)="EditRack($event)"
+                defaultValue="not_recognised"
+                id="notRecognised"
+                class="form-check-input"
+              />
+              <label for="notRecognised" class="form-check-label text-muted"
+                >Not Recognised</label
+              >
+            </div>
+          </form>
+          <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="modal.close('Cross click')"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="button" class="btn default" (click)="SaveRackChanges()">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- template to edit the all fields -->
+<ng-template let-modal #EditField>
+  <div class="modal-header">
+    <h4 class="modal-title w-60">Edit the {{ editField }}</h4>
+    <button
+      type="button"
+      class="btn btn-close"
+      (click)="modal.dismiss('Cross click')"
+      aria-hidden="true"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form action="" *ngIf="editField == 'rack_method'" id="custome">
+            <div
+              class="card p-3 mt-3 d-flex justify-centent-center align-items-center"
+              id="data-card"
+            >
+              <div class="">
+                <lib-ngx-image-zoom
+                  class="card-img-top"
+                  [enableScrollZoom]="true"
+                  [thumbImage]="
+                    IP + '/riro_image/' + selectedRiro.riro_merged_image
+                  "
+                  [fullImage]="
+                    IP + '/riro_image/' + selectedRiro.riro_merged_image
+                  "
+                >
+                </lib-ngx-image-zoom>
+              </div>
+              <div
+                class="card p-3 mt-3 d-flex justify-centent-center align-items-center"
+                id="data-card"
+              >
+                <div class="form-check form-check-inline">
+                  <input
+                    rows="5"
+                    value="automatic"
+                    id="1"
+                    type="radio"
+                    [formControl]="tempField"
+                    class="form-check-input"
+                  />
+                  <label for="1" class="form-check-label">Automatic</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    rows="5"
+                    value="manual"
+                    id="2"
+                    type="radio"
+                    [formControl]="tempField"
+                    class="form-check-input"
+                  />
+                  <label for="2">Manual</label>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <form action="" *ngIf="editField == 'tag'" id="custome">
+            <div class="card mb-3">
+              <div class="card-img-top">
+                <lib-ngx-image-zoom
+                  imageLoader
+                  class="card-img-top"
+                  [enableScrollZoom]="true"
+                  [thumbImage]="
+                    IP + '/taglock_image/' + selectedRiro.lock_tag_image
+                  "
+                  [fullImage]="
+                    IP + '/taglock_image/' + selectedRiro.lock_tag_image
+                  "
+                >
+                </lib-ngx-image-zoom>
+
+                <p class="text-dark mt-3">
+                  Time: {{ selectedRiro.tag_time | dateFormater }}
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="card p-3 mt-3 d-flex justify-centent-center align-items-center"
+              id="data-card"
+            >
+              <div class="form-check form-check-inline">
+                <input
+                  rows="5"
+                  value="tag"
+                  id="1"
+                  type="radio"
+                  [formControl]="tempField"
+                  class="form-check-input"
+                />
+
+                <label for="1" class="form-check-label">tag</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input
+                  rows="5"
+                  value="untag"
+                  id="2"
+                  type="radio"
+                  [formControl]="tempField"
+                  class="form-check-input"
+                />
+
+                <label for="2">untag</label>
+              </div>
+            </div>
+          </form>
+
+          <form action="" *ngIf="editField == 'lock'" id="custome">
+            <div class="card mb-3">
+              <div class="card-img-top">
+                <lib-ngx-image-zoom
+                  class="card-img-top"
+                  [enableScrollZoom]="true"
+                  [thumbImage]="
+                    IP + '/taglock_image/' + selectedRiro.lock_tag_image
+                  "
+                  [fullImage]="
+                    IP + '/taglock_image/' + selectedRiro.lock_tag_image
+                  "
+                >
+                </lib-ngx-image-zoom>
+
+                <p class="text-dark mt-3">
+                  Time: {{ selectedRiro.lock_time | dateFormater }}
+                </p>
+              </div>
+            </div>
+            <div
+              class="card p-3 mt-3 d-flex justify-centent-center align-items-center"
+              id="data-card"
+            >
+              <div class="form-check form-check-inline">
+                <input
+                  rows="5"
+                  value="lock"
+                  id="1"
+                  type="radio"
+                  [formControl]="tempField"
+                  class="form-check-input"
+                />
+
+                <label for="1" class="form-check-label">lock</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input
+                  rows="5"
+                  value="unlock"
+                  id="2"
+                  type="radio"
+                  [formControl]="tempField"
+                  class="form-check-input"
+                />
+
+                <label for="2">unlock</label>
+              </div>
+            </div>
+          </form>
+          <form action="" *ngIf="editField == 'five_meter'" id="custome">
+            <div
+              class="card-img-top mb-2"
+              *ngIf="selectedRiro?.five_meter?.images"
+            >
+              <ngb-carousel>
+                <ng-container
+                  *ngFor="let img of selectedRiro.five_meter.images"
+                >
+                  <ng-template ngbSlide class="m-4">
+                    <lib-ngx-image-zoom
+                      class="card-img-top"
+                      [enableScrollZoom]="true"
+                      [thumbImage]="IP + '/fivemeter_image/' + img.img_name"
+                      [fullImage]="IP + '/fivemeter_image/' + img.img_name"
+                    >
+                    </lib-ngx-image-zoom>
+                  </ng-template>
+                </ng-container>
+              </ngb-carousel>
+            </div>
+            <div
+              class="card p-3 mt-3 d-flex justify-centent-center align-items-center"
+              id="data-card"
+            >
+              <div class="form-check form-check-inline">
+                <input
+                  value="Yes"
+                  id="1"
+                  type="radio"
+                  [formControl]="tempField"
+                  class="form-check-input"
+                />
+
+                <label for="1" class="form-check-label">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input
+                  value="No"
+                  id="2"
+                  type="radio"
+                  [formControl]="tempField"
+                  class="form-check-input"
+                />
+
+                <label for="2">No</label>
+              </div>
+            </div>
+          </form>
+          <!-- <p>Do you really want to delete these Camera? This process cfive_meterannot be undone.</p> -->
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="modal.close('Cross click')"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn default"
+            (click)="SaveFieldChanges()"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template let-modal #deleteField>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="modal-header flex-column">
+          <h4 class="modal-title w-100">Are you sure?</h4>
+          <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+        </div>
+        <div class="modal-body">
+          <p>
+            Do you really want to delete this details? This process cannot be
+            undone.
+          </p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="modal.close('Cross click')"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="button" (click)="RiroDelete()" class="btn danger">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
