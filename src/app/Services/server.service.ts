@@ -2,7 +2,7 @@ import { DatePipe } from "@angular/common";
 import { HttpClient, HttpHeaders, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Observable, retry, Subject } from "rxjs";
+import { BehaviorSubject, Observable, retry, Subject } from "rxjs";
 import { configService } from "./config.service";
 import { SocketService } from "./socket-server.service";
 @Injectable({
@@ -15,6 +15,8 @@ export class ServerService {
   steamDataDelay: number;
   delay: number;
   relayDelay: number;
+  notificationSetting:Subject<boolean>=new BehaviorSubject(true)
+  alertVoiceSettings:Subject<boolean>=new BehaviorSubject(true)
   dashboardInterval: number=3000;
   jobsheetInterval: number=3000;
   jobsheetDataInterval2: number=3000;
@@ -28,7 +30,6 @@ export class ServerService {
   raLiveInterval: any;
   unplannedInterval: any;
   configInfo: any;
-
   secretKey: string = "docketrun-944";
   ppeLiveInterval: any;
   public userType: string = "admin";
@@ -41,11 +42,13 @@ export class ServerService {
     public datePipe: DatePipe,
     private configService:configService,
   ) {
+   this.notificationSetting.next(localStorage.getItem('alert')=='true'?true:false)
+   this.alertVoiceSettings.next(localStorage.getItem('audioOff')=='true'?true:false)
     var res = this.configService.config
     console.log(res,'response of config')
     this.IP=res.IP
     this.IP_ESI=res.IP_ESI
-  
+    
     this.dashboardInterval=res.dashboardInterval
     this.jobsheetDataInterval=res.jobSheetDataInterval
     this.jobsheetInterval=res.jobSheetStatusInterval
@@ -78,7 +81,18 @@ export class ServerService {
       withCredentials: true,
     });
   }
-
+  UpdateNotificationSettings(value:boolean){
+    this.notificationSetting.next(value)
+  }
+  UpdateVoiceAlert(value:boolean){
+    this.alertVoiceSettings.next(value)
+  }
+  GetNotificationSettings(){
+    return this.notificationSetting.asObservable()
+  }
+  GetVoiceAlertSettings(){
+    return this.alertVoiceSettings.asObservable()
+  }
   DownloadCameraSheet() {
     const headers = new HttpHeaders({
       "Access-Control-Allow-Origin": "*",

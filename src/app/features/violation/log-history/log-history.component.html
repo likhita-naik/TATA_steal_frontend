@@ -35,16 +35,7 @@
           ></fa-icon></button
         >&nbsp;
 
-        <!-- <span class="float-end" *ngIf="!(isdatewise || isLatest)">
-                    <span class="d-flex justify-centent-center align-items-center"><span class="text-muted">Analytics
-                            :</span>
-                        <span class="success-badge" *ngIf="isActive">
-                            
-                            <span *ngIf="!isActive2">Running</span>
-                            <span *ngIf="isActive2">Running in Mockdrill Mode</span>
-
-                        </span>
-                        <span class="danger-badge" *ngIf="!isActive">Stopped</span></span></span> -->
+    
       </div>
     </div>
   </div>
@@ -59,12 +50,7 @@
       <p-tabPanel header="Crowd Count">
         <router-outlet *ngIf="activeIndex == 2"></router-outlet>
       </p-tabPanel>
-      <!-- <p-tabPanel header="Fire Detection">
-                <router-outlet *ngIf="activeIndex==3"></router-outlet>
-            </p-tabPanel>  
-            <p-tabPanel header="Spillage Detection">
-                <router-outlet *ngIf="activeIndex==4"></router-outlet>
-            </p-tabPanel> -->
+    
       <p-tabPanel header="Steam-Suit Detection">
         <router-outlet *ngIf="activeIndex == 3"></router-outlet>
       </p-tabPanel>

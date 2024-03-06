@@ -80,6 +80,7 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
     localStorage.getItem("alert") == "true"
       ? (this.alert = true)
       : (this.alert = false);
+      
     console.log(
       localStorage.getItem("audioOff"),
       localStorage.getItem("alert")
@@ -113,6 +114,7 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
   ngOnInit(): void {
     //...........Reading previous violation data's length from local storage....
     this.violLength = Number(localStorage.getItem("updatedLen"));
+    
   }
 
   ngAfterViewInit() {
@@ -204,6 +206,7 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
       localStorage.setItem("audioOff", "true");
     } else {
       this.audioOff = !this.audioOff;
+      this.webServer.UpdateNotificationSettings(this.audioOff)
       localStorage.setItem("audioOff", this.audioOff ? "true" : "false");
     }
   }
@@ -215,7 +218,7 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
     if (!this.alert) {
       this.audioOff = true;
       localStorage.setItem("alert", "false");
-
+      this.webServer.UpdateVoiceAlert(this.alert)
       localStorage.setItem("audioOff", "true");
       this.toasterService.clear();
     }

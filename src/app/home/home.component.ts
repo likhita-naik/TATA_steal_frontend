@@ -35,6 +35,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ) {
     this.API = this.configServer.IP;
     this.delay = configServer.logInterval;
+
+    localStorage.getItem("audioOff") == "true"
+      ? (this.audioOff = true)
+      : (this.audioOff = false);
+    localStorage.getItem("alert") == "true"
+      ? (this.alert = true)
+      : (this.alert = false);
+    this.webServer.GetNotificationSettings().subscribe((value:boolean)=>{
+      this.alert=value
+      console.log('updatin the notification value in home component')
+    })
+
+      
   }
   ngOnInit(): void {
     this.setPrevViolCount()
@@ -43,6 +56,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.subscription1 = setInterval(() => {
       this.getViolationNotification();
     }, this.delay);
+    
+    this.webServer.alertVoiceSettings.subscribe((value:boolean)=>{
+      this.audioOff=value
+    })
   }
   showViol() {
     if (this.alert) {

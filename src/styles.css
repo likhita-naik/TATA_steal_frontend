@@ -739,7 +739,7 @@ td {
   left: 0;
   height: 100vh;
   z-index: 999 !important;
-  overflow: auto;
+  overflow-y: auto !important;
   background: hsl(207, 85%, 33%);
   border-radius: 3px;
   color: #fff;
