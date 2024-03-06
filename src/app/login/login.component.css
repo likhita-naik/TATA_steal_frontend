@@ -266,24 +266,29 @@ input[type="text"]:placeholder {
 }
 
 .fadeIn.first {
+  -webkit-animation-delay: 0.2s;
+  -moz-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+}
+
+.fadeIn.second {
   -webkit-animation-delay: 0.4s;
   -moz-animation-delay: 0.4s;
   animation-delay: 0.4s;
 }
 
-.fadeIn.second {
+.fadeIn.third {
   -webkit-animation-delay: 0.6s;
   -moz-animation-delay: 0.6s;
   animation-delay: 0.6s;
 }
 
-.fadeIn.third {
+.fadeIn.fourth {
   -webkit-animation-delay: 0.8s;
   -moz-animation-delay: 0.8s;
   animation-delay: 0.8s;
 }
-
-.fadeIn.fourth {
+.fadeIn.fifth {
   -webkit-animation-delay: 1s;
   -moz-animation-delay: 1s;
   animation-delay: 1s;
@@ -318,3 +323,26 @@ input[type="text"]:placeholder {
 #icon {
   width: 40%;
 }
+
+
+.wrapper-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  grid-column-gap: 15px;
+
+
+}
+
+.disabled {
+ 
+    background-color: disable-background-color;
+  
+}
+
+
+.center-tab-header .ui-tabs-nav {
+  display: flex !important;
+  justify-content: center !important;
+}
+

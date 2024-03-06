@@ -13,6 +13,9 @@ const routes: Routes = [
     loadChildren: () =>
       import("./login/login.module").then((m) => m.LoginModule),
   },
+//   {path:'create-account',
+//   loadChildren: () => import('./create-account/create-account.module').then(m => m.CreateAccountModule)
+//  },
   {
     path: "",
     loadChildren: () =>

@@ -1,26 +1,31 @@
 <div class="wrapper fadeInDown">
   <div id="formContent">
-    <!---Logo-->
     <div class="fadeIn first">
       <img src="assets/images/customer_logo.png" id="icon" />
     </div>
-    <!-- <div class="mb-3 mt-4" class="text-muted" style="font-family: 'Times New Roman', Times, serif;"><h5><b>Admin</b></h5></div> -->
+    
 
-    <!-------->
-    <form #authForm="ngForm" (ngSubmit)="OnSubmit(authForm)">
+    <p-tabView styleClass="center-tab-header"> 
+      <p-tabPanel header="Admin" >
+        <form #authForm="ngForm">
+          <div  [formGroup]="AdminLoginForm">
+
+        <div class="d-flex align-items-center float-end" style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;" >
+          <p (click)="CreateAccount()"><b>Create New Account ?</b></p>
+        </div>
+
       <input
         type="text"
-        id="login"
+        id="emailid"
         class="fadeIn second"
         ngModel
-        name="userName"
-        placeholder="User name"
+        name="emailid"
+        placeholder="Email ID"
         required
+        formControlName="emailid"
         (keyup.enter)="ToNextField('password')"
       />
-      <!-- <p *ngIf="email.invalid&&email.touched" class="help-block mb-2"><small style="color: red;">*Email is
-          required</small></p> -->
-
+      
       <input
         type="password"
         id="password"
@@ -29,19 +34,34 @@
         ngModel
         name="password"
         placeholder="Password"
-        (keyup.enter)="OnSubmit(authForm)"
+        formControlName="password"
+        (keyup.enter)="ToNextField('token')"
         required
       />
 
-      <!-- <p *ngIf="password.invalid&&password.touched" class="help-block mb-2"><small style="color: red;">*password is
-        required</small></p> -->
+      <input
+          type="password"
+          id="token"
+          class="fadeIn fourth"
+          id="token"
+          ngModel
+          name="token"
+          placeholder="Token"
+          formControlName="token"
+          (keyup.enter)="AdminLoginSubmit()"
+          required
+        />
 
-      <!-- <small><a (click)="ForgotFunction()" style="cursor: pointer;" class="underlineHover" *ngIf="emailName.valid"><u>forgot password?</u></a></small><br> -->
+        <div class="d-flex justify-content-between align-items-center" style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;" >
+          <p  (click)="ForgotPassword(ForgottenPasswordModal)"><b>Forgot password ?</b></p>
 
-      <p *ngIf="fail" style="color: rgb(208, 30, 30)">
-        <small>userName and password is incorrect</small>
-      </p>
-      <button type="submit" [disabled]="!authForm.valid" class="fadeIn fourth">
+        </div>
+        
+
+      <!-- <p *ngIf="fail" style="color: rgb(208, 30, 30)">
+        <small>Email Id OR password is incorrect</small>
+      </p> -->
+      <button  *ngIf="!alreadyLoggedIn" type="submit" [disabled]="AdminLoginForm.invalid" class="fadeIn fifth" (click)="AdminLoginSubmit()">
         <div *ngIf="isLoading">
           <span
             class="spinner-border spinner-border-sm me-1"
@@ -52,6 +72,223 @@
         </div>
         <div *ngIf="!isLoading">LOG IN</div>
       </button>
+
+      <button *ngIf="alreadyLoggedIn" type="submit" [disabled]="AdminLoginForm.invalid" class="fadeIn fifth" (click)="userLoggedType ==='admin'?adminLogout():userLogout()">
+        <div *ngIf="isLoading">
+          <span
+            class="spinner-border spinner-border-sm me-1"
+            role="status"
+            aria-hidden="true"
+          ></span
+          >LOGGING IN...
+        </div>
+        <div *ngIf="!isLoading">LOG OUT & LOGIN</div>
+      </button>
+    </div>
     </form>
+    
+  </p-tabPanel>
+
+    <p-tabPanel header="User"   >
+      <form #authForm="ngForm" >
+      <div [formGroup]="UserLoginForm">
+        <input
+          type="text"
+          id="emailid"
+          class="fadeIn second"
+          ngModel
+          name="emailid"
+          placeholder="Email ID"
+          formControlName="emailid"
+          required
+          (keyup.enter)="ToUserNextField('password')"
+        />
+       
+        <input
+          type="password"
+          id="password"
+          class="fadeIn third"
+          id="password"
+          ngModel
+          name="password"
+          placeholder="Password"
+          formControlName="password"
+          (keyup.enter)="ToUserNextField('token')"
+          required
+        />
+
+        <input
+          type="password"
+          id="token"
+          class="fadeIn fourth"
+          id="token"
+          ngModel
+          name="token"
+          placeholder="Token"
+          formControlName="token"
+          (keyup.enter)="UserLoginSubmit()"
+          required
+        />
+       
+
+        <!-- <div class="d-flex justify-content-between align-items-center" style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;" > -->
+          <!-- <p><b>Forgot password ?</b></p> -->
+          <!-- <p (click)="ChangePassword(ChangePasswordModal)"><b>Reset password ?</b></p> -->
+        <!-- </div> -->
+  
+        <!-- <p *ngIf="fail" style="color: rgb(208, 30, 30)">
+          <small>Email Id OR password is incorrect</small>
+        </p> -->
+        <button  type="submit" [disabled]="UserLoginForm.invalid" class="fadeIn fifth" (click)="UserLoginSubmit()">
+          <div *ngIf="isLoading">
+            <span
+              class="spinner-border spinner-border-sm me-1"
+              role="status"
+              aria-hidden="true"
+            ></span
+            >LOGGING IN...
+          </div>
+          <div *ngIf="!isLoading">LOG IN</div>
+        </button>
+
+
+      </div>
+      </form>
+    </p-tabPanel>
+    </p-tabView>
   </div>
 </div>
+
+
+<ng-template let-modal #ForgottenPasswordModal>
+  <div class="modal-header">
+      <h4 class="modal-title" style="color:  hsl(212, 50%, 35%)">Reset password</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+
+  <div class="modal-body" id="dataTable">
+     
+        <form action="" class=""   [formGroup]="ForgottenPasswordForm"  >
+          <!-- <div class="col-12 card"> -->
+          <div id="input">
+            <div  class="wrapper">
+              <div class="col-12 card"  *ngIf="!gotOTP">
+
+                <div class="form-floating">
+                  <h6 class="sub-header">Enter Your Registered Email ID:</h6>
+                </div>
+
+              <div class="form-floating">
+                  <input type="text" placeholder="Email Id" class="form-control"  formControlName="emailid" id="emailid"/>
+                  <label for="emailid"> Email Id</label>
+              </div>
+
+              <div class="form-floating">
+                <button type="submit" (click)="SendOTP()">
+                  GET OTP
+                </button>
+              </div>
+
+            </div>
+
+        
+            <div class="col-12 card"  *ngIf="!OTPVerified && gotOTP">
+
+
+              <div class="form-floating">
+                <h6 class="sub-header">Enter Generated OTP:</h6>
+              </div>
+              <br>
+
+              <div class="form-floating" >
+                <div  class="align-items-center">
+                <span style="background-color: #4c4949; color:white; padding:13px; justify-content: center;font-size: larger;">{{OTP?OTP+captcha:'CAPTCHA'}}</span></div>
+              </div> 
+              <br>
+
+              <div class="form-floating">
+                <input type="password" placeholder="Enter OTP" class="form-control" formControlName="userInput"  id="userInput"  />
+                <label for="userInput"> Enter OTP</label>
+              </div>
+
+              <div  *ngIf="gotOTP && !OTPVerified" class="wrapper">
+                <button type="submit" (click)="verify()"> Verify</button>
+            </div>
+
+            </div>
+
+            
+
+
+          </div>
+        </div>
+      <!-- </div> -->
+      <div *ngIf="OTPVerified">
+        <div class="form-floating">
+          <h6 class="sub-header">Enter New Password</h6>
+        </div>
+
+          <div class="wrapper">
+
+              <div class="form-floating">
+                  <input type="password" placeholder="Password" class="form-control" formControlName="forgottenNewPassword" id="forgottenNewPassword"/>
+                  <label for="forgottenNewPassword"> Password</label>
+              </div>
+
+              <div class="form-floating">
+                  <input type="password" placeholder="Confirm password" class="form-control" formControlName="forgottenConfirmPassword"   id="forgottenConfirmPassword"/>
+                  <label  for="forgottenConfirmPassword"> Confirm password</label>
+              </div>
+
+          </div>
+          
+
+          
+          <div class="wrapper">
+              <button type="submit" (click)="ForgottenPasswordSubmit()"><span>Submit</span></button>
+          </div>   
+          </div>
+      </form>
+          
+  </div>
+
+</ng-template>
+
+
+<ng-template let-modal #ChangePasswordModal>
+  <div class="border" style="background-color: white">
+     
+      <div class="modal-header" >
+        <h3>Reset password</h3>
+        <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')"></button>
+      </div>
+   
+      <div class="modal-body">
+
+          <form action="" class=""   [formGroup]="ChangePasswordForm">
+              <div class="wrapper" id="input">
+
+                  <div class="form-floating">
+                      <input type="password" placeholder="Current password" class="form-control"  formControlName="currentPassword" id="currentPassword"/>
+                      <label for="currentPassword"> Current password</label>
+                  </div>
+                  <div class="form-floating">
+                      <input type="password" placeholder="New password" class="form-control" formControlName="newPassword" id="newPassword"/>
+                      <label for="newPassword"> New password</label>
+                  </div>
+                  <div class="form-floating">
+                      <input type="password" placeholder="Confirm password" class="form-control" formControlName="confirmPassword" id="confirmPassword"/>
+                      <label  for="confirmPassword"> Confirm password</label>
+                  </div>
+              </div> 
+
+              <div class="wrapper">
+                  <button type="submit" (click)="ChangePasswordSubmit()"  >
+                      <span>Submit</span>
+                  </button>
+              </div>   
+              
+          </form>
+      </div>
+  </div>
+</ng-template>

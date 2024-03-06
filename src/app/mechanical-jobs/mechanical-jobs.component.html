@@ -1,7 +1,9 @@
 <div class="container-fluid">
     <div class="page-header"> <h4>Mechanical Jobs</h4></div>
 
-   <div *ngIf="!jobFileStatus" id="file-upload-container" ><app-file-uploader   (OnFileUploaded)="OnJobsheetUploaded($event)"></app-file-uploader></div> 
+   <div *ngIf="!jobFileStatus" id="file-upload-container" class="mt-2">
+    <h5 class="sub-header">Upload Mechanical Jobsheet</h5>
+    <app-file-uploader   (OnFileUploaded)="OnJobsheetUploaded($event)"></app-file-uploader></div> 
     <div
     class="data-container" *ngIf="jobFileStatus"
     [ngClass]="isHistory ? 'data-container2' : 'data-container'"

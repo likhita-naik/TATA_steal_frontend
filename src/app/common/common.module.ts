@@ -5,7 +5,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import { NgbdSortableHeader } from './sortable.directive';
 import { NgxImageZoomModule } from 'ngx-image-zoom';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { LightboxModule } from 'ngx-lightbox';
@@ -16,7 +15,6 @@ import { NgScrollbarModule } from 'ngx-scrollbar';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ImageLoaderDirective } from './ImageLoader.directive';
 import { FileUploaderComponent } from './file-uploader/file-uploader.component';
-import { IconComponent } from './icon/icon.component';
 import { TimeTransformPipe } from './time-transform.pipe';
 
 
@@ -30,10 +28,10 @@ import { TimeTransformPipe } from './time-transform.pipe';
     FileUploaderComponent,
   ],
   imports: [
+    ReactiveFormsModule,
 
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     FontAwesomeModule,
     NgbModule,
     NgScrollbarModule,

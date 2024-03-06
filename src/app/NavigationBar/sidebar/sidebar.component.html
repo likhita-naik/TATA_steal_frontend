@@ -1,11 +1,4 @@
 <div id="sidebarWrapper" class="">
-
-    <!-- Sidebar -->
-    <div class="custom-menu">
-        <!-- <button id="toggle" class="btn primary" (click)="toggleSidebar()" >
-        <fa-icon icon="sliders"></fa-icon>
-       </button> -->
-    </div>
     <nav id="sidebar">
         <div class="sidebar-header">
             <strong class="p-1">
@@ -14,157 +7,354 @@
 
             <div id="CollapseImg" class="p-1">
                 <img src="assets/images/tata_steel_logo1.svg" class="logo" alt="">
-
             </div>
-        </div>     
-           <div class="m-2 d-block" [ngClass]="isCollapse?'d-flex justify-centent-center align-items-center':'float-start'" (click)="toggleSidebar()">
+        </div>  
+
+        <div class="m-2 d-block" [ngClass]="isCollapse?'d-flex justify-centent-center align-items-center':'float-start'" (click)="toggleSidebar()">
            <button class="btn"> <fa-icon icon="bars" class="text-white" size="2x"></fa-icon></button>
-           </div>
-        
+        </div>
+
+           
         <ul class="list-unstyled components">
 
-            <!-- <li class="active">
-                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Home</a>
-                <ul class="collapse list-unstyled" id="homeSubmenu">
-                    <li>
-                        <a href="#">Home 1</a>
-                    </li>
-                    <li>
-                        <a href="#">Home 2</a>
-                    </li>
-                    <li>
-                        <a href="#">Home 3</a>
-                    </li>
-                </ul>
-            </li> -->
             <li class="mt-4">
                 <a routerLink="/app/dashboard" placement="end" [ngbPopover]="isCollapse?'Dashboard':''" popoverTitle=""
                     popoverClass="custom-popover" triggers="mouseenter:mouseleave" routerLinkActive="active">
-                    <!-- <fa-icon icon="exclamation-triangle" class="me-2"></fa-icon> -->
                     <fa-icon icon="home" class="me-2"></fa-icon>
-
-                    <span>Dashboard</span> </a>
+                    <span>Dashboard</span> 
+                </a>
             </li>
+
             <li class="mt-4" placement="end" [ngbPopover]="isCollapse?'ESI Monitor':''" popoverTitle=""
                 popoverClass="custom-popover" triggers="mouseenter:mouseleave">
                 <a routerLink="/app/jobsheetMoniter" routerLinkActive="active">
                     <fa-icon icon="file" class="me-2"></fa-icon>
-
-                    <!-- <svg xmlns="http://www.w3.org/2000/svg" class="svg-inline--fa icon" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 125 125" xml:space="preserve">
-                        <desc>Created with Fabric.js 3.5.0</desc>
-                        <defs>
-                        </defs>
-                        <rect x="0" y="0" width="100%" height="100%" fill="rgba(255,255,255,0)"/>
-                        <g transform="matrix(8.2382 0 0 8.4063 16.4764 16.8126)" id="Workspace">
-                        <path style="stroke: rgb(255,255,255); stroke-width: 2; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: none; fill-rule: nonzero; opacity: 1;" transform=" translate(-6.5, -6.5)" d="M 8 5 H 6 A 1 1 0 0 0 5 6 V 8" stroke-linecap="round"/>
-                        </g>
-                        <g transform="matrix(8.2382 0 0 8.4063 107.0962 16.8126)" id="Workspace">
-                        <path style="stroke: rgb(255,255,255); stroke-width: 2; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: none; fill-rule: nonzero; opacity: 1;" transform=" translate(-17.5, -6.5)" d="M 16 5 h 2 a 1 1 0 0 1 1 1 V 8" stroke-linecap="round"/>
-                        </g>
-                        <g transform="matrix(8.2382 0 0 8.4063 107.0962 109.2817)" id="Workspace">
-                        <path style="stroke: rgb(255,255,255); stroke-width: 2; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: none; fill-rule: nonzero; opacity: 1;" transform=" translate(-17.5, -17.5)" d="M 19 16 v 2 a 1 1 0 0 1 -1 1 H 16" stroke-linecap="round"/>
-                        </g>
-                        <g transform="matrix(8.2382 0 0 8.4063 16.4764 109.2817)" id="Workspace">
-                        <path style="stroke: rgb(255,255,255); stroke-width: 2; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: none; fill-rule: nonzero; opacity: 1;" transform=" translate(-6.5, -17.5)" d="M 8 19 H 6 a 1 1 0 0 1 -1 -1 V 16" stroke-linecap="round"/>
-                        </g>
-                        <g transform="matrix(8.2382 0 0 8.4063 61.7864 63.0314)" id="Workspace">
-                        <path style="stroke: rgb(255,255,255); stroke-width: 2; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: none; fill-rule: nonzero; opacity: 1;" transform=" translate(-12, -11.9981)" d="M 12 9 a 5.75 5.75 0 0 0 -5 3 a 5.67 5.67 0 0 0 10 0 A 5.75 5.75 0 0 0 12 9 Z" stroke-linecap="round"/>
-                        </g>
-                        <g transform="matrix(8.2382 0 0 8.4063 61.7863 63.0472)" id="Workspace">
-                        <circle style="stroke: rgb(255,255,255); stroke-width: 2; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: none; fill-rule: nonzero; opacity: 1;" cx="0" cy="0" r="1.5"/>
-                        </g>
-                        </svg>               -->
-                         <!-- <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1,.cls-2{fill:none;}.cls-2{stroke:#ffff;stroke-linecap:round;stroke-linejoin:round;}</style></defs><g data-name="Layer 2" id="Layer_2"><g id="Workspace"><rect class="cls-1" height="24" width="24"/><path class="cls-2" d="M8,5H6A1,1,0,0,0,5,6V8"/><path class="cls-2" d="M16,5h2a1,1,0,0,1,1,1V8"/><path class="cls-2" d="M19,16v2a1,1,0,0,1-1,1H16"/><path class="cls-2" d="M8,19H6a1,1,0,0,1-1-1V16"/><path class="cls-2" d="M12,9a5.75,5.75,0,0,0-5,3,5.67,5.67,0,0,0,10,0A5.75,5.75,0,0,0,12,9Z"/><circle class="cls-2" cx="12" cy="12" r="1.5"/></g></g></svg> -->
-                    <!-- <app-icon class="sidebar-bg" [path]="'assets/images/icons/safety_eye.svg'"></app-icon> -->
                     <span> ESI Monitor</span></a>
             </li>
+
+            <li class="mt-4" placement="end" [ngbPopover]="isCollapse?'ESI Monitor':''" popoverTitle=""
+                popoverClass="custom-popover" triggers="mouseenter:mouseleave">
+                <a routerLink="/app/mechanical-jobs" routerLinkActive="active">
+                    <fa-icon icon="perbyte" class="me-2"></fa-icon>
+                    <span> Mechanical Jobs</span></a>
+            </li>
+
             <li class="mt-4">
                 <a [ngbPopover]="isCollapse?'ESI Unplanned Jobs':''" popoverTitle="" popoverClass="custom-popover"
                     triggers="mouseenter:mouseleave" routerLink="/app/ESI_unallocated" routerLinkActive="active">
                     <fa-icon icon="file-circle-plus" class="me-2"></fa-icon>
-
-                    <span> ESI Unplanned Jobs </span> </a>
+                    <span> ESI Unplanned Jobs </span> 
+                </a>
             </li>
+
             <li class="mt-4">
                 <a [ngbPopover]="isCollapse?'ESI History':''" popoverTitle="" popoverClass="custom-popover"
                     triggers="mouseenter:mouseleave" routerLink="/app/ESIHistory" routerLinkActive="active">
                     <fa-icon icon="file-lines" class="me-2"></fa-icon>
-
-                    <span> ESI History </span> </a>
+                    <span> ESI History </span> 
+                </a>
             </li>
 
             <li class="mt-4">
                 <a [ngbPopover]="isCollapse?'Violations':''" popoverTitle="" popoverClass="custom-popover"
                     triggers="mouseenter:mouseleave" routerLink="/app/violations" routerLinkActive="active">
-                    <!-- <fa-icon icon="exclamation-triangle" class="me-2"></fa-icon> -->
                     <fa-icon icon="triangle-exclamation" class="me-2"></fa-icon>
-
-                    <span> Violations</span></a>
+                    <span> Violations</span>
+                </a>
             </li>
+
             <li class="mt-4">
                 <a [ngbPopover]="isCollapse?'Traffic Count':''" popoverTitle="" popoverClass="custom-popover"
                     triggers="mouseenter:mouseleave" routerLink="/app/trafficCount" routerLinkActive="active">
-                    <!-- <fa-icon icon="exclamation-triangle" class="me-2"></fa-icon> -->
                     <fa-icon icon="person-walking-dashed-line-arrow-right" class="me-2"></fa-icon>
-
-                    <span> Traffic Count</span></a>
+                    <span> Traffic Count</span>
+                </a>
             </li>
+
             <li class="mt-4">
                 <a [ngbPopover]="isCollapse?'Camera Settings':''" popoverTitle="" popoverClass="custom-popover"
                     triggers="mouseenter:mouseleave" routerLink="/app/CameraSettings" routerLinkActive="active">
                     <fa-icon icon="camera" class="me-2"></fa-icon>
-
-                    <span> Camera Settings</span> </a>
+                    <span> Camera Settings</span> 
+                </a>
             </li>
-            <!-- <li class="mt-4">
-                <a [ngbPopover]="isCollapse?'Steam Suit Detection':''" popoverTitle="" popoverClass="custom-popover"
-                    triggers="mouseenter:mouseleave" routerLink="/app/SteamSuitDetection" routerLinkActive="active">
-                    <fa-icon icon="user-astronaut" class="me-2"></fa-icon>
-
-                    <span> Steam Suit Detection </span> </a>
-            </li> -->
-         
+        
             <li class="mt-4">
                 <a [ngbPopover]="isCollapse?'Settings':''" popoverTitle="" popoverClass="custom-popover" triggers="mouseenter:mouseleave" routerLink="/app/Settings" routerLinkActive="active">
                     <fa-icon icon="cog" class="me-2"></fa-icon>
+                    <span>  Settings</span> 
+                </a>
+            </li>
 
-                <span>  Settings</span>  </a>
+            <li class="mt-4">
+                <a [ngbPopover]="isCollapse?'user-management':''" popoverTitle="" popoverClass="custom-popover" triggers="mouseenter:mouseleave" routerLink="/app/user-management" routerLinkActive="active">
+                    <fa-icon icon="users" class="me-2"></fa-icon>
+                    <span>User Management</span>  
+                </a>
+            </li>
+
+            <li class="mt-4" >
+                <a routerLinkActive="active" 
+                [ngbPopover]="isCollapse?userType?userType ==='admin'?adminProfileDetails?.email:userProfileDetails?.email:'':''"  [ngClass]="isCollapse?'':''"   popoverTitle=""
+                    popoverClass="custom-popover" triggers="mouseenter:mouseleave" 
+                    (click)="userType === 'admin'? OpenViewAdminProfileModal(viewAdminProfileModal):OpenViewUserProfileModal(viewUserProfileModal)"  >
+                    <fa-icon icon="user-circle" class="me-2" size="1x" ></fa-icon>
+                    <span>{{userType?userType  === 'admin'?adminProfileDetails?.email:userProfileDetails?.email:''}}</span> 
+                </a>
             </li>
 
             <li class="mt-4" style="bottom:0;" >
-                <a  routerLinkActive="active"  triggers="mouseenter:mouseleave" [ngbPopover]="isCollapse?'    Logout    ':''" popoverTitle="" popoverClass="custom-popover" class="m-3"  (click)="LogoutModal(logout)" class="logout m-3">
+                <a  routerLinkActive="active"  triggers="mouseenter:mouseleave" [ngbPopover]="isCollapse?'Logout':''" popoverTitle="" popoverClass="custom-popover" class="m-3"  (click)=" userType === 'admin'? openAdminLogoutModal(adminLogoutModal):openUserLogoutModal(userLogoutModal)" class="logout m-3">
                     <fa-icon icon="power-off" class="me-2"></fa-icon>
-                 <span> &nbsp;&nbsp; Log Out  &nbsp;&nbsp;</span> </a>
+                 <span> &nbsp;&nbsp; Log Out  &nbsp;&nbsp;</span> 
+                </a>
             </li>
-            
-
 
         </ul>
     </nav>
 
 </div>
 
-<ng-template let-modal #logout>
+<ng-template let-modal #adminLogoutModal>
     <div class="modal-body">
       <div class="modal-confirm">
         <div class="modal-content">
+
           <div class="modal-header flex-column">
-            <!-- <div class="icon-box"> -->
-              <i class="material-icons">
-                <fa-icon icon="power-off"  size="2x" class="me-2 text-custome"></fa-icon>
-              </i>
-            <!-- </div> -->
-            <h4 class="modal-title w-100">Are you sure?</h4>
-            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+                <i class="material-icons">
+                    <fa-icon icon="power-off"  size="2x" class="me-2 text-custome"></fa-icon>
+                </i>
+                <h4 class="modal-title w-100">Are you sure?</h4>
           </div>
+
           <div class="modal-body">
             <p>Do you really want to Logout?</p>
           </div>
+
           <div class="modal-footer justify-content-center">
             <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
               data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn default" (click)="Logout()">Logout</button>
+            <button type="button" class="btn default" (click)="adminLogout()">Logout</button>
           </div>
+
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- <ng-template let-modal #viewDetails>
+
+    <div class="modal-header" id="formContent">
+        <h4 class="modal-title w-100">{{adminProfileDetails?.email}}</h4>
+        <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="modal-confirm">
+          <div class="modal-content">
+
+            <div class="modal-header flex-column">
+                <i class="material-icons">
+                    <fa-icon icon="user-circle" class="me-2" size="2x" ></fa-icon>
+                </i>
+                <h4 class="modal-title w-100">{{adminProfileDetails?.fullname}}</h4>
+            </div>
+
+            <div class="modal-footer justify-content-center align-items-center">
+              <button type="button" class="btn btn-secondary" (click)="OpenViewAdminProfileModal(viewUserProfileModal)"
+                data-dismiss="modal"> 
+                <fa-icon icon="cog" class="me-2"></fa-icon>
+                Settings</button>
+              <button type="button" class="btn default" (click)="adminLogout()"> 
+                <fa-icon icon="power-off"   class="me-2 text-custome"></fa-icon>
+                Logout</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </ng-template> -->
+
+  <ng-template let-modal #viewAdminProfileModal>
+
+    <div class="modal-header" id="formContent">
+        <h4 class="modal-title w-100">Profile Details :</h4>
+        <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')"></button>
+    </div>
+
+    
+    <div class="modal-body">
+        <div class="modal-confirm">
+          <div class="modal-content">
+
+            <div class="modal-header flex-column">
+                <i class="material-icons">
+                    <fa-icon icon="user-circle" class="me-2" size="2x" ></fa-icon>
+                </i>
+            </div>
+
+            <div class="modal-body flex-column" >
+                <h5><b>Full Name: </b><span  class="modal-title w-100"> {{adminProfileDetails?.fullname}}</span></h5>
+                <h5><b>Department: </b><span class="modal-title w-100"> {{adminProfileDetails?.department}}</span></h5>
+                <h5><b>Contact Number: </b><span class="modal-title w-100"> {{adminProfileDetails?.contact}}</span></h5>
+                <h5><b>Email Id: </b><span class="modal-title w-100"> {{adminProfileDetails?.email}}</span></h5>
+                <h5><b>Token: </b><span class="modal-title w-100"> {{adminProfileDetails?.token}}</span></h5>
+            </div>
+
+            <div class="modal-footer justify-content-center">
+              <button type="button" class="btn btn default-outline" (click)="OpenUpdateProfileModal(updateProfileModal)"
+                data-dismiss="modal"><fa-icon icon="edit" class="me-1"></fa-icon>
+                Edit </button>
+              <button type="button" class="btn default" (click)="OpenChangePassword(ChangePasswordModal)"> 
+                Change password</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+  </ng-template>
+
+
+  <ng-template let-modal #ChangePasswordModal>
+
+    <div class="border" style="background-color: white">
+       
+        <div class="modal-header" >
+          <h3>Change password</h3>
+          <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')"></button>
+        </div>
+     
+        <div class="modal-body">
+            <form action="" class=""   [formGroup]="ChangePasswordForm">
+
+                <div class="wrapper" id="input">
+                    <div class="form-floating">
+                        <input type="password" placeholder="Current password" class="form-control"  formControlName="currentPassword" id="currentPassword"/>
+                        <label for="currentPassword"> Current password</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="password" placeholder="New password" class="form-control" formControlName="newPassword" id="newPassword"/>
+                        <label for="newPassword"> New password</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="password" placeholder="Confirm password" class="form-control" formControlName="confirmPassword" id="confirmPassword"/>
+                        <label  for="confirmPassword"> Confirm password</label>
+                    </div>
+                </div> 
+  
+                <div class="d-flex justify-content-center align-items-center">
+                    <button type="submit" (click)="userType ==='admin'?ChangeAdminPasswordSubmit():ChangeUserPasswordSubmit()" class="btn default"  >
+                        <span>Submit</span>
+                    </button>
+                </div>   
+                
+            </form>
+        </div>
+    </div>
+  </ng-template>
+
+
+  <ng-template let-modal #updateProfileModal>
+    <div class="border" style="background-color: white">
+       
+        <div class="modal-header" >
+          <h3>Update Profile</h3>
+          <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')"></button>
+        </div>
+     
+        <div class="modal-body">
+  
+            <form action="" class=""   [formGroup]="EditProfileForm">
+                <div class="wrapper" id="input">
+  
+                    <div class="form-floating">
+                        <input type="text" placeholder="Full Name" class="form-control"  formControlName="fullName" id="fullName"/>
+                        <label for="fullName"> Full Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" placeholder="Department" class="form-control" formControlName="department" id="department"/>
+                        <label for="department"> Department</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" placeholder="Contact Number" class="form-control" formControlName="contactNumber" id="contactNumber"/>
+                        <label  for="contactNumber"> Contact Number</label>
+                    </div>
+                </div> 
+  
+                <div class=" d-flex justify-content-center align-items-center">
+                    <button type="submit" (click)="userType ==='admin'?UpdateAdminProfileSubmit():UpdateUserProfileSubmit()"  class="btn default" >
+                        <span>Update</span>
+                    </button>
+                </div>   
+                
+            </form>
+        </div>
+    </div>
+  </ng-template>
+
+
+  <ng-template let-modal #viewUserProfileModal>
+
+    <div class="modal-header" id="formContent">
+        <h4 class="modal-title w-100">Profile Details :</h4>
+        <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')"></button>
+    </div>
+
+    
+    <div class="modal-body">
+        <div class="modal-confirm">
+          <div class="modal-content">
+
+            <div class="modal-header flex-column">
+                <i class="material-icons">
+                    <fa-icon icon="user-circle" class="me-2" size="2x" ></fa-icon>
+                </i>
+            </div>
+
+            <div class="modal-body flex-column" >
+                <h5><b>Full Name: </b><span  class="modal-title w-100"> {{userProfileDetails?.fullname}}</span></h5>
+                <h5><b>Department: </b><span class="modal-title w-100"> {{userProfileDetails?.department}}</span></h5>
+                <h5><b>Contact Number: </b><span class="modal-title w-100"> {{userProfileDetails?.contact}}</span></h5>
+                <h5><b>Email Id: </b><span class="modal-title w-100"> {{userProfileDetails?.email}}</span></h5>
+                <h5><b>Token: </b><span class="modal-title w-100"> {{userProfileDetails?.token}}</span></h5>
+            </div>
+
+            <div class="modal-footer justify-content-center">
+              <button type="button" class="btn btn default-outline" (click)="OpenUpdateProfileModal(updateProfileModal)"
+                data-dismiss="modal"><fa-icon icon="edit" class="me-1"></fa-icon>
+                Edit </button>
+              <button type="button" class="btn default" (click)="OpenChangePassword(ChangePasswordModal)"> 
+                Change password</button>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+  </ng-template>
+
+  <ng-template let-modal #userLogoutModal>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+
+          <div class="modal-header flex-column">
+                <i class="material-icons">
+                    <fa-icon icon="power-off"  size="2x" class="me-2 text-custome"></fa-icon>
+                </i>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+          </div>
+
+          <div class="modal-body">
+            <p>Do you really want to Logout?</p>
+          </div>
+
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+              data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn default" (click)="userLogout()">Logout</button>
+          </div>
+
         </div>
       </div>
     </div>

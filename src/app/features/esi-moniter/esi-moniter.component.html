@@ -70,32 +70,32 @@
                 <p-overlayPanel #overlay [appendTo]="'body'">
                   <!-- Customize your overlay content here -->
                   <div [formGroup]="isShowUnplanned">
-                  <span class="d-flex justify-content-between"
-                    ><span>Show unplanned jobs notifications</span>
-                    <span class="form-check form-switch ms-2">
-                      <input
-                        class="form-check-input"
-                        formControlName="notification"
-                        type="checkbox"
-                        role="switch"
-                        [checked]="true"
-                        id="flexSwitchCheckDefault"
-                      />
+                    <span class="d-flex justify-content-between"
+                      ><span>Show unplanned jobs notifications</span>
+                      <span class="form-check form-switch ms-2">
+                        <input
+                          class="form-check-input"
+                          formControlName="notification"
+                          type="checkbox"
+                          role="switch"
+                          [checked]="true"
+                          id="flexSwitchCheckDefault"
+                        />
+                      </span>
                     </span>
-                  </span>
-                  <span class="d-flex justify-content-between"
-                    ><span>Unplanned notification sound</span>
-                    <span class="form-check form-switch ms-2">
-                      <input
-                        class="form-check-input"
-                        formControlName="alertSound"
-                        type="checkbox"
-                        role="switch"
-                        [checked]="true"
-                        id="flexSwitchCheckDefault"
-                      />
+                    <span class="d-flex justify-content-between"
+                      ><span>Unplanned notification sound</span>
+                      <span class="form-check form-switch ms-2">
+                        <input
+                          class="form-check-input"
+                          formControlName="alertSound"
+                          type="checkbox"
+                          role="switch"
+                          [checked]="true"
+                          id="flexSwitchCheckDefault"
+                        />
+                      </span>
                     </span>
-                  </span>
                   </div>
                 </p-overlayPanel>
               </span>
@@ -2400,7 +2400,13 @@
     </div>
     <div class="modal-body">
       <div class="row">
-        <span class="float-end"><button class="btn default-outline float-end" (click)="ToggleShowdataHistory()"><fa-icon icon="clock-rotate-left"></fa-icon></button></span>
+        <span class="float-end"
+          ><button
+            class="btn default-outline float-end"
+            (click)="ToggleShowdataHistory()"
+          >
+            <fa-icon icon="clock-rotate-left"></fa-icon></button
+        ></span>
         <div
           [ngClass]="{ 'col-12': !showDataHistory, 'col-8': showDataHistory }"
         >
@@ -2667,11 +2673,9 @@
         <div class="col-4" *ngIf="showDataHistory">
           <div class="p-2 border rounded mt-3">
             <div class="border-bottom">History</div>
-             <span class="text-muted"> Tag details are not edited before.</span>
-         
+            <span class="text-muted"> Tag details are not edited before.</span>
           </div>
         </div>
-
       </div>
     </div>
   </ng-template>
@@ -4116,15 +4120,14 @@
 
   <ng-template #editTitle let-modal>
     <div class="modal-header">
-
-        <h4 class="modal-title">New Title</h4>
-        <button
-          type="button"
-          class="btn-close float-end"
-          aria-label="Close"
-          (click)="modal.dismiss('Cross click')"
-        ></button>
-        <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+      <h4 class="modal-title">New Title</h4>
+      <button
+        type="button"
+        class="btn-close float-end"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+      <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
     </div>
     <div class="modal-body">
       <div class="row justify-content-md-center">
