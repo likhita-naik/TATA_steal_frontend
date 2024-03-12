@@ -1,0 +1,2849 @@
+<div class="container-fluid dashboard-content">
+  <div class="page-header mb-2">
+    <h3>Integration of AI solutions to the Camera</h3>
+  </div>
+
+  <div class="row" *ngIf="isCameraData" id="info-card">
+    <div class="col-xl-3 col-md-6 col-xs-12 col-sm-12">
+      <div class="card analytics" id="data-card">
+        <h5 class="text-muted">Camera Name</h5>
+        <h3>{{ cameraData ? cameraData[0].cameraname : "--" }}</h3>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 col-xs-12 col-sm-12">
+      <div class="card analytics" id="data-card">
+        <h5 class="text-muted">Camera IP</h5>
+        <h3>{{ cameraData ? cameraData[0].camera_ip : "--" }}</h3>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 col-xs-12 col-sm-12">
+      <div class="card analytics" id="data-card">
+        <h5 class="text-muted">Area</h5>
+        <h3>
+          {{
+            cameraData
+              ? cameraData[0].area
+                ? cameraData[0].area
+                : "None"
+              : "--"
+          }}
+        </h3>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 col-xs-12 col-sm-12">
+      <div class="card analytics" id="data-card">
+        <h5 class="text-muted">Plant</h5>
+        <h3>
+          {{
+            cameraData
+              ? cameraData[0].plant
+                ? cameraData[0].plant
+                : "None"
+              : "--"
+          }}
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="card card-body mb-3" id="data-card">
+    <div class="row mb-3">
+      <div class="col-9 border-bottom">
+        <div class="row mb-3">
+          <div class="d-flex justify-content-start">
+            <div *ngIf="cameraData.length > 0">
+              <p-treeSelect
+                id="ccContainer"
+                [labelStyleClass]="'w-100 btn default text-white'"
+                [containerStyle]="{
+                  background: 'var(--prime-color)',
+                  color: 'white !important',
+                  'border-radius': '0.375rem !important'
+                }"
+                [ngModelOptions]="{ standalone: true }"
+                [style]="{ color: 'white !important' }"
+                [disabled]="cameraData[0].cr_data.length > 0"
+                [(ngModel)]="selectedCCMode"
+                (onNodeSelect)="OnCCTypeSelect($event)"
+                [options]="ccTypeList | async"
+                placeholder="+ Crowd Count Types"
+              ></p-treeSelect>
+            </div>
+            <button
+              class="ms-2 me-2 btn success text-black"
+              style="background-color: rgb(189, 189, 38) !important"
+              (click)="AddNewROI()"
+            >
+              <fa-icon icon="plus" class="me-1"></fa-icon>Danger Zone ROI
+            </button>
+
+            <button class="me-2 btn success" (click)="AddNewLine()">
+              <fa-icon icon="plus" class="me-1"></fa-icon>
+              Traffic Count ROI
+            </button>
+            <button
+              class="me-2 btn success"
+              *ngIf="false"
+              style="background-color: #f44336 !important"
+              (click)="AddNewSpillageRoi()"
+            >
+              <fa-icon icon="plus" class="me-1"></fa-icon>
+              Spillage ROI
+            </button>
+            <button class="btn default-outline" (click)="GetCameraFeedImage()">
+              <fa-icon icon="arrow-rotate-right" *ngIf="!loader1"></fa-icon>
+              <span
+                class="spinner-border spinner-border-sm me-2 text-prime"
+                role="status"
+                aria-hidden="true"
+                *ngIf="loader1"
+              ></span>
+              Update Camera Feed Image
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-12 col-xs-12 col-sm-12 p-2 border-bottom">
+        <div class="float-end">
+          <!-- <button class="btn default me-2" *ngIf="isEdit" (click)="SaveEditedRoi()">Save
+                                changes</button> -->
+          <!-- <button class="btn default me-2" *ngIf="(isEdit||isChanges)&&!(isAddROI) "
+                                (click)="SaveEditedRoi()">Save changes</button> -->
+          <button
+            *ngIf="
+              !(isEdit && isChanges) &&
+              (isAddROI || isAddCC || isSpillage) &&
+              newROIPoints.length > 2
+            "
+            class="btn default me-2"
+            (click)="RoiName()"
+          >
+            Confirm ROI
+          </button>
+          <button class="me-2 btn danger" (click)="DeleteNewRoi()">
+            <fa-icon icon="trash" class="me-1 text-white"></fa-icon>Delete ROI
+          </button>
+          <button class="float-end btn primary" (click)="Back()">
+            <fa-icon icon="angle-left" class="me-1"></fa-icon>
+            Back
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="" class="d-flex justify-content-center">
+          <div id="canvas-container">
+            <canvas id="canvasROI" class="canvas-class"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card card-body">
+        <div class="mb-3" style="color: #178489">
+          <h5>AI solutions:</h5>
+        </div>
+        <div *ngIf="cameraData.length > 0">
+          <p-tabView styleClass="tabview-custom">
+            <p-tabPanel>
+              <ng-template pTemplate="header">
+                <span>Danger Zone ({{ allCameraData.length }}) </span>
+              </ng-template>
+              <div *ngIf="cameraData != null">
+                <div
+                  class=""
+                  *ngIf="
+                    cameraData[0].roi_data && cameraData[0].roi_data.length > 0;
+                    else noDetails
+                  "
+                >
+                  <div class="" id="data-card"><h5>ROI Details</h5></div>
+                  <table class="table"  >
+                    <thead  >
+                      <tr style="text-align: center">
+                        <th scope="col">S.No</th>
+                        <th scope="col">ROI name</th>
+                        <th scope="col">Objects</th>
+                        <th scope="col">Pinch Role </th>
+                        <th scope="col">Tag Name</th>
+                        <th scope="col">Alarms</th>
+                        <th scope="col">
+                          <fa-icon class="me-2" icon="cog"></fa-icon>Settings
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        style="text-align: center" *ngFor="
+                        let ROIs of cameraData[0].roi_data;
+                        let i = index
+                      "
+                        
+                      >
+                        <td>{{ i + 1 }}</td>
+                        <td (dblclick)="AlterROIName(i)">
+                          {{ ROIs.roi_name }}
+                        </td>
+                        <td>
+                          <div class="" *ngFor="let label of ROIs.label_name">
+                            {{ label }}
+                          </div>
+                        </td>
+
+                        <td>
+                          <div
+                            class="d-flex justify-content-center align-items-center"
+                          >
+                            <div class="form-check form-check-inline m-2">
+                              <span>Pinch Role</span>
+                              <input
+                                class="form-check-input"
+                                (change)="
+                                SetPinchRole($event, i, ROIs)
+                                "
+                                style="color: var(--primary-color) !important"
+                                type="checkbox"
+                                [checked]="ROIs?.pinch_role"
+                                [id]="'pinchRole' + i"
+                              />
+
+                             
+
+                            </div>
+                          </div>
+                        </td>
+
+                        <td >
+                          <!-- <div
+                            class="d-flex justify-content-center align-items-center"
+                          >
+                            <div>
+                              <span>Tag Name</span>
+                              <input
+                                style="color: var(--primary-color) !important"
+                                type="text"
+                               
+                                [id]="'tagName' + i"
+                              />
+
+                             
+
+                            </div>
+                          </div> -->
+
+                          <div  class="flex" >
+                            {{ ROIs.tag_name }}
+                          </div>
+                        </td>
+
+                        <td>
+                          <div class="">
+                            <div class="flex">
+                              <div class="">
+                                <tr>
+                                  <td>
+                                    <div
+                                      *ngIf="cameraData[0]?.alarm_type?.relay"
+                                    >
+                                      <span>
+                                        <div
+                                          class="form-check form-check-inline m-2"
+                                        >
+                                          <span>Relay</span>
+                                          <input
+                                            class="form-check-input"
+                                            (change)="
+                                              SetRelayOrHooter(
+                                                $event,
+                                                i,
+                                                ROIs,
+                                                'relay'
+                                              )
+                                            "
+                                            style="
+                                              color: var(
+                                                --primary-color
+                                              ) !important;
+                                            "
+                                            type="checkbox"
+                                            [checked]="ROIs?.alarm_type?.relay"
+                                            [id]="'Relay' + i"
+                                          />
+                                        </div>
+                                      </span>
+                                    </div>
+                                  </td>
+
+                                  <td>
+                                    <div
+                                      *ngIf="cameraData[0]?.alarm_type?.hooter"
+                                    >
+                                      <span>
+                                        <div
+                                          class="form-check form-check-inline m-2"
+                                        >
+                                          <span>Hooter</span>
+                                          <input
+                                            class="form-check-input"
+                                            style="
+                                              color: var(
+                                                --primary-color
+                                              ) !important;
+                                            "
+                                            (change)="
+                                              SetRelayOrHooter(
+                                                $event,
+                                                i,
+                                                ROIs,
+                                                'hooter'
+                                              )
+                                            "
+                                            type="checkbox"
+                                            [checked]="ROIs?.alarm_type?.hooter"
+                                            role="switch"
+                                            [id]="'hooter' + i"
+                                          />
+                                        </div>
+                                      </span>
+                                      <span
+                                        >hooter shutdown time :
+                                        {{ ROIs?.hooter_shutdown_time }}</span
+                                      >
+                                    </div>
+                                  </td>
+                                </tr>
+                              </div>
+
+                              <br />
+                            </div>
+                          </div>
+                        </td>
+
+                        <td>
+                          <button
+                            class="btn btn-sm danger me-2"
+                            (click)="isDelete(i, deleteModal, 'RA')"
+                          >
+                            <fa-icon icon="trash"></fa-icon> Delete
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <ng-template #noDetails>
+                  <div class="card" id="data-card">
+                    <div
+                      class="d-flex justify-content-center align-items-center"
+                    >
+                      <h5>No ROI is added for danger zone,</h5>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+
+              <ng-template #noDetails>
+                <div class="card" id="data-card">
+                  <div class="d-flex justify-content-center align-items-center">
+                    <h5>No Details Found For Danger Zone analytics</h5>
+                  </div>
+                </div>
+              </ng-template>
+            </p-tabPanel>
+            <p-tabPanel header="Header II">
+              <ng-template pTemplate="header">
+                <span
+                  >Traffic Count ({{
+                    cameraData[0].tc_data ? cameraData[0].tc_data.length : 0
+                  }})</span
+                >
+              </ng-template>
+              <div *ngIf="cameraData.length > 0">
+                <div
+                  class=""
+                  id="data-card"
+                  *ngIf="cameraData[0]?.tc_data.length > 0; else noDetails"
+                >
+                  <h5>ROI Details</h5>
+                </div>
+                <table class="table" *ngIf="cameraData[0]?.tc_data.length > 0">
+                  <thead>
+                    <tr>
+                      <th scope="col">S.No</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Objects</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="let tc of cameraData[0].tc_data; let in = index"
+                    >
+                      <td>{{ in + 1 }}</td>
+                      <td>{{ tc.area_name }}</td>
+                      <td>
+                        <div *ngFor="let class of tc.class_name">
+                          {{ class }}
+                        </div>
+                      </td>
+                      <td>
+                        <button
+                          (click)="IsDeleteTC(deleteTCModal, in)"
+                          class="btn btn-sm danger"
+                        >
+                          <fa-icon icon="trash"></fa-icon> Delete
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <ng-template #noDetails>
+                  <div class="card" id="data-card">
+                    <div
+                      class="d-flex justify-content-center align-items-center"
+                    >
+                      <h5>No Details Found For Traffic Count analytics</h5>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </p-tabPanel>
+            <p-tabPanel header="Header III">
+              <ng-template pTemplate="header">
+                <span
+                  >Crowd Count ({{
+                    cameraData[0].cr_data ? cameraData[0].cr_data.length : 0
+                  }})</span
+                >
+              </ng-template>
+              <div *ngIf="cameraData.length > 0">
+                <div *ngIf="cameraData[0].cr_data.length > 0; else noDetails">
+                  <div class="" id="data-card">
+                    <h5>
+                      {{
+                        cameraData[0].cr_data[0].full_frame
+                          ? "Crowd Count For Full Frame"
+                          : "ROI Details"
+                      }}
+                    </h5>
+                  </div>
+
+                  <table
+                    class="table"
+                    *ngIf="
+                      !cameraData[0].cr_data[0].full_frame;
+                      else CCFullFrame
+                    "
+                  >
+                    <thead>
+                      <tr>
+                        <th scope="col">SI no</th>
+                        <th scope="col">Crowd Count Roi Name</th>
+                        <th scope="col">Details</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        *ngFor="
+                          let cr_data of cameraData[0].cr_data;
+                          let i = index
+                        "
+                      >
+                        <td>{{ i + 1 }}</td>
+                        <td>
+                          {{ cr_data.area_name ? cr_data.area_name : "Frame" }}
+                        </td>
+
+                        <td scope="col">
+                          <!-- <ul> -->
+                          <div *ngFor="let class of cr_data.data_object">
+                            <span class="mb-3">
+                              <b>{{ class.class_name }}</b>
+                            </span>
+                            <br />
+                            minimum : {{ class.min_count }} , maximum :
+                            {{ class.max_count }}
+                            <br />
+                          </div>
+                          <!-- </ul> -->
+                        </td>
+                        <td>
+                          <button
+                            (click)="isDelete(i, deleteCCModal, 'CC')"
+                            class="btn btn-sm danger"
+                          >
+                            <fa-icon icon="trash"></fa-icon> Delete
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <ng-template #noDetails>
+                  <div class="card" id="data-card">
+                    <div
+                      class="d-flex justify-content-center align-items-center"
+                    >
+                      <h5>No Details Found For Crowd Count analytics</h5>
+                    </div>
+                  </div>
+                </ng-template>
+                <ng-template #CCFullFrame>
+                  <div class="card card-body" id="data-card">
+                    <div class="border rounded p-3">
+                      <span class="float-start">
+                        <b>
+                          Crowd Count for full frame is added for this camera </b
+                        ><br />
+                        <span class=""
+                          >Minimum Person count:{{
+                            cameraData[0].cr_data[0].data_object[0].min_count
+                          }} </span
+                        ><br />
+                        <span class="">
+                          Maximum Person count:
+                          {{
+                            cameraData[0].cr_data[0].data_object[0].max_count
+                          }}
+                        </span>
+                      </span>
+                      <span class="float-end">
+                        <span
+                          class="btn btn-sm danger"
+                          (click)="ModalOpen(deleteCCFModal)"
+                        >
+                          <fa-icon icon="trash" class="me-2"></fa-icon>Full
+                          Frame Crowd Count
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </p-tabPanel>
+            <p-tabPanel header="Header III">
+              <ng-template pTemplate="header">
+                <span>Personal Protective Equipment</span>
+              </ng-template>
+              <div class="d-flex justify-content-center align-items-center">
+                <div class="col-6">
+                  <div class="border rounded p-3">
+                    <div *ngIf="cameraData.length > 0">
+                      <div class="input-group">
+                        <span class="row col-2">
+                          <h5 class="" style="color: #178489">
+                            Personal Protective Equipment:
+                          </h5>
+                        </span>
+                        <div
+                          class=""
+                          [formGroup]="ppeForm"
+                          style="pointer-events: all"
+                        >
+                          <div
+                            class="form-check form-check-inline"
+                            id="custome"
+                          >
+                            <input
+                              type="checkbox"
+                              id="helmet"
+                              value="helmet"
+                              defaultValue=""
+                              (change)="PPE_Config($event)"
+                              [checked]="ppeConfig.helemt"
+                              formControlName="helmet"
+                              class="form-check-input"
+                            />
+                            <label
+                              for="helmet"
+                              class="form-check-label text-muted"
+                              >Helmet</label
+                            >
+                          </div>
+                          <div
+                            class="form-check form-check-inline"
+                            id="custome"
+                          >
+                            <input
+                              type="checkbox"
+                              formControlName="vest"
+                              name=""
+                              value="vest"
+                              (change)="PPE_Config($event)"
+                              [checked]="ppeConfig.vest"
+                              defaultValue="vest"
+                              id="vest"
+                              class="form-check-input"
+                            />
+                            <label
+                              for="vest"
+                              class="form-check-label text-muted"
+                              >Vest</label
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </p-tabPanel>
+            <!-- <p-tabPanel header="Fire and Dust Detection">
+              <ng-template pTemplate="header">
+                <span>Fire Detection</span>
+              </ng-template>
+              <div *ngIf="cameraData.length > 0" class="col-xl-12">
+                <div class="row d-flex justify-content-center">
+                  <div class="col-6 border rounded p-3">
+                    <span class="row col-4 ms-2">
+                      <h5 class="" style="color: #178489">Fire and Dust:</h5>
+                    </span>
+                    <div
+                      class="m-3"
+                      [formGroup]="fireSmokeForm"
+                      style="pointer-events: all"
+                    >
+                      <div class="form-check form-check-inline" id="custome">
+                        <input
+                          type="checkbox"
+                          id="fire"
+                          value="fire"
+                          defaultValue="fire"
+                          formControlName="fire"
+                          class="form-check-input"
+                        />
+                        <label for="fire" class="form-check-label text-muted"
+                          >Fire</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline" id="custome">
+                        <input
+                          type="checkbox"
+                          id="dust"
+                          value="dust"
+                          defaultValue="dust"
+                          formControlName="dust"
+                          class="form-check-input"
+                        />
+                        <label for="dust" class="form-check-label text-muted"
+                          >Dust</label
+                        >
+                      </div> -->
+                      <!-- <div class="form-check form-check-inline" id="custome">
+                                                <input type="checkbox" formControlName="smoke" name="" value="smoke"
+                                                    defaultValue="smoke" id="smoke" class="form-check-input">
+                                                <label for="smoke" class="form-check-label text-muted">Smoke</label>
+                                            </div> -->
+                    <!-- </div>
+                    <div
+                      class="border rounded p-3 m-3"
+                      *ngIf="
+                        fireSmokeForm.get('fire').value ||
+                        fireSmokeForm.get('smoke').value ||
+                        fireSmokeForm.get('dust').value
+                      "
+                    >
+                      <label class="mb-2">Select Camera Type :</label>
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          id="camera_type1"
+                          value="bullet"
+                          [formControl]="cameraType"
+                        />
+                        <label class="form-check-label" for="camera_type1">
+                          Bullet/Dome
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          id="camera_type2"
+                          value="ptz"
+                          [formControl]="cameraType"
+                        />
+                        <label class="form-check-label" for="camera_type2">
+                          PTZ
+                        </label>
+                      </div>
+                    </div>
+
+                    <div
+                      class="border rounded p-3 m-3"
+                      *ngIf="cameraType.value?.toLowerCase() == 'ptz'"
+                    >
+                      <div class="m-2">Preset Settings for PTZ camera</div>
+                      <button
+                        class="btn btn-sm default-outline mb-3 ms-3"
+                        (click)="AddSensgizData()"
+                      >
+                        <fa-icon icon="plus" class="mb-2"></fa-icon> Add
+                      </button>
+                      <div
+                        *ngFor="let form of sensgiz.controls; let i = index"
+                        class="p-2"
+                        style=""
+                      >
+                        <ng-container
+                          class="d-flex justify-centent-center"
+                          [formGroup]="form"
+                        >
+                          <div
+                            class="d-flex align-items-center justify-content-between"
+                          > -->
+                            <!-- <div class="form-floating">
+
+                                                            <input class="form-control w-20 me-2" id="coinId"
+                                                                placeholder="Coin ID" formControlName="coinId">
+                                                            <label for="coinId">Coin Id</label>
+
+                                                        </div> -->
+                            <!-- <div class="m-2">{{ i + 1 }}.</div>
+                            <div class="form-floating w-100 me-2">
+                              <input
+                                type="number"
+                                class="form-control w-100 me-2"
+                                id="number-input"
+                                placeholder="Preset Id"
+                                formControlName="presetId"
+                              />
+                              <label for="number-input">Preset Id</label>
+                              <div *ngIf="form.get('presetId').errors !== null">
+                                <span
+                                  class="text-danger"
+                                  *ngIf="
+                                    form.get('presetId').errors['pattern'] !==
+                                    undefined
+                                  "
+                                  >value should be positive number
+                                </span>
+                              </div>
+                            </div>
+
+                            <div class="form-floating w-100 me-2">
+                              <input
+                                class="form-control w-100 me-2"
+                                id="loc"
+                                placeholder="Location"
+                                formControlName="coinLocation"
+                              />
+                              <label for="loc">Location</label>
+                            </div> -->
+                            <!-- <span class="circle"> -->
+                            <!-- <fa-icon
+                              icon="circle-minus"
+                              style="cursor: pointer; color: #bd1f14"
+                              size="lg"
+                              class="ms-2"
+                              (click)="DeleteSensgizData(i)"
+                            ></fa-icon> -->
+                            <!-- </span> -->
+                          <!-- </div>
+                        </ng-container>
+                      </div>
+                    </div> -->
+                    <!-- <span class="float-end"> <button class="me-2 btn success" style=""
+                                                (click)="AddFireROI()">
+                                                <fa-icon icon="plus" class="me-1"></fa-icon>
+                                                ROI
+                                            </button></span> -->
+                    <!-- <div class="d-flex justify-content-center">
+                      <button
+                        class="btn default m-2"
+                        [disabled]="
+                          (fireSmokeForm.get('fire').value == false &&
+                            fireSmokeForm.get('smoke').value == false &&
+                            fireSmokeForm.get('dust').value == false) ||
+                          (sensgiz.invalid && cameraType.value == 'ptz') ||
+                          cameraType.value == null
+                        "
+                        *ngIf="
+                          cameraData[0].firesmoke_data == undefined ||
+                          cameraData[0].firesmoke_data.length == 0
+                        "
+                        (click)="AddFireSmokeSolution()"
+                      >
+                        Save Fire and Dust Details
+                      </button>
+                      <button
+                        class="btn default m-2"
+                        *ngIf="
+                          cameraData[0].firesmoke_data != undefined &&
+                          cameraData[0].firesmoke_data.length > 0
+                        "
+                        [disabled]="
+                          sensgiz.invalid && cameraType.value == 'ptz'
+                        "
+                        (click)="AddFireSmokeSolution()"
+                      >
+                        Update Details
+                      </button>
+                      <button
+                        class="btn danger m-2"
+                        *ngIf="
+                          cameraData[0].firesmoke_data != undefined &&
+                          cameraData[0].firesmoke_data.length > 0
+                        "
+                        (click)="ModalOpen(deleteFireModal)"
+                      >
+                        Delete Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </p-tabPanel> -->
+            <p-tabPanel header="Header II" *ngIf="false">
+              <ng-template pTemplate="header">
+                <span
+                  >Spillage Detection ({{
+                    cameraData[0].spillage_roi_data
+                      ? cameraData[0].spillage_roi_data.length > 0
+                      : 0
+                  }})</span
+                >
+              </ng-template>
+              <div *ngIf="cameraData.length > 0">
+                <div *ngIf="cameraData[0]?.spillage_roi_data; else noDetails">
+                  <div class="card card-header" id="data-card">
+                    <h5
+                      *ngIf="
+                        cameraData[0]?.spillage_roi_data.length > 0;
+                        else noDetails
+                      "
+                    >
+                      ROI Details
+                    </h5>
+                  </div>
+
+                  <table
+                    class="table"
+                    *ngIf="cameraData[0]?.spillage_roi_data.length > 0"
+                  >
+                    <thead>
+                      <tr>
+                        <th scope="col">S.No</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Object</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        *ngFor="
+                          let tc of cameraData[0].spillage_roi_data;
+                          let in = index
+                        "
+                      >
+                        <td>{{ in + 1 }}</td>
+                        <td>{{ tc.roi_name }}</td>
+                        <td>
+                          <div *ngFor="let class of tc.label_name">
+                            {{ class }}
+                          </div>
+                        </td>
+                        <td>
+                          <button
+                            (click)="isDelete(in, deleteModal, 'spillage')"
+                            class="btn btn-sm danger"
+                          >
+                            <fa-icon icon="trash"></fa-icon> Delete
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <ng-template #noDetails>
+                    <div class="card" id="data-card">
+                      <div
+                        class="d-flex justify-content-center align-items-center"
+                      >
+                        <h5>No Details Found For Spillage analytics</h5>
+                      </div>
+                    </div>
+                  </ng-template>
+                </div>
+                <ng-template #noDetails>
+                  <div class="card" id="data-card">
+                    <div
+                      class="d-flex justify-content-center align-items-center"
+                    >
+                      <h5>No Details Found For Spillage analytics</h5>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </p-tabPanel>
+
+            <p-tabPanel header="Header III" *ngIf="false">
+              <ng-template pTemplate="header">
+                <span>Environmental Change</span>
+              </ng-template>
+              <div *ngIf="cameraData.length > 0" class="col-xl-12">
+                <div class="row d-flex justify-content-center">
+                  <div class="col-6 border rounded p-3">
+                    <span class="row col-2">
+                      <h5 class="" style="color: #178489">Fire :</h5>
+                    </span>
+                    <div
+                      class=""
+                      [formGroup]="fireSmokeForm"
+                      style="pointer-events: all"
+                    >
+                      <div class="form-check form-check-inline" id="custome">
+                        <input
+                          type="checkbox"
+                          id="fire"
+                          value="fire"
+                          defaultValue="helmet"
+                          formControlName="fire"
+                          class="form-check-input"
+                        />
+                        <label for="fire" class="form-check-label text-muted"
+                          >Fire</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline" id="custome">
+                        <input
+                          type="checkbox"
+                          formControlName="smoke"
+                          name=""
+                          value="smoke"
+                          defaultValue="smoke"
+                          id="smoke"
+                          class="form-check-input"
+                        />
+                        <label for="smoke" class="form-check-label text-muted"
+                          >Smoke</label
+                        >
+                      </div>
+                    </div>
+
+                    <div
+                      class="border rounded p-3 m-3"
+                      *ngIf="
+                        fireSmokeForm.get('fire').value ||
+                        fireSmokeForm.get('smoke').value
+                      "
+                    >
+                      <button
+                        class="btn btn-sm default-outline mb-3 ms-3"
+                        (click)="AddSensgizData()"
+                      >
+                        <fa-icon icon="plus" class="mb-2"></fa-icon> Add
+                      </button>
+
+                      <div
+                        *ngFor="let form of sensgiz.controls; let i = index"
+                        class="p-2"
+                        style=""
+                      >
+                        <ng-container
+                          class="d-flex justify-centent-center"
+                          [formGroup]="form"
+                        >
+                          <div
+                            class="d-flex align-items-center justify-content-between"
+                          >
+                            <div class="form-floating">
+                              <input
+                                class="form-control w-20 me-2"
+                                id="coinId"
+                                placeholder="Coin ID"
+                                formControlName="coinId"
+                              />
+                              <label for="coinId">Coin Id</label>
+                              <div *ngIf="form.get('coinId').errors != null">
+                                <span
+                                  class="text-danger"
+                                  *ngIf="
+                                    form.get('coinId').errors['min'] !=
+                                      undefined &&
+                                    form.get('coinId').errors['pattern'] ==
+                                      undefined
+                                  "
+                                  >The minimum allowed value is 0</span
+                                >
+                                <span
+                                  class="text-danger"
+                                  *ngIf="
+                                    form.get('coinId').errors['pattern'] !=
+                                    undefined
+                                  "
+                                  >value should be number
+                                </span>
+                              </div>
+                            </div>
+                            <div class="form-floating">
+                              <input
+                                type="number"
+                                class="form-control w-20 me-2"
+                                id="number-input"
+                                placeholder="Preset Id"
+                                formControlName="presetId"
+                              />
+                              <label for="number-input">Preset Id</label>
+                              <div *ngIf="form.get('presetId').errors != null">
+                                <span
+                                  class="text-danger"
+                                  *ngIf="
+                                    form.get('presetId').errors['min'] !=
+                                      undefined &&
+                                    form.get('presetId').errors['pattern'] ==
+                                      undefined
+                                  "
+                                  >The minimum allowed value is 0</span
+                                >
+                                <span
+                                  class="text-danger"
+                                  *ngIf="
+                                    form.get('presetId').errors['pattern'] !=
+                                    undefined
+                                  "
+                                  >value should be number
+                                </span>
+                              </div>
+                            </div>
+
+                            <div class="form-floating">
+                              <input
+                                class="form-control w-20 me-2"
+                                id="loc"
+                                placeholder="Location"
+                                formControlName="coinLocation"
+                              />
+                              <label for="loc">Location</label>
+                            </div>
+                            <!-- <span class="circle"> -->
+                            <fa-icon
+                              icon="circle-minus"
+                              style="cursor: pointer; color: #bd1f14"
+                              size="lg"
+                              class="ms-2"
+                              (click)="DeleteSensgizData(i)"
+                            ></fa-icon>
+                            <!-- </span> -->
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+                    <span class="float-end">
+                      <button
+                        class="me-2 btn success"
+                        style=""
+                        (click)="AddFireROI()"
+                      >
+                        <fa-icon icon="plus" class="me-1"></fa-icon>
+                        ROI
+                      </button>
+                    </span>
+                  </div>
+                  <!-- water solution configaration starts -->
+                  <!-- <div class="col-6 p-3 border">
+                                <div class="row">
+                                    <span>Water :</span>
+                                    <div class="form-check form-check-inline" id="custome">
+                                        <input type="checkbox" name="" value="smoke" (change)="PPE_Config($event)"
+                                            defaultValue="smoke" id="smoke" class="form-check-input">
+                                        <label for="smoke" class="form-check-label text-muted">Water</label>
+                                    </div>
+                                    <button class="me-2 btn success"
+                                    style="background-color: rgb(224,129,25) !important;" (click)="AddFireROI()">
+                                    <fa-icon icon="plus" class="me-1"></fa-icon>
+                                    Water ROI
+                                </button>
+                                </div> 
+
+                            </div>
+                            -->
+                  <!-- water solution configaration ends -->
+                </div>
+              </div>
+            </p-tabPanel>
+          </p-tabView>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3" *ngIf="false">
+      <div class="col-12" *ngIf="cameraData != null">
+        <div class="card" *ngIf="cameraData.length > 0">
+          <li
+            class="list-group-item"
+            class="border p-2"
+            style="border-radius: 7px"
+          >
+            <div class="mb-3">
+              <span class="">
+                <h5 class="float-start" style="color: #178489">
+                  Alert Details
+                </h5>
+                <span
+                  class="float-end btn default-tertiary"
+                  (click)="EditAlert(editAlert)"
+                  ><fa-icon icon="pen-to-square"></fa-icon
+                ></span>
+              </span>
+            </div>
+
+            <div class="row">
+              <div class="col-xl-12 col-lg-6 col-md-12 col-sm-6 col-xs-6">
+                <!-- <div class="div mb-3 "> Alert Configaration</div> -->
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <div
+                      class="d-flex justify-content-center align-items-center"
+                    >
+                      <div class="mt-3">
+                        <span class="text-muted">Enabled Alert Type: </span>
+                        <span
+                          class="ms-2"
+                          *ngIf="cameraData[0].alarm_type.hooter"
+                          ><span class="text-dark"><b> Hooter</b></span>
+                        </span>
+                        <span
+                          class="m-2"
+                          *ngIf="cameraData[0].alarm_type.hooter"
+                          >&</span
+                        >
+                        <span
+                          class="ms-2"
+                          *ngIf="cameraData[0].alarm_type.relay"
+                          ><span class="text-dark"> <b>Relay</b></span> <b> </b
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12" *ngIf="false">
+                    <div class="">
+                      <div class="p-1 m-1" *ngIf="false">
+                        <div *ngIf="cameraData[0].alarm_type != 'sensegiz'">
+                          <span class="mb-2 mt-3"><b>Details</b> </span>
+                          <div
+                            class="d-flex justify-content-between align-items-center mt-2"
+                            *ngIf="cameraData[0].alarm_type != 'sensegiz'"
+                          >
+                            <span>
+                              <ul
+                                class="d-flex justify-centent-space-between align-items-center"
+                              >
+                                <li class="list-group-item me-2">
+                                  <span class="text-muted"
+                                    >{{
+                                      cameraData[0].alarm_type
+                                        .charAt(0)
+                                        .toUpperCase() +
+                                        cameraData[0].alarm_type.slice(1)
+                                    }}'s IP : </span
+                                  ><span
+                                    class="float-end"
+                                    *ngIf="
+                                      cameraData[0].alarm_ip_address != null
+                                    "
+                                    >{{
+                                      cameraData[0].alarm_ip_address
+                                        ? cameraData[0].alarm_ip_address
+                                        : "---"
+                                    }}</span
+                                  >
+                                </li>
+                                <li class="list-group-item ms-2">
+                                  <span class="text-muted">Delay : </span
+                                  ><span class="float-end">2 seconds</span>
+                                </li>
+                              </ul>
+                            </span>
+                            <!-- <span class="float-end btn default-tertiary"
+                                                    (click)="EditAlert(editAlert)">
+                                                    <fa-icon icon="pen-to-square" class=""></fa-icon> Edit
+                                                </span> -->
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="col-12 p-2"
+                        *ngIf="cameraData[0].alarm_type != 'sensegiz'"
+                      >
+                        <div
+                          class="row mt-3"
+                          *ngIf="cameraData[0].alarm_ip_address != null"
+                        >
+                          <div class="col-12">
+                            <div class="me-2"><b>Select Violation Type</b></div>
+
+                            <ul class="list-group">
+                              <li
+                                class="list-group-item"
+                                *ngIf="cameraData[0].roi_data.length > 0"
+                                style="overflow-x: auto; max-width: 100%"
+                              >
+                                <div
+                                  class="form-check form-check-inline"
+                                  id="custome"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    id="RAalert"
+                                    value="RA"
+                                    defaultValue=""
+                                    (change)="OnAlarmAISelect($event)"
+                                    class="form-check-input"
+                                  />
+                                  <label
+                                    for="RAalert"
+                                    class="form-check-label text-muted"
+                                    >RA</label
+                                  >
+                                  <div
+                                    [formGroup]="alarmRAObjects"
+                                    *ngIf="AlarmAITypes.indexOf('RA') >= 0"
+                                  >
+                                    <div
+                                      class="mb-3 mt-3 d-flex justify-content-center"
+                                      *ngIf="raObjects.length > 0"
+                                    >
+                                      <div
+                                        class="form-check form-check-inline"
+                                        id="subCheckbox"
+                                        *ngIf="raObjects.indexOf('person') >= 0"
+                                      >
+                                        <input
+                                          formControlName="person"
+                                          type="checkbox"
+                                          [defaultValue]="'person'"
+                                          [value]="'person'"
+                                          checked
+                                          class="form-check-input"
+                                          (change)="OnRAAlarmObjects($event)"
+                                          name=""
+                                          id="0"
+                                        />
+                                        <label for="0" class="form-check-label"
+                                          >Person</label
+                                        >
+                                      </div>
+                                      <div
+                                        class="form-check form-check-inline"
+                                        id="subCheckbox"
+                                        *ngIf="raObjects.indexOf('car') >= 0"
+                                      >
+                                        <input
+                                          formControlName="car"
+                                          type="checkbox"
+                                          [value]="'car'"
+                                          [defaultValue]="'car'"
+                                          class="form-check-input"
+                                          (change)="OnRAAlarmObjects($event)"
+                                          name=""
+                                          id="1"
+                                        />
+                                        <label for="1" class="form-check-label"
+                                          >Car</label
+                                        >
+                                      </div>
+                                      <div
+                                        class="form-check form-check-inline"
+                                        id="subCheckbox"
+                                        *ngIf="raObjects.indexOf('bike') >= 0"
+                                      >
+                                        <input
+                                          formControlName="bike"
+                                          type="checkbox"
+                                          [value]="'bike'"
+                                          [defaultValue]="'bike'"
+                                          class="form-check-input"
+                                          (change)="OnRAAlarmObjects($event)"
+                                          name=""
+                                          id="2"
+                                        />
+                                        <label for="2" class="form-check-label"
+                                          >Bike</label
+                                        >
+                                      </div>
+                                      <!-- truck is removed from this  -->
+                                      <div
+                                        class="form-check form-check-inline"
+                                        id="subCheckbox"
+                                        *ngIf="raObjects.indexOf('truck') >= 0"
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          formControlName="truck"
+                                          [value]="'truck'"
+                                          [defaultValue]="'truck'"
+                                          class="form-check-input"
+                                          (change)="OnRAAlarmObjects($event)"
+                                          name=""
+                                          id="3"
+                                        />
+                                        <label for="3" class="form-check-label"
+                                          >Truck</label
+                                        >
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <!-- testing -->
+                                  <p>ROIS</p>
+                                  <div
+                                    class="box-container"
+                                    style="overflow-x: auto; max-width: 100%"
+                                    *ngIf="AlarmAITypes.indexOf('RA') >= 0"
+                                  >
+                                    <span
+                                      class="box-md"
+                                      *ngFor="let roi of cameraData[0].roi_data"
+                                    >
+                                      <span
+                                        class="form-check-inline form-check-inline m-2"
+                                        style="
+                                          display: inline-block !important;
+                                          width: 70%;
+                                          max-width: 70%;
+                                          overflow-x: scroll;
+                                        "
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          class="form-check-input m-2"
+                                          [checked]="
+                                            alarmSelectedViol[0].roi_key_id.indexOf(
+                                              roi.roi_id
+                                            )
+                                          "
+                                          (change)="OnAlarmRAROISelect($event)"
+                                          [id]="roi.roi_id"
+                                          [value]="roi.roi_id"
+                                        />
+                                        <label [for]="roi.roi_id">{{
+                                          roi.roi_name
+                                        }}</label>
+                                      </span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </li>
+                              <li
+                                class="list-group-item"
+                                *ngIf="ppeConfig.helmet || ppeConfig.vest"
+                              >
+                                <div
+                                  class="form-check form-check-inline"
+                                  id="custome"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    name=""
+                                    value="PPE"
+                                    (change)="OnAlarmAISelect($event)"
+                                    defaultValue="PPE"
+                                    id="PPEalert"
+                                    class="form-check-input"
+                                  />
+                                  <label
+                                    for="PPEalert"
+                                    class="form-check-label text-muted"
+                                    >PPE</label
+                                  >
+                                  <div
+                                    class="mb-3 mt-3 d-flex justify-content-center"
+                                    [formGroup]="alarmPPEObjects"
+                                    *ngIf="AlarmAITypes.indexOf('PPE') >= 0"
+                                  >
+                                    <div
+                                      class="form-check form-check-inline"
+                                      id="subCheckbox"
+                                      *ngIf="ppeConfig.helmet"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        id="helmetAlert"
+                                        value="helmet"
+                                        defaultValue=""
+                                        [formControlName]="'helmet'"
+                                        (change)="OnPPEAlarmObjects($event)"
+                                        class="form-check-input"
+                                      />
+                                      <label
+                                        for="helmetAlert"
+                                        class="form-check-label text-muted"
+                                        >Helmet</label
+                                      >
+                                    </div>
+                                    <div
+                                      class="form-check form-check-inline"
+                                      id="subCheckbox"
+                                      *ngIf="ppeConfig.vest"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        name=""
+                                        value="vest"
+                                        [formControlName]="'vest'"
+                                        (change)="OnPPEAlarmObjects($event)"
+                                        defaultValue="vest"
+                                        id="vestAlert"
+                                        class="form-check-input"
+                                      />
+                                      <label
+                                        for="vestAlert"
+                                        class="form-check-label text-muted"
+                                        >Vest</label
+                                      >
+                                    </div>
+                                  </div>
+                                </div>
+                              </li>
+                              <li class="list-group-item">
+                                <div
+                                  class="form-check form-check-inline"
+                                  id="custome"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    name=""
+                                    value="fire"
+                                    defaultValue="fire"
+                                    id="fireAlert"
+                                    class="form-check-input"
+                                  />
+                                  <label
+                                    for="fireAlert"
+                                    class="form-check-label text-muted"
+                                    >Fire</label
+                                  >
+                                </div>
+                              </li>
+                              <li class="list-group-item">
+                                <div
+                                  class="form-check form-check-inline"
+                                  id="custome"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    name=""
+                                    value="smoke"
+                                    defaultValue="smoke"
+                                    id="smokeAlert"
+                                    class="form-check-input"
+                                  />
+                                  <label
+                                    for="smokeAlert"
+                                    class="form-check-label text-muted"
+                                    >Smoke</label
+                                  >
+                                </div>
+                              </li>
+                              <li
+                                class="list-group-item"
+                                *ngIf="cameraData[0].cr_data.length > 0"
+                              >
+                                <div
+                                  class="form-check form-check-inline"
+                                  id="custome"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    id="RAalert"
+                                    value="RA"
+                                    defaultValue=""
+                                    (change)="PPE_Config($event)"
+                                    class="form-check-input"
+                                  />
+                                  <label
+                                    for="RAalert"
+                                    class="form-check-label text-muted"
+                                  >
+                                    Crowd Count</label
+                                  >
+                                  <div [formGroup]="alarmRAObjects">
+                                    <div
+                                      class="mb-3 mt-3 d-flex justify-content-center"
+                                    >
+                                      <div
+                                        class="form-check form-check-inline"
+                                        id="custome"
+                                        *ngIf="raObjects.indexOf('person') >= 0"
+                                      >
+                                        <input
+                                          formControlName="person"
+                                          type="checkbox"
+                                          [defaultValue]="'person'"
+                                          [value]="'person'"
+                                          checked
+                                          class="form-check-input"
+                                          (change)="OnRAAlarmObjects($event)"
+                                          name=""
+                                          id="0"
+                                        />
+                                        <label for="0" class="form-check-label"
+                                          >Person</label
+                                        >
+                                      </div>
+                                      <div
+                                        class="form-check form-check-inline"
+                                        id="custome"
+                                        *ngIf="raObjects.indexOf('car') >= 0"
+                                      >
+                                        <input
+                                          formControlName="car"
+                                          type="checkbox"
+                                          [value]="'car'"
+                                          [defaultValue]="'car'"
+                                          class="form-check-input"
+                                          (change)="OnRAAlarmObjects($event)"
+                                          name=""
+                                          id="1"
+                                        />
+                                        <label for="1" class="form-check-label"
+                                          >Car</label
+                                        >
+                                      </div>
+                                      <div
+                                        class="form-check form-check-inline"
+                                        id="custome"
+                                        *ngIf="raObjects.indexOf('bike') >= 0"
+                                      >
+                                        <input
+                                          formControlName="bike"
+                                          type="checkbox"
+                                          [value]="'bike'"
+                                          [defaultValue]="'bike'"
+                                          class="form-check-input"
+                                          (change)="OnRAAlarmObjects($event)"
+                                          name=""
+                                          id="2"
+                                        />
+                                        <label for="2" class="form-check-label"
+                                          >Bike</label
+                                        >
+                                      </div>
+                                      <!-- truck is removed from this  -->
+                                      <div
+                                        class="form-check form-check-inline"
+                                        id="custome"
+                                        *ngIf="raObjects.indexOf('truck') >= 0"
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          formControlName="truck"
+                                          [value]="'truck'"
+                                          [defaultValue]="'truck'"
+                                          class="form-check-input"
+                                          (change)="OnRAAlarmObjects($event)"
+                                          name=""
+                                          id="3"
+                                        />
+                                        <label for="3" class="form-check-label"
+                                          >Truck</label
+                                        >
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div
+                        *ngIf="cameraData[0].alarm_type == 'sensegiz'"
+                        class="col-12 d-flex justify-centent-center"
+                      >
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th scope="col">Coin ID</th>
+                              <th scope="col">Preset ID</th>
+
+                              <th scope="col">Location</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr
+                              *ngFor="
+                                let coin of cameraData[0].coin_details;
+                                let i = index
+                              "
+                            >
+                              <td>{{ coin.coin_id }}</td>
+                              <td>{{ coin.preset_id }}</td>
+
+                              <td>{{ coin.coin_location }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </div>
+      </div>
+    </div>
+    <ng-template #noAIsol>
+      <div class="alert alert-warning">
+        No AI analytics are added to this camera.
+      </div>
+    </ng-template>
+
+    <div class="row mt-3">
+      <div class="col-12">
+        <div class="alert alert-dark">
+          Above configaration will be applied to this camera
+        </div>
+      </div>
+      <div class="col-2">
+        <div class="mx-auto my-auto">
+          <!-- <button class="btn primary mt-2 mb-2" (click)="SaveChanges()" *ngIf="!isChanges">
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="isLoading"></span>
+
+                &nbsp; Save Config &nbsp;</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template let-modal #ROINameChangeModal>
+    <div class="card">
+      <div class="card-header">
+        <h4>Change ROI name</h4>
+      </div>
+      <div class="card-body p-4">
+        <form action="">
+          <input
+            type="text"
+            id="ROI"
+            class="form-control mb-3"
+            [formControl]="tempROIID"
+            [ngClass]="{ 'is-invalid': tempROIID.invalid && tempROIID.touched }"
+          />
+          <div
+            id="validationServerUsernameFeedback"
+            [ngClass]="
+              tempROIID.invalid && tempROIID.touched
+                ? 'invalid-feedback'
+                : 'visually-hidden'
+            "
+          >
+            Please enter roi name.
+          </div>
+          <button
+            class="btn success ms-2 float-end"
+            type="submit"
+            (click)="ChangeROIName()"
+          >
+            Change
+          </button>
+          <button
+            class="btn danger me-2 float-end"
+            (click)="modal.close('Cross click')"
+          >
+            cancel
+          </button>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #CCNameChangeModal>
+    <div class="card">
+      <div class="card-header">
+        <h4>Change Crowd Count name</h4>
+      </div>
+      <div class="card-body p-4">
+        <form action="">
+          <input
+            type="text"
+            id="ROI"
+            class="form-control mb-3"
+            [formControl]="tempROIID"
+            [ngClass]="{ 'is-invalid': tempROIID.invalid && tempROIID.touched }"
+          />
+          <div
+            id="validationServerUsernameFeedback"
+            [ngClass]="
+              tempROIID.invalid && tempROIID.touched
+                ? 'invalid-feedback'
+                : 'visually-hidden'
+            "
+          >
+            Please enter roi name.
+          </div>
+          <button
+            class="btn success ms-2 float-end"
+            type="submit"
+            (click)="ChangeROIName()"
+          >
+            Change
+          </button>
+          <button
+            class="btn danger me-2 float-end"
+            (click)="modal.close('Cross click')"
+          >
+            cancel
+          </button>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #ccForFrame>
+    <div class="modal-header">
+      <h3>Crowd Count For Full Frame</h3>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.close('Cross click')"
+      ></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-content">
+        <div class="w-100 p-2">
+          <div class="row" id="custome" [formGroup]="CrowdForm">
+            <div class="column-flex justify-content-center align-items-center">
+              <div
+                *ngFor="let object of ccObjectsMinMax"
+                class="d-flex justify-content-center align-items-center"
+              >
+                <div
+                  class="d-flex justify-content-center align-items-center mb-3 mt-3"
+                >
+                  <div class="row" id="custome" [formGroup]="object">
+                    <div
+                      class="d-flex justify-content-center align-items-center"
+                    >
+                      <div class="w-100">
+                        <div class="column-flex">
+                          <div
+                            class="form-check form-check"
+                            id="custome"
+                            class="mb-2"
+                          >
+                            <input
+                              type="checkbox"
+                              [formControlName]="object.get('object').value"
+                              [defaultValue]="'person'"
+                              [value]="'person'"
+                              checked
+                              class="form-check-input"
+                              name=""
+                              min="0"
+                              [id]="object.get('object').value"
+                            />
+                            <label
+                              [for]="object.get('object').value"
+                              class="form-check-label ms-2"
+                              >{{ object.get("object").value }}</label
+                            >
+                          </div>
+                          <div
+                            class="mb-2"
+                            *ngIf="object.get(object.get('object').value).value"
+                          >
+                            <label>Minimum Count:</label>
+                            <input
+                              type="number"
+                              [ngClass]="{
+                                'is-invalid':
+                                  object.get('min').invalid ||
+                                  (object.get('min').value ==
+                                    object.get('max').value &&
+                                    object.get('min').touched &&
+                                    object.get('max').touched &&
+                                    object.get('min').value >=
+                                      object.get('max').value)
+                              }"
+                              formControlName="min"
+                              min="0"
+                              id="min"
+                              class="form-control"
+                              placeholder="min"
+                            />
+                          </div>
+                          <div
+                            class=""
+                            *ngIf="object.get(object.get('object').value).value"
+                          >
+                            <label>Maximum Count:</label>
+
+                            <input
+                              type="number"
+                              [ngClass]="
+                                object.get('min').invalid ||
+                                (object.get('min').value ==
+                                  object.get('max').value &&
+                                  object.get('min').touched &&
+                                  object.get('max').touched &&
+                                  object.get('min').value >=
+                                    object.get('max').value)
+                              "
+                              formControlName="max"
+                              pattern="\d+"
+                              name=""
+                              min="0"
+                              id="min"
+                              class="form-control"
+                              placeholder="max"
+                            />
+                          </div>
+
+                          <span
+                            class="text-danger"
+                            *ngIf="
+                              object.get('min').touched &&
+                              object.get('max').touched &&
+                              object.get('min').value >= object.get('max').value
+                            "
+                            ><small
+                              >Invalid Values for Minimum and Maximum
+                            </small></span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- <div class="row">
+
+                                <div class="mb-3 mt-3 d-flex justify-content-center">
+                                    <div class="form-check form-check-inline" id="custome">
+                                        <input type="checkbox" [formControl]="classIDPerson" [defaultValue]="'person'"
+                                            [value]="'person'" checked class="form-check-input"
+                                            (change)="ClassId($event)" name="" id="0">
+                                        <label for="0" class="form-check-label">Person</label>
+                                    </div>
+                                    <div class="form-check form-check-inline" id="custome">
+                                        <input type="checkbox" [formControl]="classIDCar" [value]="'car'"
+                                            [defaultValue]="'car'" class="form-check-input" (change)="ClassId($event)"
+                                            name="" id="1">
+                                        <label for="1" class="form-check-label">Car</label>
+                                    </div>
+                                    <div class="form-check form-check-inline" id="custome">
+                                        <input type="checkbox" [formControl]="classIDBike" [value]="'bike'"
+                                            [defaultValue]="'bike'" class="form-check-input" (change)="ClassId($event)"
+                                            name="" id="2">
+                                        <label for="2" class="form-check-label">Bike</label>
+                                    </div>
+                                    <div class="form-check form-check-inline" id="custome">
+                                        <input type="checkbox" [formControl]="classIDTruck" [value]="'truck'"
+                                            [defaultValue]="'truck'" class="form-check-input" (change)="ClassId($event)"
+                                            name="" id="3">
+                                        <label for="3" class="form-check-label">Truck</label>
+                                    </div>
+                                </div> 
+                            </div>-->
+              <div class="">
+                <button
+                  class="btn default float-end"
+                  [disabled]="ccObjectsMinMax[0].invalid"
+                  (click)="onSaveCCFrame()"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #ROINameModal>
+    <div class="card">
+      <div class="card-header">
+        <h4>Danger Zone ROI Name</h4>
+      </div>
+      <div class="card-body p-4">
+        <form action="">
+          <input
+            type="text"
+            id="ROI"
+            class="form-control mb-3"
+            placeholder="Enter ROI name"
+            [ngClass]="{
+              'is-invalid':
+                roiNameControl.invalid &&
+                roiNameControl.touched &&
+                roiNameControl.dirty
+            }"
+            [formControl]="roiNameControl"
+          />
+          <div
+            id="validationServerUsernameFeedback"
+            [ngClass]="
+              roiNameControl.invalid && roiNameControl.touched
+                ? 'invalid-feedback'
+                : 'visually-hidden'
+            "
+          >
+            Please enter roi name.
+          </div>
+          <div
+            class="mb-3 mt-3 d-flex justify-content-center border rounded p-3"
+          >
+            <div class="form-check form-check-inline" id="custome">
+              <input
+                type="checkbox"
+                [formControl]="classIDPerson"
+                [defaultValue]="'person'"
+                [value]="'person'"
+                checked
+                class="form-check-input"
+                (change)="ClassId($event)"
+                name=""
+                id="0"
+              />
+              <label for="0" class="form-check-label">Person</label>
+            </div>
+          </div>
+          <div
+            class="mb-3 mt-3 border rounded p-3"
+            *ngIf="
+              cameraData[0].alarm_type.hooter || cameraData[0].alarm_type.relay
+            "
+          >
+            <div class="border-bottom mb-2">Alarms:</div>
+            <div class="d-flex justify-content-center align-items-center">
+              <tr>
+                <td>
+                  <div *ngIf="cameraData[0].alarm_type.hooter">
+                    <div
+                      class="d-flex justify-content-center mt-3"
+                      *ngIf="cameraData[0].alarm_type.hooter"
+                    >
+                      <div class="form-check form-check-inline" id="custome">
+                        <input
+                          type="checkbox"
+                          [formControl]="isAddHooter"
+                          class="form-check-input"
+                          name=""
+                          id="hooterroi"
+                        />
+                        <label for="hooterroi" class="form-check-label"
+                          >Hooter</label
+                        >
+                      </div>
+                    </div>
+                    <br />
+                    <div
+                      class="form-group"
+                      *ngIf="cameraData[0].alarm_type.hooter"
+                    >
+                      <label>Hooter Shutdown Time :</label>
+                      <input
+                        id="hooterShutdownTime"
+                        [formControl]="hooterShutdownTime"
+                        class="form-control"
+                      />
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div *ngIf="cameraData[0].alarm_type.relay">
+                    <div
+                      class="d-flex justify-content-center mt-3"
+                      *ngIf="cameraData[0].alarm_type.relay"
+                    >
+                      <div class="form-check form-check-inline" id="custome">
+                        <input
+                          type="checkbox"
+                          [formControl]="isAddRelay"
+                          class="form-check-input"
+                          name=""
+                          id="relayroi"
+                        />
+                        <label for="relayroi" class="form-check-label"
+                          >Relay</label
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </div>
+          </div>
+          <div class="border rounded p-3">
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="checkbox"
+                  [formControl]="pinchRole"
+                  class="form-check-input"
+                  name=""
+                  id="pinchRole"
+                />
+                <label for="pinchRole" class="form-check-label"
+                  >Pinch Role</label
+                >
+              </div>
+            </div>
+          </div><br>
+
+
+          <div class="border rounded p-3" *ngIf="pinchRole.valid">
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="form-group" >
+                <label class="d-flex justify-content-center align-items-center">
+                  Tag Name:</label
+                >
+                <input
+                class="form-control"
+                  type="text"
+                  [formControl]="tagName"
+                  name="tagname"
+                  id="tagname"
+                  
+                />
+                
+              </div>
+            </div>
+          </div><br>
+
+          <div class="mb-3 mt-3 border rounded p-3" *ngIf="false">
+            Hooter and Relay are not added to this Camera.
+          </div><br>
+
+          <button
+            class="btn success ms-1 float-end"
+            type="submit"
+            (click)="nameSubmit()"
+            [disabled]="roiNameControl.invalid || classIds.length == 0"
+          >
+            Submit
+          </button>
+          <button
+            class="btn danger me-1 float-end"
+            (click)="modal.close('Cross click')"
+          >
+            cancel
+          </button>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #deleteModal>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div>
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <p>
+              Do you really want to delete these ROI? This process cannot be
+              undone.
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn danger" (click)="DeleteROI()">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #deleteCCModal>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div>
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <p>
+              Do you really want to delete these ROI? This process cannot be
+              undone.
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn danger" (click)="DeleteCCROI()">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #deleteTCModal>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div>
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <p>
+              Do you really want to delete these ROI? This process cannot be
+              undone.
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn danger" (click)="OnDeleteTCROI()">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #deleteCCFModal>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div>
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <p>
+              Do you really want to delete Crowd Count for full frame of this
+              camera?.
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn danger" (click)="DeleteCCFrame()">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #deleteFireModal>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div>
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <p>Do you really want to delete Fire analytics details?.</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn danger"
+              (click)="DeleteFireSmokeFrame()"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #crowdCount>
+    <div class="card">
+      <div class="card-header">
+        <h4>Crowd Count ROI</h4>
+      </div>
+      <div class="card-body p-4">
+        <form action="" class="">
+          <input
+            type="text"
+            id="ROI"
+            class="form-control mb-3"
+            placeholder="Enter ROI name"
+            [ngClass]="{
+              'is-invalid':
+                crowdCountRoiName.invalid &&
+                crowdCountRoiName.touched &&
+                crowdCountRoiName.dirty
+            }"
+            [formControl]="crowdCountRoiName"
+          />
+          <div
+            id="validationServerUsernameFeedback"
+            [ngClass]="
+              crowdCountRoiName.invalid && crowdCountRoiName.touched
+                ? 'invalid-feedback'
+                : 'visually-hidden'
+            "
+          >
+            Please enter roi name.
+          </div>
+          <!-- min max configaration for multiple objects
+                     -->
+          <div
+            *ngFor="let object of ccObjectsMinMax"
+            class="d-flex justify-content-center align-items-center"
+          >
+            <div
+              class="d-flex justify-content-center align-items-center mb-3 mt-3"
+            >
+              <div class="form-inline row" id="custome" [formGroup]="object">
+                <div class="form-check" id="custome" class="mb-2">
+                  <input
+                    type="checkbox"
+                    [formControlName]="object.get('object').value"
+                    [defaultValue]="'person'"
+                    [value]="'person'"
+                    class="form-check-input"
+                    name=""
+                    min="0"
+                    [id]="object.get('object').value"
+                  />
+                  <label
+                    [for]="object.get('object').value"
+                    class="form-check-label ms-2"
+                    >{{ object.get("object").value }}</label
+                  >
+                </div>
+                <div
+                  class="mb-2"
+                  *ngIf="object.get(object.get('object').value).value"
+                >
+                  <label>Minimum Count:</label>
+
+                  <input
+                    type="number"
+                    [ngClass]="{
+                      'is-invalid':
+                        object.get('min').invalid ||
+                        (object.get('min').value == object.get('max').value &&
+                          object.get('min').touched &&
+                          object.get('max').touched &&
+                          object.get('min').value >= object.get('max').value)
+                    }"
+                    formControlName="min"
+                    min="0"
+                    id="min"
+                    class="form-control"
+                    placeholder="min"
+                  />
+                </div>
+                <div
+                  class=""
+                  *ngIf="object.get(object.get('object').value).value"
+                >
+                  <label>Maximum Count:</label>
+
+                  <input
+                    type="number"
+                    [ngClass]="{ 'is-invalid': object.get('max').invalid }"
+                    formControlName="max"
+                    pattern="\d+"
+                    name=""
+                    min="0"
+                    id="min"
+                    class="form-control"
+                    placeholder="max"
+                  />
+                </div>
+
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    object.get('min').touched &&
+                    object.get('max').touched &&
+                    object.get('min').value >= object.get('max').value
+                  "
+                  ><small>Invalid Values for Minimum and Maximum </small></span
+                >
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="btn success ms-1 float-end"
+            type="submit"
+            (click)="OnAddingNewCCRoi()"
+            [disabled]="CCValid <= 0 || crowdCountRoiName.invalid"
+          >
+            Submit
+          </button>
+          <button
+            class="btn danger me-1 float-end"
+            (click)="modal.close('Cross click')"
+          >
+            cancel
+          </button>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #spillageROIName>
+    <div class="card">
+      <div class="card-header">
+        <h4>Spillage ROI Name</h4>
+      </div>
+      <div class="card-body p-4">
+        <form action="" class="">
+          <input
+            type="text"
+            id="ROI"
+            class="form-control mb-3"
+            placeholder="Enter ROI name"
+            [ngClass]="{
+              'is-invalid':
+                crowdCountRoiName.invalid &&
+                crowdCountRoiName.touched &&
+                crowdCountRoiName.dirty
+            }"
+            [formControl]="roiNameControl"
+          />
+          <div
+            id="validationServerUsernameFeedback"
+            [ngClass]="
+              roiNameControl.invalid && roiNameControl.touched
+                ? 'invalid-feedback'
+                : 'visually-hidden'
+            "
+          >
+            Please enter roi name.
+          </div>
+          <button
+            class="btn success ms-1 float-end"
+            type="submit"
+            (click)="OnAddingSpillageROI()"
+            [disabled]="roiNameControl.invalid"
+          >
+            Submit
+          </button>
+          <button
+            class="btn danger me-1 float-end"
+            (click)="modal.close('Cross click')"
+          >
+            cancel
+          </button>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #roiInfo>
+    <div class="modal-header">
+      <h3>Select Traffic Count</h3>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-content">
+        <div class="alert alert-info mb-0">
+          <div class="">
+            <div
+              class="d-flex align-items-center justify-content-center mt-3 mb-3"
+            >
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="classIDPerson"
+                  [defaultValue]="'Entry'"
+                  [value]="'Entry'"
+                  checked
+                  class="form-check-input"
+                  (change)="TrafficCountConfig($event)"
+                  name="tcConfig"
+                  id="0"
+                />
+                <label for="0" class="form-check-label">Entry</label>
+              </div>
+
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="classIDTruck"
+                  [value]="'Exit'"
+                  [defaultValue]="'Exit'"
+                  class="form-check-input"
+                  (change)="TrafficCountConfig($event)"
+                  name="tcConfig"
+                  id="1"
+                />
+                <label for="1" class="form-check-label">Exit</label>
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="classIDTruck"
+                  [value]="'Entry_Exit'"
+                  [defaultValue]="'Entry_Exit'"
+                  class="form-check-input"
+                  (change)="TrafficCountConfig($event)"
+                  name="tcConfig"
+                  id="2"
+                />
+                <label for="2" class="form-check-label">Entry and Exit</label>
+              </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-center">
+              <p class="">Now you will draw directions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #TCNameModal>
+    <div class="card">
+      <div class="card-header">
+        <h4>Traffic Count ROI Name</h4>
+      </div>
+      <div class="card-body p-4">
+        <form action="">
+          <div class="m-3">
+            <input
+              type="text"
+              id="ROI"
+              class="form-control"
+              placeholder="Enter traffic count region name"
+              [ngClass]="{
+                'is-invalid': tcName.invalid && tcName.touched && tcName.dirty
+              }"
+              [formControl]="tcName"
+            />
+            <div
+              id="validationServerUsernameFeedback"
+              [ngClass]="
+                tcName.invalid && tcName.touched
+                  ? 'invalid-feedback'
+                  : 'visually-hidden'
+              "
+            >
+              Please enter roi name.
+            </div>
+          </div>
+          <div class="m-3 border rounded p-3 d-flex justify-content-center">
+            <div class="form-check form-check-inline" id="custome">
+              <input
+                type="checkbox"
+                [formControl]="classIDPerson"
+                [defaultValue]="'person'"
+                [value]="'person'"
+                checked
+                class="form-check-input"
+                (change)="ClassId($event)"
+                name=""
+                id="0"
+              />
+              <label for="0" class="form-check-label">Person</label>
+            </div>
+            <!-- <div class="form-check form-check-inline" id="custome">
+                            <input type="checkbox" [formControl]="classIDCar" [value]="'car'" [defaultValue]="'car'"
+                                class="form-check-input" (change)="ClassId($event)" name="" id="1">
+                            <label for="1" class="form-check-label">Car</label>
+                        </div>
+                        <div class="form-check form-check-inline" id="custome">
+                            <input type="checkbox" [formControl]="classIDBike" [value]="'bike'" [defaultValue]="'bike'"
+                                class="form-check-input" (change)="ClassId($event)" name="" id="2">
+                            <label for="2" class="form-check-label">Bike</label>
+                        </div>
+                        <div class="form-check form-check-inline" id="custome">
+                            <input type="checkbox" [formControl]="classIDTruck" [value]="'truck'"
+                                [defaultValue]="'truck'" class="form-check-input" (change)="ClassId($event)" name=""
+                                id="3">
+                            <label for="3" class="form-check-label">Truck</label>
+                        </div> -->
+          </div>
+          <div class="border rounded p-3 m-3">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="camera_type1"
+                value="entry"
+                [formControl]="tcDirection"
+              />
+              <label class="form-check-label" for="camera_type1"> Entry </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="camera_type2"
+                value="exit"
+                [formControl]="tcDirection"
+              />
+              <label class="form-check-label" for="camera_type2"> Exit </label>
+            </div>
+          </div>
+          <button
+            class="btn success ms-1 float-end"
+            type="submit"
+            (click)="AddTrafficCountData()"
+            [disabled]="
+              tcName.invalid ||
+              classIds.length == 0 ||
+              tcDirection.value == null
+            "
+            type="submit"
+          >
+            Submit
+          </button>
+          <button
+            class="btn danger me-1 float-end"
+            (click)="modal.close('Cross click')"
+          >
+            cancel
+          </button>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #CCType>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <!-- <div class="icon-box">
+                <i class="material-icons">&#xE5CD;</i>
+              </div> -->
+            <h4 class="modal-title w-100">
+              Please Select the Crowd Count Type
+            </h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <div class="container">
+              <h1></h1>
+              <form class="form cf">
+                <section class="plan cf">
+                  <input
+                    type="radio"
+                    name="radio1"
+                    id="free"
+                    value="free"
+                  /><label class="free-label four col" for="free">ROI</label>
+                  <input
+                    type="radio"
+                    name="radio1"
+                    id="basic"
+                    value="basic"
+                    checked
+                  /><label class="basic-label four col" for="basic"
+                    >Full Frame</label
+                  >
+                  <!-- <input type="radio" name="radio1" id="premium" value="premium"><label class="premium-label four col" for="premium">Premium</label> -->
+                </section>
+              </form>
+            </div>
+          </div>
+          <!-- <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                        data-dismiss="modal">Cancel</button>
+                    <button type="button" (click)="modal.close('Cross click')" class="btn default">Got it</button>
+                </div> -->
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #editAlert>
+    <div class="modal-header flex-column">
+      <!-- <div class="icon-box">
+<i class="material-icons">&#xE5CD;</i>
+</div> -->
+      <h4 class="modal-title w-100">Edit Alert</h4>
+      <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+    </div>
+    <div class="modal-body">
+      <div class="col-12">
+        <form
+          class="border p-3 mb-3"
+          style="border-radius: 10px"
+          [formGroup]="editAlertForm"
+        >
+          <div class="mb-2">
+            <b> Enable Alert :</b>
+            <span class="float-end"
+              ><input
+                type="checkbox"
+                hidden="hidden"
+                [checked]="cameraData[0].alarm_enable == 'true' ? true : false"
+                formControlName="alarmEnable"
+                [id]="'enable'" />
+              <label class="switch" [for]="'enable'"></label
+            ></span>
+          </div>
+          <div class="wrapper-two" id="input">
+            <label for="alarmType" class="mb-1"><b>Alarm type </b></label>
+            <div class="form-floating form-control p-3 mb-3" id="alarmType">
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  formControlName="alarmType"
+                  value="hooter"
+                  (change)="hooterOrRelayConfig($event)"
+                  defaultValue="hooter"
+                  id="hooter"
+                  class="form-check-input"
+                />
+                <label for="hooter" class="form-check-label text-muted"
+                  >Hooter</label
+                >
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  formControlName="alarmType"
+                  value="relay"
+                  (change)="hooterOrRelayConfig($event)"
+                  defaultValue="relay"
+                  id="relay"
+                  class="form-check-input"
+                />
+                <label for="relay" class="form-check-label text-muted"
+                  >Relay</label
+                >
+              </div>
+              <!-- <div class="form-check form-check-inline" id="custome">
+                            <input type="radio" formControlName="alarmType" value="sensegiz"
+                                (change)="hooterOrRelayConfig($event,sensgizDetails)" defaultValue="sensgiz"
+                                id="sensgiz" class="form-check-input">
+                            <label for="sensgiz" class="form-check-label text-muted">Sensegiz</label>
+                        </div> -->
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  formControlName="alarmType"
+                  value=""
+                  (change)="hooterOrRelayConfig($event, sensgizDetails)"
+                  defaultValue=""
+                  id="none"
+                  class="form-check-input"
+                />
+                <label for="none" class="form-check-label text-muted"
+                  >None</label
+                >
+              </div>
+              <!-- <div class="form-check form-check-inline" id="custome">
+                        <input type="radio" formControlName="isHooter" value="voiceAlert" (change)="hooterOrRelayConfig($event)"
+                          defaultValue="voiceAlert" id="voiceAlert" class="form-check-input">
+                        <label for="voiceAlert" class="form-check-label text-muted">Voice Alert</label>
+                      </div> -->
+            </div>
+
+            <!-- altered -->
+            <!-- <div class="form-floating" id="cameraBrand" *ngIf="isVoiceAlert">
+                      <ng-multiselect-dropdown #singleSelect [placeholder]="'Language'" [settings]="dropdownSettings2|async"
+                      [data]="voiceLanguages|async" formControlName="voiceLang" >
+                    </ng-multiselect-dropdown>
+          
+                    </div> -->
+          </div>
+          <div class="mb-3">
+            <label for="alarmDetails" class="mb-1"><b>Alarm Details </b></label>
+
+            <div class="form-floating" id="alarmDetails" *ngIf="isHooter">
+              <input
+                type="text"
+                formControlName="alarmIp"
+                placeholder="User name"
+                class="form-control"
+                id="hooterIp"
+              />
+              <label for="hooterIp">Hooter IP</label>
+            </div>
+            <div class="form-floating" *ngIf="isRelay">
+              <input
+                type="text"
+                formControlName="alarmIp"
+                placeholder="User name"
+                class="form-control"
+                id="relayIp"
+              />
+              <label for="relayIp">Relay IP</label>
+            </div>
+            <!-- <div class="form-floating" *ngIf="isSensgiz">
+
+                        <div class="form-control">
+                            <div>
+
+                                <span>Sensegiz Details</span>
+                                <span class="float-end">
+                                    <fa-icon icon="pen-to-square" style="cursor: pointer;"
+                                        (click)="SensgizModal(sensgizDetails)"></fa-icon>
+                                </span>
+                            </div>
+                        </div>
+                    </div> -->
+          </div>
+          <!-- <div class="m-1">
+                    <label for="delay" class="mb-1"><b> Delay</b></label>
+
+                    <input formControlName="delay" type="text" id="delay" class="form-control"
+                        placeholder="New delay value">
+                </div> -->
+          <div class="m-2 alert alert-danger" *ngIf="responseMessage != ''">
+            {{ responseMessage }}
+          </div>
+        </form>
+        <!-- <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                    data-dismiss="modal">Cancel</button>
+                <button type="button" (click)="modal.close('Cross click')" class="btn default">Got it</button>
+              </div> -->
+
+        <div class="mt-2 btn-wrapper">
+          <button
+            class="btn default-outline me-1"
+            (click)="modal.close('Cross click')"
+          >
+            Cancel
+          </button>
+          <button
+            class="btn default"
+            (click)="OnEditAlertDetails()"
+            [disabled]="!isAlertFormValid"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #sensgizDetails let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Sensegiz Details</h4>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.close('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body p-3">
+      <button
+        class="btn btn-sm default-outline mb-3 ms-3"
+        (click)="AddSensgizData()"
+      >
+        <fa-icon icon="plus" class="mb-2"></fa-icon> Add
+      </button>
+      <div
+        *ngFor="let form of sensgiz.controls; let i = index"
+        class="p-2"
+        style=""
+      >
+        <ng-container class="d-flex justify-centent-center" [formGroup]="form">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="form-floating">
+              <input
+                class="form-control w-20 me-2"
+                id="coinId"
+                placeholder="Coin ID"
+                formControlName="coinId"
+              />
+              <label for="coinId">Coin Id</label>
+            </div>
+            <div class="form-floating">
+              <input
+                type="number"
+                class="form-control w-20 me-2"
+                id="number-input"
+                placeholder="Preset Id"
+                formControlName="presetId"
+              />
+              <label for="number-input">Preset Id</label>
+            </div>
+
+            <div class="form-floating">
+              <input
+                class="form-control w-20 me-2"
+                id="loc"
+                placeholder="Location"
+                formControlName="coinLocation"
+              />
+              <label for="loc">Location</label>
+            </div>
+            <!-- <span class="circle"> -->
+            <fa-icon
+              icon="circle-minus"
+              style="cursor: pointer; color: #bd1f14"
+              size="lg"
+              class="ms-2"
+              (click)="DeleteSensgizData(i)"
+            ></fa-icon>
+            <!-- </span> -->
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn default float-end" (click)="SaveSensgizInfo()">
+        Save
+      </button>
+    </div>
+  </ng-template>
+</div>

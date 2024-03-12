@@ -1,0 +1,1365 @@
+<div class="container-fluid dashboard-content">
+  <h2 class="page-header">Settings</h2>
+  <!-- <h5 class="mt-2">Sensetivity Settings</h5> -->
+  <div class="row"></div>
+
+  <div class="wrapper-two">
+    <div class="">
+      <div class="">
+        <div class="m-2 h-100">
+          <div class="card" id="data-card">
+            <div class="mb-2 ms-2">
+              <h4 class="sub-header">Detection Sensetivity</h4>
+            </div>
+            <div class="card-header">
+              <span class="float-start mb-3 text-muted">
+                A range of 0 to 100 represents the confidence threshold for
+                decision-making, where values closer to 0 are more cautious and
+                values closer to 100 are more confident.Changes in this values
+                affects the precision and recall in the below given model's
+                predictions.
+              </span>
+              <span class="float-end mt-3">
+                <button class="btn default" (click)="UpdateThresholdValues()">
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    role="status"
+                    aria-hidden="true"
+                    *ngIf="loader1"
+                  ></span
+                  >Update
+                </button></span
+              >
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="card" [formGroup]="sensetivity">
+                  <div class="row">
+                    <div
+                      class="col-xl-4 col-md-12 col-lg-4 col-xs-12 col-sm-12"
+                    >
+                      <label class="mb-2"><b>Person</b></label>
+                      <input
+                        type="text"
+                        pInputText
+                        [ngModelOptions]="{ standalone: true }"
+                        [(ngModel)]="personValue"
+                        class="text-dark"
+                      />
+                      <p-slider
+                        [(ngModel)]="personValue"
+                        [ngModelOptions]="{ standalone: true }"
+                        class="w-full"
+                      ></p-slider>
+                    </div>
+
+                    <div
+                      class="col-xl-4 col-md-12 col-lg-4 col-xs-12 col-sm-12"
+                    >
+                      <label class="mb-2"><b>Helmet</b></label>
+                      <input
+                        type="text"
+                        pInputText
+                        [ngModelOptions]="{ standalone: true }"
+                        [(ngModel)]="helmetValue"
+                        class="text-dark"
+                      />
+                      <p-slider
+                        [(ngModel)]="helmetValue"
+                        [ngModelOptions]="{ standalone: true }"
+                        class="w-full"
+                      ></p-slider>
+                    </div>
+                    <div
+                      class="col-xl-4 col-md-12 col-lg-4 col-xs-12 col-sm-12"
+                    >
+                      <label class="mb-2"><b>Vest</b></label>
+                      <input
+                        type="text"
+                        pInputText
+                        [ngModelOptions]="{ standalone: true }"
+                        [(ngModel)]="vestValue"
+                        class="text-dark"
+                      />
+                      <p-slider
+                        [(ngModel)]="vestValue"
+                        [ngModelOptions]="{ standalone: true }"
+                        class="w-full"
+                      ></p-slider>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wrapper-item">
+      <!--REPORT SETTINGS-->
+      <div class="row h-100 m-2">
+        <div class="card p-2 mb-3" id="data-card">
+          <div class="">
+            <span class="sub-header h4 mb-2 ms-2 mt-2 float-start"
+              >Video Analytics Variables</span
+            >
+            <span class="float-end">
+              <button
+                [disabled]="!ConfigVarForm.valid"
+                class="btn default float-end"
+                (click)="OnUpdateConfig()"
+              >
+                Update
+              </button>
+            </span>
+          </div>
+          <div class="row p-2" [formGroup]="ConfigVarForm">
+            <div class="row">
+              <div class="col-xl-4 col-lg-3 col-md-3 col-xs-12 col-sm-12 mt-3">
+                <div class="border rounded p-2 data-card">
+                  <div class="ms-2 mb-2">
+                    <h6 class="">Camera FPS</h6>
+                  </div>
+                  <div class="m-2">
+                    <input
+                      type="text"
+                      formControlName="cameraFPS"
+                      [ngClass]="{
+                        'is-invalid':
+                          ConfigVarForm.get('cameraFPS')?.errors != undefined
+                      }"
+                      class="form-control"
+                    />
+                    <div *ngIf="ConfigVarForm.get('cameraFPS').errors != null">
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('cameraFPS').errors['min'] !=
+                            undefined &&
+                          ConfigVarForm.get('cameraFPS').errors['pattern'] ==
+                            undefined
+                        "
+                        >The minimum allowed value is 30</span
+                      >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('cameraFPS').errors['pattern'] !=
+                          undefined
+                        "
+                        >Value should be positive number
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-4 col-lg-3 col-md-3 col-xs-12 col-sm-12 mt-3">
+                <div class="border rounded p-2 data-card">
+                  <div class="ms-2">
+                    <h6 class="">Process Interval</h6>
+                  </div>
+                  <div class="m-2">
+                    <input
+                      type="text"
+                      formControlName="dropFrameInterval"
+                      [ngClass]="{
+                        'is-invalid':
+                          ConfigVarForm.get('dropFrameInterval')?.errors !=
+                          undefined
+                      }"
+                      class="form-control"
+                    />
+                    <div
+                      *ngIf="
+                        ConfigVarForm.get('dropFrameInterval').errors != null
+                      "
+                    >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('dropFrameInterval').errors[
+                            'min'
+                          ] != undefined &&
+                          ConfigVarForm.get('dropFrameInterval').errors[
+                            'pattern'
+                          ] == undefined
+                        "
+                        >The minimum allowed value is 30</span
+                      >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('dropFrameInterval').errors[
+                            'pattern'
+                          ] != undefined
+                        "
+                        >Value should be positive number
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-4 col-lg-3 col-md-3 col-xs-12 col-sm-12 mt-3">
+                <div class="border rounded data-card p-2">
+                  <div class="ms-2">
+                    <h6 class="">Camera Reconnect Interval</h6>
+                  </div>
+                  <div class="m-2">
+                    <input
+                      type="text"
+                      [ngClass]="{
+                        'is-invalid':
+                          ConfigVarForm.get('rtspReconnectInterval')?.errors !=
+                          undefined
+                      }"
+                      formControlName="rtspReconnectInterval"
+                      class="form-control"
+                    />
+                    <div
+                      *ngIf="
+                        ConfigVarForm.get('rtspReconnectInterval').errors !=
+                        null
+                      "
+                    >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('rtspReconnectInterval').errors[
+                            'min'
+                          ] != undefined &&
+                          ConfigVarForm.get('rtspReconnectInterval').errors[
+                            'pattern'
+                          ] == undefined
+                        "
+                        >The minimum allowed value is 30</span
+                      >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('rtspReconnectInterval').errors[
+                            'pattern'
+                          ] != undefined
+                        "
+                        >Value should be positive number
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-xl-4 col-lg-3 col-md-3 col-xs-12 col-sm-12 mt-3">
+                <div class="border rounded data-card p-2">
+                  <div class="ms-2">
+                    <h6 class="">Data Save Interval</h6>
+                  </div>
+                  <div class="m-2">
+                    <input
+                      type="text"
+                      [ngClass]="{
+                        'is-invalid':
+                          ConfigVarForm.get('dataSaveInterval')?.errors !=
+                          undefined
+                      }"
+                      formControlName="dataSaveInterval"
+                      class="form-control"
+                    />
+                    <div
+                      *ngIf="
+                        ConfigVarForm.get('dataSaveInterval').errors != null
+                      "
+                    >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('dataSaveInterval').errors['min'] !=
+                            undefined &&
+                          ConfigVarForm.get('dataSaveInterval').errors[
+                            'pattern'
+                          ] == undefined
+                        "
+                        >The minimum allowed value is 30</span
+                      >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('dataSaveInterval').errors[
+                            'pattern'
+                          ] != undefined
+                        "
+                        >Value should be positive number
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-4 col-lg-3 col-md-3 col-xs-12 col-sm-12 mt-3">
+                <div class="border rounded data-card p-2">
+                  <div class="ms-2">
+                    <h6 class="">Panel Stop Analytics Time </h6>
+                  </div>
+                  <div class="m-2">
+                    <input
+                      type="text"
+                      [ngClass]="{
+                        'is-invalid':
+                          ConfigVarForm.get('riroPanelBufferTime')?.errors !=
+                          undefined
+                      }"
+                      formControlName="riroPanelBufferTime"
+                      class="form-control"
+                    />
+                    <div
+                      *ngIf="
+                        ConfigVarForm.get('riroPanelBufferTime').errors != null
+                      "
+                    >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('riroPanelBufferTime').errors[
+                            'min'
+                          ] != undefined &&
+                          ConfigVarForm.get('riroPanelBufferTime').errors[
+                            'pattern'
+                          ] == undefined
+                        "
+                        >The minimum allowed value is 30</span
+                      >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('riroPanelBufferTime').errors[
+                            'pattern'
+                          ] != undefined
+                        "
+                        >Value should be positive number
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-4 col-lg-3 col-md-3 col-xs-12 col-sm-12 mt-3">
+                <div class="border rounded data-card p-2">
+                  <div class="ms-2">
+                    <h6 class="">Frame Stop Analytics Time </h6>
+                  </div>
+                  <div class="m-2">
+                    <input
+                      type="text"
+                      [ngClass]="{
+                        'is-invalid':
+                          ConfigVarForm.get('riroFrameBufferTime').errors !=
+                          undefined
+                      }"
+                      formControlName="riroFrameBufferTime"
+                      class="form-control"
+                    />
+                    <div
+                      *ngIf="
+                        ConfigVarForm.get('riroFrameBufferTime').errors != null
+                      "
+                    >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('riroFrameBufferTime').errors[
+                            'min'
+                          ] != undefined &&
+                          ConfigVarForm.get('riroFrameBufferTime').errors[
+                            'pattern'
+                          ] == undefined
+                        "
+                        >The minimum allowed value is 30</span
+                      >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('riroFrameBufferTime').errors[
+                            'pattern'
+                          ] != undefined
+                        "
+                        >Value should be positive number
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mt-3">
+              <div class="col-6">
+                <div class="border rounded p-2 data-card">
+                  <div class="d-block w-100 h-100">
+                    <div
+                      class="d-flex justify-content-center align-items-center"
+                    >
+                      <span class="form-check form-switch mb-3 mt-3" scope="col">
+                        <label for="pinchRole">Pinch Role </label>
+
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          [formControl]="pinchRole"
+                          role="switch"
+                          id="pinchRole"
+                        />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="border rounded data-card p-2">
+                  <div class="" class="me-2">
+                    <h6 class="ms-2">Grid Size</h6>
+                  </div>
+                  <div class="m-2">
+                    <input
+                      type="text"
+                      class="form-control form-control-sm"
+                      [formControlName]="'gridSize'"
+                    />
+                    <div *ngIf="ConfigVarForm.get('gridSize').errors != null">
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('gridSize').errors['min'] !=
+                            undefined &&
+                          ConfigVarForm.get('gridSize').errors['pattern'] ==
+                            undefined
+                        "
+                        >The minimum value should be 4</span
+                      >
+                      <span
+                        class="text-danger"
+                        *ngIf="
+                          ConfigVarForm.get('gridSize').errors['pattern'] !=
+                          undefined
+                        "
+                        >Value should be positive even number
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- "AllReportDetails.length>0;else noMail -->
+  <div class="row m-3">
+    <div class="card" id="data-card">
+      <span class="float-start">
+        <h4 class="sub-header">Email Settings</h4>
+      </span>
+      <div class="card-header">
+        <!-- <span class="float-start">
+          <h5> Emails Details</h5>
+        </span> -->
+        <span class="float-end mt-3">
+          <button
+            class="btn default float-end"
+            (click)="AddReport(reportAddModal)"
+          >
+            &nbsp;&nbsp;
+            <fa-icon icon="plus" class="me-1"></fa-icon>Add&nbsp;&nbsp;
+          </button>
+        </span>
+      </div>
+      <div class="col-12" *ngIf="AllReportDetails.length > 0; else noMail">
+        <div class="card card-body p-2" id="data-card">
+          <table class="table table-bordered">
+            <thead style="background: #f8f9fa">
+              <tr>
+                <th rowspan="2">SI No</th>
+                <th colspan="3">Email details of report recievers</th>
+
+                <th rowspan="2">Reports</th>
+                <th rowspan="2">Departments</th>
+                <th rowspan="2">Reporting Time</th>
+                <th rowspan="3">Report Sender Email</th>
+                <th rowspan="2"></th>
+              </tr>
+              <tr>
+                <th>To</th>
+                <th>CC</th>
+                <th>BCC</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let report of AllReportDetails; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <div *ngFor="let emails of report.email_receivers.to">
+                    {{ emails }}
+                  </div>
+                </td>
+                <td>
+                  <div *ngFor="let emails of report.email_receivers.cc">
+                    {{ emails }}
+                  </div>
+                </td>
+                <td>
+                  <div *ngFor="let emails of report.email_receivers.bcc">
+                    {{ emails }}
+                  </div>
+                </td>
+
+                <td>
+                  <div *ngIf="report.violation_report">
+                    <span *ngFor="let type of report.analytics_types">
+                      <span>{{ aiSolutionsList[type.toUpperCase()] }}</span
+                      ><br />
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div *ngFor="let dep of report?.department">
+                    <span>{{ dep }}</span
+                    ><br />
+                  </div>
+                </td>
+                <td>
+                  <span *ngFor="let time of report.timestamp">
+                    <span>{{ time | timeTransform }}</span
+                    ><br />
+                  </span>
+                </td>
+
+                <td>
+                  {{ report.sender_email ? report.sender_email : "---" }}
+                </td>
+
+                <td>
+                  <div class="d-flex justify-content-center align-items-center">
+                    <fa-icon
+                      icon="pen-to-square"
+                      style="cursor: pointer"
+                      class="text-black m-2"
+                      (click)="EditReport(editReport, report)"
+                      size="lg"
+                    ></fa-icon>
+                    <fa-icon
+                      icon="trash"
+                      style="cursor: pointer"
+                      (click)="isDeleteReport(deleteModal, report)"
+                      class="text-danger m-2"
+                      size="lg"
+                    ></fa-icon>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" *ngIf="false">
+  <div class="card-body p-2 mt-3 mb-3">
+    <div
+      class="d-flex justify-content-between align-items-center"
+      style="width: 100%"
+      id="data-card"
+    >
+      <div class="border-right m-2 p-2" style="width: 5%">
+        <b>SI no</b>
+      </div>
+      <div
+        class="border-right m-2 p-2"
+        style="width: 45%; max-width: 40%; overflow: auto"
+      >
+        <span>Emails</span><br />
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="border border-right">To</span><span>CC</span
+          ><span>BCC</span>
+        </div>
+      </div>
+      <div class="border-right m-2 p-2" style="width: 20%">
+        <b>Reports</b>
+      </div>
+      <div class="border-right m-2 p-2" style="width: 10%">
+        <b>Timings</b>
+      </div>
+      <div class="border-right m-2 p-2" style="width: 20%">
+        <b>Actions</b>
+      </div>
+      <!-- <div class="border-right m-2 p-2">Si no</div> -->
+    </div>
+  </div>
+
+  <div
+    class="card card-body p-3 mb-3"
+    style="height: auto; overflow-y: scroll"
+    *ngFor="let report of AllReportDetails; let i = index"
+    id="data-card"
+  >
+    <div
+      class="d-flex justify-content-between align-items-center"
+      style="width: 100%"
+    >
+      <div style="width: 10%">
+        <b>{{ i + 1 }}</b>
+      </div>
+      <div style="width: 15%">
+        <div class="report" *ngFor="let cc of report.email_receivers.to">
+          <span class="mb-1 grid-item" style="overflow-x: auto">{{ cc }}</span
+          ><br />
+        </div>
+      </div>
+      <div style="width: 15%">
+        <div class="report" *ngFor="let cc of report.email_receivers.cc">
+          <span class="mb-1 grid-item" style="overflow-x: auto">{{ cc }}</span
+          ><br />
+        </div>
+      </div>
+      <div style="width: 15%">
+        <div class="report" *ngFor="let cc of report.email_receivers.bcc">
+          <span class="mb-1 grid-item" style="overflow-x: auto">{{ cc }}</span
+          ><br />
+        </div>
+      </div>
+
+      <div style="width: 20%">
+        <div *ngIf="report.violation_report">
+          <span *ngFor="let type of report.analytics_types">
+            <span>{{ type }}</span
+            ><br />
+          </span>
+        </div>
+      </div>
+      <div style="width: 10%">
+        <span *ngFor="let time of report.timestamp">
+          <span>{{ time }}</span
+          ><br />
+        </span>
+      </div>
+      <div
+        class="d-flex justify-centent-center align-items-center"
+        style="width: 20%"
+      >
+        <fa-icon
+          icon="pen-to-square"
+          style="cursor: pointer"
+          class="text-black me-1"
+          (click)="EditReport(editReport, report)"
+          size="lg"
+        ></fa-icon>
+        <fa-icon
+          icon="trash"
+          style="cursor: pointer"
+          (click)="isDeleteReport(deleteModal, report)"
+          class="text-danger"
+          size="lg"
+        ></fa-icon>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- END OF REPORT SETTINGS -->
+
+<!-- <ng-template let-modal #reportAddModal1>
+  <div class="modal-header">
+    <h5>Add Report</h5>
+  </div>
+  <div class="modal-body p-3">
+    <form action="" class="mb-3" id="reportAddForm">
+      <div class="wrapper-two">
+        <div class="form-floating">
+          <div class="input-group">
+            <input [formControl]="emailControl" type="email" class="form-control" id="email">
+            <button class="btn default" (click)="OnAddEmail()" type="submit"
+              [disabled]="emailControl.invalid">Add</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div *ngIf="reportDetails.length>0;else elsep">
+      <div class="mt-3" *ngFor="let report of reportDetails;let i=index">
+        <div class="container mb-3">
+          <div class="row">{{report.email}}</div>
+          <div class="row">
+            <div class="form-check form-check-inline" id="custome">
+              <input type="checkbox" [id]="'violAlert'+i" [checked]="report.violation_alert" [value]="'violAlert'"
+                defaultValue="" (change)="PPEConfig($event,i)" class="form-check-input">
+              <label [for]="'violAlert'+i" class="form-check-label text-muted">Violation Report</label>
+            </div>
+          </div>
+          <div class="row" id="custome">
+            <div class="form-check form-check-inline" id="custome">
+              <input type="checkbox" [id]="'esiAlert'+i" [checked]="report.esi_alert" [value]="'ESIAlert'"
+                defaultValue="" (change)="PPEConfig($event,i)" class="form-check-input">
+              <label [for]="'esiAlert'+i" class="form-check-label text-muted">ESI Report</label>
+            </div>
+          </div>
+
+        <div class="row col-5">
+          <span>reporting time :<ngb-timepicker [(ngModel)]="reportTime" [spinners]="false"></ngb-timepicker>
+          </span><span class="container-sm"> </span> 
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-centent-center" id="submit">
+    <button style="width:90% ;" class="btn default mb-3" *ngIf="reportDetails.length>0">Submit</button>
+  </div>
+
+</ng-template> -->
+
+<ng-template let-modal #reportAddModal>
+  <div class="modal-header">
+    <h5 class="float-start">Add Email Details</h5>
+    <button
+      type="button"
+      class="btn-close float-end mb-2"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body p-3 m-3 mb-3">
+    <div class="radio-container">
+      <p-fieldset legend="Report Receiver's Details">
+        <!-- <div class="header">
+          <h5>Reports Receiver's Details</h5>
+        </div> -->
+        <form
+          action=""
+          class="mb-3"
+          [formGroup]="reportForm"
+          id="reportAddForm"
+        >
+          <div class="p-3" style="border-radius: 8.5px">
+            <div class="float-end me-4">
+              <span class="text-info me-1">*</span> Required Fields.
+            </div>
+
+            <div class="m-3" id="emails-input">
+              <label for="email" class="mb-2">
+                <span class="text-info me-1">*</span><b>To Emails :</b></label
+              >
+              <!-- <form [formGroup]="formGroup"  id="emails-input"> -->
+              <p-chips
+                formControlName="toEmail"
+                separator=","
+                [addOnBlur]="true"
+                [style]="{ display: 'inline' }"
+              >
+              </p-chips>
+              <div *ngIf="isSubmitted || reportForm.get('toEmail')?.dirty">
+                <div *ngIf="reportForm.get('toEmail').errors">
+                  <div
+                    *ngIf="reportForm.get('toEmail').errors['required']"
+                    class="text-danger"
+                  >
+                    Please enter value for email.
+                  </div>
+                  <div
+                    *ngIf="reportForm.get('toEmail').errors['invalidEmail']"
+                    class="text-danger"
+                  >
+                    Please enter the valid email address.
+                  </div>
+                </div>
+              </div>
+              <!-- </form>      -->
+            </div>
+            <div class="m-3">
+              <label for="email" class="mb-2"><b>CC Emails :</b></label>
+              <p-chips
+                formControlName="ccEmail"
+                [addOnBlur]="true"
+                [class]="'custome-chips'"
+                [style]="{
+                  display: 'inline',
+                  'box-shadow': 'none !important',
+                  'border-radius': '10px'
+                }"
+              ></p-chips>
+              <div *ngIf="reportForm.get('ccEmail').errors">
+                <!-- <div *ngIf="reportForm.get('ccEmail').errors.required">
+                  Please enter the valid e-mail address.
+                </div> -->
+                <div *ngIf="reportForm.get('ccEmail').errors['pattern']">
+                  Please enter the value of type email.
+                </div>
+              </div>
+            </div>
+            <div class="m-3">
+              <label for="email" class="mb-2"><b>BCC Emails :</b></label>
+              <p-chips
+                formControlName="bccEmail"
+                [addOnBlur]="true"
+                [class]="'custome-chips'"
+                [style]="{
+                  display: 'inline',
+                  'box-shadow': 'none !important',
+                  'border-radius': '10px',
+                  'border-color': reportForm.get('bccEmail').invalid
+                    ? 'red !important'
+                    : ''
+                }"
+              ></p-chips>
+              <div *ngIf="reportForm.get('bccEmail').errors">
+                <div *ngIf="reportForm.get('bccEmail').errors['pattern']">
+                  Please enter the value of type email.
+                </div>
+              </div>
+            </div>
+            <div class="m-3">
+              <label for="mb-2"
+                ><span class="text-info me-1"></span><b>Departments:</b>
+              </label>
+              <p-treeSelect
+                [selectionMode]="'checkbox'"
+                (onNodeSelect)="ondepSelect($event)"
+                [metaKeySelection]="false"
+                [display]="'chip'"
+                containerStyleClass="w-100 m-2"
+                [options]="departmentList | async"
+                [filter]="true"
+                [(ngModel)]="selectedDeps"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Select the departments"
+              ></p-treeSelect>
+            </div>
+            <div class="m-3">
+              <div class="mb-2">
+                <span class="text-info me-1">*</span><b> Select Reports:</b>
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <!-- <input type="checkbox" [id]="'violAlert'" formControlName="violationReport" [value]="'violAlert'"
+                  defaultValue="" class="form-check-input">
+                <label [for]="'violAlert'" class="form-check-label text-muted">Violation Report</label> -->
+
+                <div
+                  class="mb-3 mt-3 ms-2 d-flex justify-content-center align-items-center"
+                >
+                  <div
+                    *ngFor="let solution of aiSolutions; let i = index"
+                    class="me-3"
+                  >
+                    <input
+                      type="checkbox"
+                      [id]="'solution' + i"
+                      (change)="OnReportAnalytics($event)"
+                      [value]="solution.value"
+                      defaultValue=""
+                      class="form-check-input"
+                    />
+                    <label
+                      [for]="'solution' + i"
+                      class="form-check-label text-muted me-4"
+                      >{{ solution.name }}</label
+                    >
+                  </div>
+                </div>
+                <div
+                  *ngIf="isSubmitted && reportAnalytics.length == 0"
+                  class="text-danger"
+                >
+                  You have to select atleast one report
+                </div>
+              </div>
+              <!-- <div class="form-check form-check-inline" id="custome">
+              <input type="checkbox" formControlName="esiJobsheet" [id]="'esiAlert'" [value]="'ESIAlert'"
+                defaultValue="" class="form-check-input">
+              <label [for]="'esiAlert'" class="form-check-label text-muted">ESI Report</label>
+            </div> -->
+            </div>
+
+            <span class="mb-2 m-3"
+              ><span class="text-info me-1">*</span
+              ><b>Reporting time :</b></span
+            >
+
+            <div class="row border m-3 p-3" style="border-radius: 10px">
+              <div>
+                <div class="float-end">
+                  <button class="btn default-outline" (click)="AddTimeStamp()">
+                    <fa-icon icon="plus"></fa-icon>Add Time
+                  </button>
+                </div>
+              </div>
+              <div>
+                <div
+                  *ngFor="let control of timeStamps.controls; let i = index"
+                  class="d-flex justify-content-between align-items-center m-2"
+                >
+                  <span class="m-2">
+                    <!-- <ngb-timepicker [(ngModel)]="control" [ngModelOptions]="{standAlone:true}"
+                  [spinners]="false" [meridian]="true" > </ngb-timepicker> -->
+                    <ngb-timepicker
+                      [formControl]="control"
+                      [spinners]="false"
+                      [meridian]="true"
+                    >
+                    </ngb-timepicker>
+                  </span>
+                  <span *ngIf="i != 0" (click)="RemoveTimeStamp(i)"
+                    ><fa-icon icon="trash"></fa-icon
+                  ></span>
+                </div>
+                <div *ngIf="timeStamps?.errors || isSubmitted">
+                  <div *ngIf="timeStamps.invalid" class="text-danger">
+                    Please enter atleast one time value.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </p-fieldset>
+    </div>
+    <div class="radio-container" *ngIf="false">
+      <p-fieldset legend="Reports Sender Details" [toggleable]="true">
+        <form action="" class="mb-3" [formGroup]="SMTPForm" id="reportAddForm">
+          <div
+            style="width: 100% !important"
+            class="d-flex justify-centent-center align-items-center"
+          >
+            <div class="d-flex justify-centent-center align-items-center p-3">
+              <i
+                >(If this details are not provided,then the reports will be sent
+                from <b>Docketrun</b> Mail)</i
+              >
+            </div>
+          </div>
+
+          <div class="p-3" style="border-radius: 8.5px">
+            <label for="email" class="ms-3 mb-1"><b>Select Domain :</b></label>
+
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="radio-option">
+                <label for="logo1" class="">
+                  <img
+                    src="assets/images/icons/GmailLogo.svg"
+                    alt=""
+                    class="img"
+                    (click)="OnDomainSelect('smtp.gmail.com')"
+                  />
+                </label>
+                <input type="radio" value="yandax" />
+              </div>
+              <div class="radio-option">
+                <label for="logo1" class="">
+                  <img
+                    src="assets/images/icons/YandaxLogo.svg"
+                    class="img"
+                    alt=""
+                    (click)="OnDomainSelect('smtp.yandex.com')"
+                  />
+                </label>
+                <input type="radio" />
+              </div>
+              <div class="radio-option" (click)="OnDomainSelect('other')">
+                <label for="logo1" class="">
+                  <div class="img">Other</div>
+                </label>
+                <input type="radio" />
+              </div>
+            </div>
+            <div class="m-3" *ngIf="isOtherSmtp">
+              <label for="email" class="mb-2"><b>SMTP Server</b></label>
+              <input
+                formControlName="domain"
+                placeholder=""
+                type="text"
+                class="form-control"
+                id="email"
+              />
+            </div>
+            <div class="m-3" *ngIf="isOtherSmtp">
+              <label for="email" class="mb-2"><b>SMTP Port</b></label>
+              <input
+                formControlName="port"
+                placeholder=" "
+                type="text"
+                class="form-control"
+                id="email"
+              />
+            </div>
+            <div class="m-3">
+              <label for="email" class="mb-2"><b>Email</b></label>
+              <input
+                formControlName="email"
+                placeholder=""
+                type=""
+                class="form-control"
+                id="email"
+              />
+            </div>
+            <div class="m-3">
+              <label for="email" class="mb-2"><b>Password</b></label>
+              <input
+                formControlName="password"
+                placeholder=""
+                type="password"
+                class="form-control"
+                id="email"
+              />
+            </div>
+          </div>
+        </form>
+      </p-fieldset>
+    </div>
+    <div class="alert alert-danger" *ngIf="!isSuccess">
+      {{ responseMessage }}
+    </div>
+    <div class="d-flex justify-centent-center" id="submit">
+      <button
+        style="width: 100%"
+        class="btn default mb-3"
+        (click)="submitDetails()"
+      >
+        <span></span
+        ><span
+          class="spinner-border spinner-border-sm me-1"
+          role="status"
+          aria-hidden="true"
+          *ngIf="isLoading"
+        ></span>
+        Submit
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template let-modal #editReport>
+  <div class="modal-header">
+    <span class="float-start">
+      <h5 class="float-center">Edit Email Details</h5>
+    </span>
+    <span class="float-end"
+      ><button
+        type="button"
+        class="btn btn-default close"
+        aria-label="Close"
+        (click)="modal.close('Cross click')"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button></span
+    >
+  </div>
+
+  <div class="modal-body p-3 m-3 mb-3">
+    <div class="radio-container">
+      <p-fieldset legend="Reports Receiver's Details">
+        <!-- <div class="header">
+          <h5>Reports Receiver's Details</h5>
+        </div> -->
+        <form
+          action=""
+          class="mb-3"
+          [formGroup]="reportEditForm"
+          id="reportAddForm"
+        >
+          <div class="float-end me-4">
+            <span class="text-info me-1">*</span> Required Fields.
+          </div>
+          <div class="p-3" style="border-radius: 8.5px">
+            <span> </span>
+            <div class="m-3" id="emails-input">
+              <label for="email" class="mb-2"
+                ><span class="text-info me-1">*</span><b>Emails(To) :</b></label
+              >
+              <!-- <form [formGroup]="formGroup"  id="emails-input"> -->
+              <p-chips
+                formControlName="toEmail"
+                [addOnBlur]="true"
+                [style]="{ display: 'inline' }"
+              ></p-chips>
+              <!-- </form>      -->
+            </div>
+            <div class="m-3">
+              <label for="email" class="mb-2"><b>Emails (CC) :</b></label>
+              <p-chips
+                formControlName="ccEmail"
+                [class]="'custome-chips'"
+                [addOnBlur]="true"
+                [style]="{
+                  display: 'inline',
+                  'box-shadow': 'none !important',
+                  'border-radius': '10px'
+                }"
+              ></p-chips>
+            </div>
+            <div class="m-3">
+              <label for="email" class="mb-2"><b>Emails (BCC) :</b></label>
+              <p-chips
+                formControlName="bccEmail"
+                [addOnBlur]="true"
+                [style]="{
+                  display: 'inline',
+                  'box-shadow': 'none !important',
+                  'border-radius': '10px'
+                }"
+              ></p-chips>
+            </div>
+            <div class="m-3">
+              <label class="mb-3"> <b>Department :</b></label>
+              <p-treeSelect
+                [selectionMode]="'checkbox'"
+                [display]="'chip'"
+                [metaKeySelection]="false"
+                containerStyleClass="w-100 me-2 ms-2"
+                [options]="departmentList | async"
+                [filter]="true"
+                [(ngModel)]="selectedDeps"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Select the departments"
+              ></p-treeSelect>
+            </div>
+            <div class="m-3">
+              <div class="">
+                <span class="text-info me-1">*</span><b> Select Reports:</b>
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <!-- <input type="checkbox" [id]="'violAlert'" formControlName="violationReport"
+                  [checked]="reportEditForm.get('violationReport').value" [value]="'violAlert'" defaultValue=""
+                  class="form-check-input">
+                <label [for]="'violAlert'" class="form-check-label text-muted">Violation Report</label> -->
+
+                <div
+                  class="mb-3 mt-3 ms-2 d-flex justify-content-center align-items-center"
+                >
+                  <div
+                    *ngFor="let solution of aiSolutions; let i = index"
+                    class="me-2"
+                  >
+                    <input
+                      type="checkbox"
+                      [id]="'solution' + i"
+                      (change)="OnReportAnalytics($event)"
+                      [value]="solution.value"
+                      [checked]="reportAnalytics.indexOf(solution.value) >= 0"
+                      defaultValue=""
+                      class="form-check-input"
+                    />
+                    <label
+                      [for]="'solution' + i"
+                      class="form-check-label text-muted me-4"
+                      >{{ solution.name }}</label
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <span class="m-3"
+              ><span class="text-info me-1">*</span
+              ><b>Reporting time :</b></span
+            >
+
+            <div class="row m-3 border p-3" style="border-radius: 10px">
+              <div>
+                <div class="float-end">
+                  <button class="btn default-outline" (click)="AddTimeStamp()">
+                    <fa-icon icon="plus"></fa-icon>Add Time
+                  </button>
+                </div>
+              </div>
+              <div>
+                <div
+                  *ngFor="let control of timeStamps.controls; let i = index"
+                  class="d-flex justify-content-between align-items-center m-2"
+                >
+                  <span class="m-2">
+                    <!-- <ngb-timepicker [(ngModel)]="control" [ngModelOptions]="{standAlone:true}"
+                  [spinners]="false" [meridian]="true" > </ngb-timepicker> -->
+                    <ngb-timepicker
+                      [formControl]="control"
+                      [spinners]="false"
+                      [meridian]="true"
+                    >
+                    </ngb-timepicker>
+                  </span>
+                  <span (click)="RemoveTimeStamp(i)" *ngIf="i != 0"
+                    ><fa-icon icon="trash"></fa-icon
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </p-fieldset>
+      <div class="radio-container" *ngIf="false">
+        <p-fieldset legend="Reports Sender Details" [toggleable]="true">
+          <!-- <div class="header">
+            <h5>Reports Sender Details</h5>
+          </div> -->
+          <form
+            action=""
+            class="mb-3"
+            [formGroup]="reportEditForm"
+            id="reportAddForm"
+          >
+            <div class="p-3" style="border-radius: 8.5px">
+              <label for="email" class="ms-3 mb-1"><b>SMTP Domain :</b></label>
+
+              <div class="d-flex justify-content-center align-items-center">
+                <div
+                  class="radio-option"
+                  [ngClass]="{
+                    checked:
+                      reportEditForm.get('smtpServer').value == 'smtp.gmail.com'
+                  }"
+                >
+                  <label for="logo1" class="">
+                    <img
+                      src="assets/images/icons/GmailLogo.svg"
+                      class="img"
+                      alt=""
+                      (click)="OnDomainEdit('smtp.gmail.com')"
+                    />
+                  </label>
+                  <input type="radio" value="yandax" />
+                </div>
+                <div
+                  class="radio-option"
+                  [ngClass]="{
+                    checked:
+                      reportEditForm.get('smtpServer').value ==
+                      'smtp.yandex.com'
+                  }"
+                >
+                  <label for="logo1" class="">
+                    <img
+                      src="assets/images/icons/YandaxLogo.svg"
+                      class="img"
+                      alt=""
+                      (click)="OnDomainEdit('smtp.yandex.com')"
+                    />
+                  </label>
+                  <input type="radio" />
+                </div>
+                <div
+                  class="radio-option"
+                  [ngClass]="{ checked: isOtherSmtp }"
+                  (click)="OnDomainEdit('other')"
+                >
+                  <label
+                    for="logo1"
+                    class="d-flex justify-centent-center align-items-center"
+                  >
+                    <div class="img" style="text-align: center">Other</div>
+                  </label>
+                  <input type="radio" />
+                </div>
+              </div>
+              <div class="m-3" *ngIf="isOtherSmtp">
+                <label for="email" class="mb-2"><b>SMTP Server</b></label>
+                <input
+                  formControlName="smtpServer"
+                  placeholder=""
+                  type=""
+                  class="form-control"
+                  id="email"
+                />
+              </div>
+              <div class="m-3" *ngIf="isOtherSmtp">
+                <label for="email" class="mb-2"><b>SMTP Port</b></label>
+                <input
+                  formControlName="smtpPort"
+                  placeholder=""
+                  type="text"
+                  class="form-control"
+                  id="email"
+                />
+              </div>
+
+              <div class="m-3">
+                <label for="email" class="mb-2"><b>Email</b></label>
+                <input
+                  formControlName="smtpEmail"
+                  placeholder=""
+                  type="email"
+                  class="form-control"
+                  id="email"
+                />
+              </div>
+
+              <div class="m-3">
+                <label for="email" class="mb-2"><b>Password</b></label>
+                <input
+                  formControlName="smtpPassword"
+                  placeholder=" "
+                  type="password"
+                  class="form-control"
+                  id="email"
+                />
+              </div>
+            </div>
+          </form>
+        </p-fieldset>
+      </div>
+    </div>
+    <div class="alert alert-danger" *ngIf="!isSuccess">
+      {{ responseMessage }}
+    </div>
+
+    <div class="d-flex justify-centent-center" id="submit">
+      <button
+        style="width: 100%"
+        class="btn default mb-3"
+        [disabled]="!reportEditForm.valid || reportAnalytics.length == 0"
+        (click)="UpdateReports()"
+      >
+        Update
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #elsep>
+  <p class="container">No emails are added for the report</p>
+</ng-template>
+<ng-template #noMail>
+  <div class="container card d-flex justify-content-center" id="data-card">
+    <div class="text-muted d-flex justify-centent-center align-items-center">
+      <h5>
+        No emails Found. Please add the email details to get violation reports.
+      </h5>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template let-modal #deleteModal>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="modal-header flex-column">
+          <div class="icon-box">
+            <i class="material-icons">&#xE5CD;</i>
+          </div>
+          <h4 class="modal-title w-100">Are you sure?</h4>
+          <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+        </div>
+        <div class="modal-body">
+          <p>Do you really want to delete? This process cannot be undone.</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="modal.close('Cross click')"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="button" class="btn danger" (click)="DeleteReport()">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

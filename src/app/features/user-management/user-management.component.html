@@ -1,0 +1,282 @@
+<div class="container-fluid dashboard-content">
+    <div class="data-container">
+        <div class="col-xl-12 col-xs-12 col-sm-12 col-md-12 col-lg-12 mb-4">
+            <div class="page-header">
+                <h3>User-Management</h3>
+            </div>
+         </div><br>
+        <div class="row">
+            <div class="col-12 mb-2">
+                <h4 class="sub-header">Registered Users-Details</h4>
+                <div class="float-end">
+                    <button class="btn default me-2 float-end" (click)="AddUser(AddUserModal)"> 
+                        <fa-icon icon="plus" class="me-1"></fa-icon>
+                        User</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card card-body mt-3" id="data-card">
+            <table  class="table" style="width:100%;overflow: auto;border-spacing: 0px 20px;">
+                <thead  class="headers" style="background:#F8F9FA !important;"  *ngIf="existingUserDetails.length>0 else nodata">
+                    <tr>
+                        <td>
+                            <b>SNO.</b>
+                        </td>
+
+                        <td>
+                            <b>User Name</b>
+                        </td>
+
+                        <td>
+                            <b>Email Id</b>
+                        </td>
+
+                        <td>
+                            <b>Contact Number</b>
+                        </td>
+
+                        <td>
+                            <b>Departments</b>
+                        </td>
+
+                        <td>
+                            <b>Registered Time</b>
+                        </td>
+
+                        <td>
+                            <b>Registered By</b>
+                        </td>
+                            
+                        <td>
+                            <b>Delete User</b>
+                        </td>
+                        
+                    </tr>
+
+                </thead>
+                <tbody >
+                    <tr *ngFor = "let userData of existingUserDetails; let i=index"  >
+                        <td>{{i+1}}.</td>
+                        <td>{{userData?.fullname}}</td>
+                        <td>{{userData?.email}}</td>
+                        <td>{{userData?.contact}}</td>
+                        <td>{{userData?.department}}</td>
+                        <td>{{userData?.created_at | dateFormater}}</td>
+                        <td>{{userData?.admin_email}}</td>
+                        <td>
+                            <button class="btn"  (click)="DeleteUserOpenModal(DeleteUserModal,userData)">
+                                <fa-icon class="text-danger" icon="trash"></fa-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<ng-template let-modal #AddUserModal>
+    <div class="border" style="background-color: white">
+
+        <div class="modal-header" id="formContent">
+          <h3>
+            <b>User Registration Form</b>
+          </h3>
+          <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')"></button>
+        </div>
+
+        <div class="modal-body">
+
+            <form action="" class=""  [formGroup]="AddUserForm">
+                <div class="wrapper" id="input">
+
+                    <div class="form-floating">
+                        <input type="text" placeholder="username" class="form-control"  formControlName="username" id="username"/>
+                        <label for="username"> User Name</label>
+                    </div>
+
+                    <div class="form-floating">
+                        <input type="text" placeholder="department"class="form-control" formControlName="department" id="depatment"/>
+                        <label for="department"> Department</label>
+                    </div>
+
+                    <div class="form-floating">
+                        <input type="text" placeholder="contactnumber" class="form-control" formControlName="contactnumber" id="contactnumber"/>
+                        <label> Contact Number</label>
+                    </div>
+
+                    <div class="form-floating">
+                        <input type="text" placeholder="email-id" class="form-control" formControlName="emailid" id="emailid"/>
+                        <label> Email Id</label>
+                    </div>
+
+                    <div class="form-floating">
+                        <input type="password" placeholder="password"class="form-control" formControlName="password" id="password"/>
+                        <label> Password</label>
+                    </div>
+                   
+                    <div class="form-floating">
+                        <input type="text" placeholder="token"class="form-control" formControlName="token" id="token"/>
+                        <label> Token</label>
+                    </div>
+                    
+
+
+                </div>
+                 <!-- <div class="wrapper-two">  
+                    <div class="form-floating">
+                        <h6 class="sub-header">Departments</h6>
+                    </div><br>
+
+                    <div class="form-floating">
+                        <h6 class="font-primary me-1">Select Single Departmet</h6>
+                        <form >
+                        <div>
+                            <input type="radio" class="radio" id="department"  formControlName="department" name="department" value="Bike">
+                            <label for="Bike"> I have a bike</label><br>
+                            <input type="radio" class="radio" id="department"  formControlName="department" name="department" value="Car">
+                            <label for="Car"> I have a car</label><br>
+                            <input type="radio" class="radio" id="department"  formControlName="department" name="department" value="Boat">
+                            <label for="Boat"> I have a boat</label>
+                        </div>
+                        </form>
+                        
+                    </div>
+
+                   
+
+                    <div class="form-floating">
+                        <h6 class="font-primary me-1">Select Multiple Departments</h6>
+                        <form>
+                            <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+                            <label for="vehicle1"> I have a bike</label><br>
+                            <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
+                            <label for="vehicle2"> I have a car</label><br>
+                            <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">
+                            <label for="vehicle3"> I have a boat</label>
+                        </form>
+                    </div>
+                </div>  -->
+
+                <div class="wrapper">
+                    <button type="submit" (click)="AddUserSubmit()" >
+                        <span>Submit</span>
+                    </button>
+                </div>   
+                
+            </form>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template let-modal #EditUserModal>
+
+    <div class="border" style="background-color: white">
+
+        <div class="modal-header" id="formContent">
+          <h3>
+            <b>Edit User Details</b>
+          </h3>
+          <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')"></button>
+        </div>
+
+        <div class="modal-body">
+
+            <form action="" class=""  >
+                <div class="wrapper-two" id="input">
+
+                    <div class="form-floating">
+                        <input type="text" placeholder="userName" class="form-control"/>
+                        <label> User Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" placeholder="contactNumber" class="form-control"/>
+                        <label> Contact Number</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" placeholder="email-id" class="form-control"/>
+                        <label> Email Id</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" placeholder="password"class="form-control"/>
+                        <label> Password</label>
+                    </div>
+                    
+                    <div class="form-floating">
+                        <h6 class="sub-header">Departments</h6>
+                    </div><br>
+
+                    <div class="form-floating">
+                        <h6 class="font-primary me-1">Select Single Departmet</h6>
+                        <form>
+                            <input type="radio" class="radio" id="vehicle1" name="vehicle" value="Bike">
+                            <label for="vehicle1"> I have a bike</label><br>
+                            <input type="radio" class="radio" id="vehicle2" name="vehicle" value="Car">
+                            <label for="vehicle2"> I have a car</label><br>
+                            <input type="radio" class="radio" id="vehicle3" name="vehicle" value="Boat">
+                            <label for="vehicle3"> I have a boat</label>
+                        </form>
+                    </div>
+
+                   
+
+                    <div class="form-floating">
+                        <h6 class="font-primary me-1">Select Multiple Departments</h6>
+                        <form>
+                            <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+                            <label for="vehicle1"> I have a bike</label><br>
+                            <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
+                            <label for="vehicle2"> I have a car</label><br>
+                            <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">
+                            <label for="vehicle3"> I have a boat</label>
+                        </form>
+                    </div>
+                 </div>
+
+                <div class="wrapper">
+                    <button type="submit" class="mt-3">
+                        <span>Update</span>
+                    </button>
+                </div>
+                     
+            </form>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template let-modal #DeleteUserModal>
+    <div class="modal-body">
+        <div class="modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <h4 class="modal-title w-100">Are you sure?</h4>
+                 </div>
+                <div class="modal-body">
+                    <p>Do you really want to delete this details? This process cannot be undone.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                    data-dismiss="modal">Cancel</button>
+                    <button type="button"  class="btn danger" (click)="DeleteUser()" >Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #nodata>
+    <div class="row card card-body" id="data-card">
+        <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='init'">
+            <h4> Loading...</h4>
+        </div>
+        <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">
+            <h4> Data Not Found</h4>
+        </div>
+        <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='Error'">
+            <h4>Error While Fetching data</h4>
+        </div>
+    </div>
+</ng-template>

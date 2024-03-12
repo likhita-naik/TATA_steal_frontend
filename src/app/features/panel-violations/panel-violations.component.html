@@ -1,0 +1,163 @@
+<div class="dashboard-content">
+    <div class="page-header mb-5">
+     <h3>PPE violations</h3>
+    </div>
+    <div class="row mb-3">
+        <div class="">
+            <button class="btn primary float-end" (click)="Back()">Back</button>
+        </div>
+    </div>
+
+    <div class="row" id="violationCount">
+        <div class="col-3">
+            <div class="card analytics card-body">
+                <h5 class="text-muted">Panel</h5>
+                <h4>{{currentPanel?currentPanel:'--'}}</h4>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card analytics card-body" *ngIf="currentData!=null">
+                <h5 class="text-muted">IP Address</h5>
+                <h4>{{currentData.ip_address?currentData.ip_address:'--'}}</h4>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card analytics card-body">
+                <h5  class="text-muted">department</h5>
+                <h4>{{department?department:'--'}}</h4>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card analytics card-body">
+                <h5  class="text-muted">Sub  Area</h5>
+                <h4>{{area?area:'--'}}</h4>
+            </div>
+        </div>
+
+       
+        
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card" id="dataTable">
+                <table class="table table-bordered"style="width:100%;overflow: auto;">
+                    <thead style="text-align: center;">
+                        <tr>
+                            <th scope="col"><b>S No</b></th>
+                            <th scope="col"><b>
+                                    <fa-icon icon="image" class="font-custome me-1"></fa-icon>Image
+                                </b></th>
+                            <th scope="col"><b>
+                                    <!-- <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
+                                    Violation Type
+                                </b></th>
+                            <th scope="col"><b>
+                                    <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon>Camera Name
+                                </b></th>
+                            <!-- <th scope="col"><b>
+                                     <fa-icon icon="laptop" class="font-custome me-1"></fa-icon>Device Name
+                                </b></th> -->
+
+                            <th scope="col"><b>
+                                    <fa-icon icon="clock" class="font-custome me-1"></fa-icon>Detected Time
+                                </b></th>
+                                <th>Is Valid?</th>
+                            <!-- <th scope="col"><b>
+                                <fa-icon icon="clock" class="font-custome me-1"></fa-icon>Exit Time
+                            </b></th> -->
+
+
+
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+
+
+                        <tr *ngFor="let d of violationData|async;let i=index" style="text-align: center;">
+                            <td>{{d.SNo}}</td>
+                            <td>
+                                <!-- <single-canvas [canvas]="d"></single-canvas> -->
+
+                                <img [src]="API+'/image/'+d.imagename[0]" class="image" (click)="imageCarousal(d)">
+                                <br />
+
+                                <button *ngIf="d.imagename.length>1" class="btn mt-2" (click)="imageCarousal(d)">&nbsp;&nbsp; <fa-icon
+                                        icon="images" class="mr-1"></fa-icon> More Images &nbsp;&nbsp;</button>
+                                &nbsp;<button class="btn btn-sm default text-white mt-2"
+                                    (click)="downloadImage(API+'/image/'+d.imagename)"> Download Image
+                                    <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
+                                </button>
+                            </td>
+                            <td >
+                                <h4>{{d.analyticstype}}</h4>
+                                <div *ngIf="d.analyticstype ==='PPE'||d.analyticstype ==='RA'">
+                                    <div *ngFor="let object of d.object_data;let in=index" class="border-bottom">
+
+                                        <div>
+                                            <div class="mb-3"> {{object.violation_count}}</div>
+                                            <ul class="list-unstyled">
+                                                <li>
+                                                    <div *ngFor="let key of objectKeys(object);">
+                                                        
+                                                        <div class="items"
+                                                            *ngIf="(key==='Helmet'?object[key]==='none'?false:object[key]===false?true:false:key==='Vest'?object[key]==='no_ppe'?true:false:false)">
+                                                            <input id="item1" type="checkbox"
+                                                                [checked]="key==='Vest'?object[key]=='arc_jacket'?true:false:object[key]">
+                                                            <label for="item1">{{key}}</label>
+                                                        </div>
+
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                               {{d.camera_name?d.camera_name:'null'}}
+                                   
+                            </td>
+                        
+                            <td>
+                               {{d.timestamp}}
+                            </td>
+                            <td style="width:3rem;">
+                            <div *ngIf="!d.violation_verificaton_status;else verified" id="verify">
+                                <div class="form-check form-check-inline"id="right" >
+                                    <input type="radio" [value]=0
+                                        (change)="VerifyTrueViol($event,d)" [defaultValue]=true id="yes" class="form-check-input">
+                                    <label for="yes" class="form-check-label text-muted">Yes </label>
+                                </div>
+                                <div class="form-check form-check-inline" id="wrong">
+                                    <input type="radio"  [value]=false
+                                         (change)="VerifyFalseViol($event,d)" [defaultValue]=false id="no"
+                                        class="form-check-input">
+                                    <label for="no" class="form-check-label text-muted">No </label>
+                                </div>
+                                </div>
+                                <ng-template #verified>
+   <div class="success-badge">Verified</div>
+                                </ng-template>
+</td>
+                        </tr>
+                    </tbody>
+
+
+
+                </table>
+
+                <div class="d-flex mx-auto justify-content-center p-1">
+                    <ngb-pagination [collectionSize]="total|async" [(page)]="page" [pageSize]="pageSize"
+                        style="width: 95vw;overflow-x: auto;" (pageChange)="sliceVD()">
+                    </ngb-pagination>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

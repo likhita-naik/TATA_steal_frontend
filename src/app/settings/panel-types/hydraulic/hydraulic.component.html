@@ -1,0 +1,212 @@
+<div class="container-fluid dashboard-content mb-3 pb-3">
+    <div class="page-header mb-3">
+        <h2>Job Settings</h2>
+    </div>
+
+    <div class="row mt-2" id="info-card" *ngIf="currentData!=null">
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Job Type</h5>
+                <h5>{{currentData.type?currentData.type:'--'}}</h5>
+            </div>
+        </div>
+
+
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Job Number</h5>
+                <h5>{{currentData.jobNo?currentData.jobNo:currentData.job_no?currentData.job_no:'--'}}</h5>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Camera IP Address</h5>
+                <h5>{{currentData.ip_address?currentData.ip_address:'--'}}</h5>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Camera ID</h5>
+                <h5>{{currentData.camera_id?currentData.camera_id:'--'}}</h5>
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Sub Area</h5>
+                <h5>{{currentData.sub_area?currentData.sub_area:'--'}}</h5>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="card analytics card-body" id="data-card">
+                <h5 class="text-muted">Department</h5>
+                <h5>{{currentData.department?currentData.department:'--'}}</h5>
+            </div>
+        </div>
+    </div>
+
+
+<div class="card card-body mb-2" id="data-card">
+    <div class="row">
+        <div class="col-7">
+            <div class="">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <button *ngIf="jobType.toLowerCase()==='hydraulic'" class="me-2 ms-2 btn success"
+                                style="width:inherit;" (click)="AddNewHydroRoi()"><fa-icon icon="plus"
+                                    class="me-1"></fa-icon>Add ROI</button>
+                        
+                                <button class="me-2 btn danger" style="width:inherit;"
+                                    (click)="DeleteNewPanel()">Delete</button>
+                                    <button class="btn default-outline" style="width:inherit" (click)="RefetchCameraImage()"><fa-icon *ngIf="!loader1" icon="arrow-rotate-right" class="me-1"></fa-icon><span
+                                        class="spinner-border spinner-border-sm me-2 text-prime"
+                                        role="status"
+                                        aria-hidden="true" *ngIf="loader1"
+                                      ></span> Update Camera Feed Image</button>                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-5">
+            <!-- <button class="btn danger" *ngIf="isEdit||isChanges" (click)="SaveEditedChanges()">Save changes</button> -->
+            <div class="float-end">
+                <button class="float-end btn primary" (click)="Back()">Back</button>
+            </div>
+            <div class="float-end">
+                <!-- <button class="btn default me-2" *ngIf="(isEdit||isChanges)&&!(isAddRW||isAddPanel) "
+                    (click)="SaveEditedChanges()">Save changes</button> -->
+                <button *ngIf="((isHydrolic) && newPanelPoints.length>2)" class="btn default me-2"
+                    (click)="PanelName()">Confirm Panel</button>
+
+            </div>
+
+
+            <!-- <div class="col-1">
+                        <button class="btn default">Edit</button>
+                    </div> -->
+            <div class="col-1">
+            </div>
+        </div>
+        <!-- <div class="col-3 alert alert-secondary">Right click to confirm the roi</div> -->
+    </div>
+</div>
+
+    <div class="col-12 mb-3">
+        <div class="card card-body">
+            <div id="canvas-container" class="d-flex justify-content-center" #canvasContainer>
+                <canvas id="canvasROI" class="canvas-class" height="auto" width="auto"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <div class="card-header">
+
+
+            <h5>Lock Regions</h5>
+        </div>
+        <table class="table" *ngIf="jobType.toLowerCase()=='hydraulic'">
+            <thead>
+                <tr>
+                    <th scope="col">S.No</th>
+                    <th scope="col">Region Name</th>
+                    <!-- <th scope="col">Settings</th> -->
+                    <th> Settings</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let panels of hydrolicROIData;let i=index">
+                    <td>{{i+1}}</td>
+                    <td>
+                        {{panels.panel_id}}
+                    </td>
+
+                    <td>
+                        <button class="btn btn-sm mr-2 text-danger" (click)="isDelete(i)">Delete</button>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    <ng-template let-modal #panelNameChangeModal>
+        <div class="card">
+            <div class="card-header">
+                <h4> Change Panel No</h4>
+            </div>
+            <div class="card-body p-4">
+                <form>
+                    <input type="text" id="panel" class="form-control mb-3" [formControl]="tempPanelID">
+                    <!-- <button class="btn success ms-2 float-end" [disabled]="(tempPanelID.value=='')"
+                    (click)="ChangePanelName()" type="submit">Submit</button> -->
+                    <button class="btn danger me-2 float-end" (click)="modal.close('Cross click')">cancel</button>
+                </form>
+            </div>
+
+        </div>
+    </ng-template>
+
+
+    <ng-template let-modal #hydroNameModal>
+        <div class="card">
+            <div class="card-header">
+                <h4 class="float-start">Enter Hydraulic ROI Name</h4>
+
+                <div class="float-end">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" (change)="onChange($event)" [checked]="unallocatedJobStatus"
+                            style="color:var(--label-color);" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Unplanned Job</label>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <form>
+                    <input type="text" id="panel"
+                        [ngClass]="{'is-invalid': (hydroRoiName.invalid && hydroRoiName.touched && hydroRoiName.dirty)}"
+                        class="form-control mb-3" [formControl]="hydroRoiName">
+                    <div id="validationServerUsernameFeedback"
+                        [ngClass]="(hydroRoiName.invalid && hydroRoiName.touched && hydroRoiName.dirty)?'invalid-feedback':'visually-hidden'">
+                        Please enter roi name.
+                    </div>
+                    <button *ngIf="isHydrolic" class="btn success ms-2 float-end" [disabled]="hydroRoiName.invalid"
+                        (click)="OnAddingHydroPanel()" type="submit">Submit</button>
+
+                    <button class="btn danger me-2 float-end" (click)="modal.close('Cross click')">cancel</button>
+                </form>
+            </div>
+
+        </div>
+    </ng-template>
+
+
+
+    <ng-template let-modal #deleteModal>
+        <div class="modal-body">
+            <div class="modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header flex-column">
+                        <div class="icon-box">
+                            <i class="material-icons">&#xE5CD;</i>
+                        </div>
+                        <h4 class="modal-title w-100">Are you sure?</h4>
+                        <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you really want to delete these ROI? This process cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                            data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn danger" (click)="DeletePanel()">Delete</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>

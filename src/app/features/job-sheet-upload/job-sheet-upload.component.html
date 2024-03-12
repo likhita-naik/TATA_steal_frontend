@@ -1,0 +1,87 @@
+<div class="container-fluid">
+  <div class="page-header">
+    <h3>Jobsheet Upload</h3>
+  </div>
+
+  <div class="col-12 upload-container">
+    <div id="header" class="mb-1">
+      <span class="float-start">
+        <!-- <h2>File Upload</h2> -->
+      </span>
+      <span class="float-end">
+        <button class="btn default mb-2" (click)="SampleExcelDownload()">
+          <span
+            class="spinner-border spinner-border-sm me-1"
+            role="status"
+            aria-hidden="true"
+            *ngIf="isLoading"
+          ></span>
+
+          <fa-icon icon="download" *ngIf="!isLoading" class="me-2"></fa-icon
+          >Download Sample sheet
+        </button>
+      </span>
+    </div>
+
+    <!-- Upload  -->
+    <div class="w-100 h-100">
+      <form id="file-upload-form" class="col-12 uploader">
+        <input
+          id="file-upload"
+          type="file"
+          name="fileUpload"
+          accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+        />
+
+        <label for="file-upload" id="file-drag">
+          <img id="file-image" src="#" alt="Preview" class="hidden" />
+          <div id="start">
+            <fa-icon icon="file-arrow-up"></fa-icon>
+            <div>Select a jobsheet or drag here</div>
+            <span id="file-upload-btn" class="btn btn-primary"
+              >Select a jobsheet</span
+            >
+          </div>
+          <div id="response" class="hidden">
+            <div id="messages"></div>
+            <progress class="progress" id="file-progress" value="0">
+              <span>0</span>%
+            </progress>
+          </div>
+        </label>
+      </form>
+    </div>
+  </div>
+
+  <!--  ============================================================== -->
+  <!-- END OF DATA TABLE -->
+</div>
+
+<ng-template let-modal #errorMessage>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="modal-header flex-column">
+          <div class="icon-box">
+            <i class="material-icons">&#33;</i>
+          </div>
+          <h4 class="modal-title w-100">Limit has reached!</h4>
+          <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+        </div>
+        <div class="modal-body">
+          <p>{{ faiMessage }}</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="modal.close('Cross click')"
+            data-dismiss="modal"
+          >
+            Okay
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

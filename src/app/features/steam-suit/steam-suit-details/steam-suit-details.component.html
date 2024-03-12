@@ -1,0 +1,81 @@
+<div class="container-fluid dashboard-content">
+    <h4 class="">
+        Steam Suit Violation Details
+    </h4>
+
+    <div class="card" id="data-card">
+        <span class="float-start border-bottom pb-1 mb-1" *ngIf="!showHistory"><span class="h4">Live Violation Details</span></span>
+        <span class="float-end">
+            <div class="float-end me-3">
+                <button class="btn default-outline float-end" *ngIf="!showHistory" (click)=" GetDetails()">All Violation
+                    Details</button>
+                <button class="btn default-outline float-end" *ngIf="showHistory" (click)=" BackToLive()">Back to
+                    Live</button>
+
+                <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3"> -->
+                <span *ngIf="violationDetails!=null">
+                    <span class="float-end m-2"
+                        *ngIf="violationDetails.analytics_details.analytics_status.status=='ON'"><span
+                            class="text-muted m-1">ANALYTICS :</span> <span class="spinner-grow spinner-grow-sm me-2"
+                            style="background-color: #3FCA56;" role="status" aria-hidden="true"></span>Running</span>
+                </span>
+
+            </div>
+
+            <!-- <div class="float-end"></div> -->
+        </span>
+        <div class="card-body" id="container" style="min-height: 20px !important;" *ngIf="!showHistory">
+            <div class="" *ngIf="violationDetails!=null;else noData">
+                <div *ngFor="let violation of (violationDetails.analytics_details.analytics_details.reverse())">
+                    <div class="card-body mb-3"
+                        [ngClass]="{'running':violationDetails.analytics_details.analytics_status.status=='ON'}">
+                        <div class="container alert  alert-danger">
+                            <div>
+                                <img [src]="IP+'/STEAMVIOLATIONIMAGE/'+violation.image_name"
+                                    (click)="onImageClick(violation)" class="violation-img" alt="image">
+                            </div>
+                            <div class="d-flex justify-centent-center align-items-center">
+                                <div class="h4">
+                                    <div class="alert alert-danger">{{violation.message}}</div>
+                                    <div class="d-flex justify-centent-center align-items-center"><span
+                                            class="text-muted m-1">Time
+                                            :</span>{{violationDetails.analytics_details.timestamp.$date}}</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ng-template #noData>
+                <div class="row card card-body" id="data-card">
+                    <div class="d-flex justify-content-center align-items-center"
+                         *ngIf="dataFetchStatus=='success'">
+                        <h4> No violation details found.</h4>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center"
+                        *ngIf="dataFetchStatus=='fail'">
+                        <h4 class="text-muted"> {{responseMessage}}</h4>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center"
+                        *ngIf="dataFetchStatus=='init'">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" ></span>
+                        Loading...
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center"
+                        *ngIf="dataFetchStatus=='Error'">Error
+                        while fetching data</div>
+    
+                </div>
+            </ng-template>
+
+        </div>
+
+        <div *ngIf="showHistory">
+            <router-outlet></router-outlet>
+
+        </div>
+
+    </div>
+
+    <ng-template #elsep></ng-template>

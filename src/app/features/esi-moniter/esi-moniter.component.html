@@ -1,0 +1,5162 @@
+<div
+  class="container-fluid dashboard-content mb-4 pb-4"
+  id="page"
+  style="max-height: 100%; position: relative"
+>
+  <div
+    class="data-container"
+    [ngClass]="isHistory ? 'data-container2' : 'data-container'"
+  >
+    <div class="mb-1">
+      <div>
+        <h4 *ngIf="!isHistory" class="page-header">ESI Monitor</h4>
+      </div>
+
+      <div class="row">
+        <div class="mb-2">
+          <div *ngIf="isHistory">
+            <h4>Planned Job Details</h4>
+
+            <div class="sub-header mb-2" *ngIf="isHistory">
+              <div class="row">
+                <span class="float-start h5"
+                  ><span>Shutdown Name :</span>
+                  <b>{{ queryParams.shutdownName }}</b></span
+                ><span class="float-end"
+                  ><span></span>{{ queryParams.time | dateFormater }}</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="" *ngIf="!isHistory">
+            <div class="float-start">
+              <div class="header" *ngIf="!isHistory">
+                <h4 class="sub-header">
+                  {{
+                    currentShutdown
+                      ? currentShutdown
+                      : shutdownInfo.job_sheet_name
+                  }}
+                </h4>
+                <span class="edit me-2" (click)="OpenTitleEditModal(editTitle)"
+                  ><fa-icon
+                    icon="pen-to-square"
+                    class="custome-font h5 ms-1"
+                  ></fa-icon
+                ></span>
+              </div>
+              <div class="page-header mb-2" *ngIf="isHistory">
+                <div class="row">
+                  <span class="float-start h4"
+                    ><b>{{ queryParams.shutdownName }}</b></span
+                  ><span class="float-end">{{
+                    queryParams.time | dateFormater
+                  }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="float-end">
+              <span class="d-flex justify-content-center align-items-center">
+                <span
+                  class="ms-2 d-flex justify-centent-center align-items-center btn default-outline"
+                  #settings
+                  (click)="overlay.toggle($event)"
+                  ><fa-icon
+                    icon="cog"
+                    style="cursor: pointer"
+                    class="text-muted"
+                  ></fa-icon>
+                </span>
+                <p-overlayPanel #overlay [appendTo]="'body'">
+                  <!-- Customize your overlay content here -->
+                  <div [formGroup]="isShowUnplanned">
+                    <span class="d-flex justify-content-between"
+                      ><span>Show unplanned jobs notifications</span>
+                      <span class="form-check form-switch ms-2">
+                        <input
+                          class="form-check-input"
+                          formControlName="notification"
+                          type="checkbox"
+                          role="switch"
+                          [checked]="true"
+                          id="flexSwitchCheckDefault"
+                        />
+                      </span>
+                    </span>
+                    <span class="d-flex justify-content-between"
+                      ><span>Unplanned notification sound</span>
+                      <span class="form-check form-switch ms-2">
+                        <input
+                          class="form-check-input"
+                          formControlName="alertSound"
+                          type="checkbox"
+                          role="switch"
+                          [checked]="true"
+                          id="flexSwitchCheckDefault"
+                        />
+                      </span>
+                    </span>
+                  </div>
+                </p-overlayPanel>
+              </span>
+            </div>
+            <div class="float-end">
+              <!-- <button class="btn default mr-2 float-end">Download All job sheet data</button> -->
+              <button
+                class="btn default me-2 float-end"
+                [disabled]="userType ? userType !== 'admin' : true"
+                (click)="modalOpen(resetJobSheet)"
+              >
+                Reset Job sheet
+              </button>
+            </div>
+            <div class="float-end">
+              <!-- <button class="btn default mr-2 float-end">Download All job sheet data</button> -->
+              <button
+                *ngIf="!isActive"
+                [disabled]="userType ? userType !== 'admin' : true"
+                class="btn primary me-2 float-end"
+                (click)="StartAppModal(startAppModal)"
+              >
+                Start ESI Application
+              </button>
+              <button
+                *ngIf="isActive"
+                class="btn btn-sm danger me-2 float-end"
+                (click)="StopAppModal(stopAppModal)"
+                [disabled]="userType ? userType !== 'admin' : true"
+              >
+                Stop ESI Application
+              </button>
+              <button
+                *ngIf="!isActive2"
+                class="float-end me-2 btn primary"
+                [disabled]="userType ? userType !== 'admin' : true"
+                (click)="StartAppModal(startHydroAppModal)"
+              >
+                <!-- <fa-icon icon="plus" class="me-2"></fa-icon> -->
+                Start Hydraulic Application
+              </button>
+              <button
+                *ngIf="isActive2"
+                [disabled]="userType ? userType !== 'admin' : true"
+                class="float-end me-2 btn btn-sm danger"
+                (click)="StopAppModal(stopHydroAppModal)"
+              >
+                <!-- <fa-icon icon="plus" class="me-2"></fa-icon> -->
+                Stop Hydraulic Application
+              </button>
+            </div>
+            <div class="float-start me-2 ms-2 mt-2 mb-2">
+              <div class="d-flex justify-centent-center align-items-center">
+                <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3"> -->
+                <span
+                  *ngIf="isActive && !isHistory"
+                  class="d-flex justify-centent-center align-items-center"
+                >
+                  <span
+                    class="spinner-grow spinner-grow-sm me-2"
+                    style="background-color: #3fca56"
+                    role="status"
+                    aria-hidden="true"
+                  ></span
+                  >Live</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row row-offset-2">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-sm-12">
+          <div class="card analytics card-body" id="with-shadow">
+            <div class="d-flex align-items-center justify-content-around">
+              <div class="font-primary">
+                <h4>Total Jobs</h4>
+              </div>
+              <h2>
+                {{
+                  jobsStatus.total_panel_count
+                    ? jobsStatus.total_panel_count
+                    : 0
+                }}
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-sm-12">
+          <div class="card analytics card-body" id="with-shadow">
+            <div class="d-flex align-items-center justify-content-around">
+              <span class="font-primary">
+                <h4 class="h4">Completed Jobs</h4>
+              </span>
+              <span>
+                <h2 class="centered">
+                  {{
+                    jobsStatus.processed_count ? jobsStatus.processed_count : 0
+                  }}
+                </h2>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-sm-12">
+          <div class="card analytics card-body" id="with-shadow">
+            <div class="d-flex align-items-center justify-content-around">
+              <span class="font-primary">
+                <span class="h4">Working Jobs</span>
+              </span>
+              <div>
+                <span>
+                  <span class="h4">{{
+                    jobsStatus.not_processed ? jobsStatus.not_processed : 0
+                  }}</span>
+                </span>
+                <span class="ms-1"
+                  >(<span class="text-muted">Rack out :</span
+                  ><b>
+                    {{
+                      jobsStatus.rack_out_count ? jobsStatus.rack_out_count : 0
+                    }}</b
+                  >)</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="card-header">
+      <h4 class="float-start text-muted">Jobsheet Details</h4>
+    </div> -->
+    <div class="row mb-2">
+      <div class="col-9">
+        <div class="d-flex flex-reverse align-items-center" *ngIf="!isHistory">
+          <div class="">
+            <div class="container p-3">
+              <fa-icon icon="filter"></fa-icon>
+            </div>
+          </div>
+
+          <div
+            class="col-xl-12 col-md-12 col-xs-12 col-lg-12 col-sm-12 me-2"
+            id="filter"
+          >
+            <div class="row">
+              <span class="col-2">
+                <p-treeSelect
+                  containerStyleClass="w-100 me-2 ms-2"
+                  [filter]="true"
+                  [(ngModel)]="selectedJobType"
+                  [ngModelOptions]="{ standalone: true }"
+                  [options]="jobTypeList | async"
+                  (onNodeSelect)="OnTypeSelect($event)"
+                  placeholder="Select Job Type"
+                ></p-treeSelect>
+              </span>
+              <span class="col-2">
+                <p-treeSelect
+                  containerStyleClass="w-100 me-2 ms-2"
+                  [filter]="true"
+                  [(ngModel)]="selectedJobNo"
+                  [ngModelOptions]="{ standalone: true }"
+                  [options]="JobNoList | async"
+                  (onNodeSelect)="OnJobNoSelect($event)"
+                  placeholder="Select Job No"
+                ></p-treeSelect>
+              </span>
+
+              <span class="col-2">
+                <p-treeSelect
+                  containerStyleClass="w-100 me-2"
+                  [filter]="true"
+                  [(ngModel)]="depSelected"
+                  [ngModelOptions]="{ standalone: true }"
+                  [options]="departments | async"
+                  (onNodeSelect)="OndepSelect($event)"
+                  placeholder="Select Department"
+                ></p-treeSelect>
+              </span>
+
+              <span class="col-2">
+                <p-treeSelect
+                  class="w-full"
+                  [filter]="true"
+                  containerStyleClass="w-100 me-2"
+                  [(ngModel)]="selectedIp"
+                  [ngModelOptions]="{ standalone: true }"
+                  [options]="ips | async"
+                  (onNodeSelect)="OnIpSelect($event)"
+                  placeholder="Select Camera IP"
+                ></p-treeSelect>
+              </span>
+
+              <span class="col-2" *ngIf="!isHidePanel">
+                <p-treeSelect
+                  containerStyleClass="w-100 me-2"
+                  [(ngModel)]="selectedPanel"
+                  [filter]="true"
+                  [ngModelOptions]="{ standalone: true }"
+                  [options]="panelNumbers | async"
+                  (onNodeSelect)="OnPanelSelect($event)"
+                  placeholder="Select Feeder Number"
+                ></p-treeSelect>
+              </span>
+
+              <span class="col-xl-2">
+                <button
+                  class="btn default-outline ms-2"
+                  *ngIf="
+                    depSelected ||
+                    panelSelected ||
+                    selectedIp ||
+                    jobTypeSelected ||
+                    selectedJobNo ||
+                    selectedJobType
+                  "
+                  (click)="ResetFilters()"
+                >
+                  &times; Cancel Filters
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-12 col-xs-12 col-sm-12 col-lg-6 my-auto">
+        <div class="d-flex justify-content-end align-items-center">
+          <button
+            *ngIf="!isHistory"
+            class="btn default ms-2 me-4"
+            (click)="JobsheetDownload()"
+          >
+            <span
+              class="spinner-border spinner-border-sm me-1"
+              role="status"
+              aria-hidden="true"
+              *ngIf="excelLoad"
+            ></span>
+
+            <fa-icon icon="download" *ngIf="!excelLoad" class="me-2"></fa-icon>
+            Jobsheet
+          </button>
+          <button
+            class="btn default-outline ms-2"
+            (click)="RefreshData()"
+            *ngIf="!isHistory"
+          >
+            <fa-icon icon="rotate" class="me-2"></fa-icon>Refetch Job Details
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- table starts -->
+
+    <div class="card p-1 mb-2" style="bottom: 0" id="data-card">
+      <div class="row">
+        <div class="col-8">
+          <div class="d-flex justify-content-space-between">
+            <div class="me-1 ms-1">
+              <span class="wrapper-two">
+                <span class="d-flex align-items-center m-1">
+                  <span class="job-notDetected-span me-1"></span>Feeder number
+                  is not detected</span
+                >
+                <span class="d-flex align-items-center m-1">
+                  <span class="job-inprogress-span me-1"></span>IRRD Machine is
+                  on (working)</span
+                >
+
+                <span
+                  style="position: relative"
+                  class="d-flex align-items-center m-1"
+                >
+                  <span class="job-edited-span me-1"></span>Job is about to
+                  start,but panel is not isolated
+                  <!-- <span class="text-custome me-1 icon-circle-medium "
+                    pTooltip="Job is about to start,but panel is not in isolated state" [tooltipPosition]="'bottom'"
+                    tooltipStyleClass="toolTip"><b>i</b>
+                  </span> -->
+                </span>
+                <span
+                  style="position: relative"
+                  class="d-flex align-items-center m-1"
+                >
+                  <span class="job-isolated-span me-1"></span>Job is about to
+                  start and panel is isolated
+                </span>
+              </span>
+            </div>
+
+            <span
+              class="d-flex align-items-center"
+              *ngIf="isActive && !isHistory"
+              style="cursor: pointer"
+              (click)="getFlasherLiveLog(flasherLiveTemplate)"
+            >
+              <span class="danger-badge"
+                ><b>Magnetic Sticker Violations</b>
+              </span>
+            </span>
+            <span
+              class="d-flex align-items-center"
+              *ngIf="!isHistory"
+              style="cursor: pointer"
+              (click)="L1ModalOpen(l1DataTable, 'xl')"
+            >
+              <span class="info-badge"><b>L1 Data</b> </span>
+            </span>
+            <!-- </span> -->
+          </div>
+        </div>
+        <div class="col-4 my-auto">
+          <div class="row">
+            <div
+              class="d-flex justify-content-between align-items-center"
+              [ngClass]="{ 'justify-content-end': isHistory }"
+            >
+              <button
+                *ngIf="isHistory"
+                class="btn default ms-2 me-4"
+                (click)="JobsheetDownload()"
+              >
+                <span
+                  class="spinner-border spinner-border-sm me-1"
+                  role="status"
+                  aria-hidden="true"
+                  *ngIf="excelLoad"
+                ></span>
+
+                <fa-icon
+                  icon="download"
+                  *ngIf="!excelLoad"
+                  class="me-2"
+                ></fa-icon>
+                Jobsheet
+              </button>
+
+              <div class="me-1 ms-1" *ngIf="!isHistory">
+                <button
+                  (click)="CameraAddModal(cameraAddModal)"
+                  class="btn default float-start"
+                >
+                  <fa-icon icon="plus" class="me-1"></fa-icon>Job
+                </button>
+              </div>
+              <div class="ms-1 me-1">
+                <div
+                  class="btn default-outline"
+                  *ngIf="!isHistory"
+                  (click)="ToUnplannedPage()"
+                  target="_blank"
+                >
+                  <fa-icon icon="arrow-up-long"></fa-icon> Unplanned jobs
+                </div>
+              </div>
+              <!-- <div class="ms-1 me-1">
+                <div
+                  class="btn default-outline"
+                  *ngIf="!isHistory"
+                  (click)="modalOpen(HTDataAddModal)"
+                  target="_blank"
+                >
+                  <fa-icon icon="arrow-up-long"></fa-icon> Manual addition
+                </div>
+              </div> -->
+              <div class="w-50 me-2">
+                <div class="w-100">
+                  <ng-multiselect-dropdown
+                    [placeholder]="&nbsp;'Hide Column' &nbsp;"
+                    [settings]="dropdownSettings"
+                    [data]="dataHeaders"
+                    [(ngModel)]="columns"
+                    (onSelect)="onHideColumn($event)"
+                    (onDeSelect)="onShowColumn($event)"
+                  >
+                  </ng-multiselect-dropdown>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="data-card" id="data-card">
+      <ng-scrollbar
+        #scrollable
+        style="width: 100% !important"
+        track="all"
+        pointerEventsMethod="scrollbar"
+        [autoHeightDisabled]="false"
+        [disabled]="false"
+      >
+        <div class="" id="dataTable">
+          <!-- ... -->
+
+          <table
+            class="table-sm me-2"
+            style="width: 100%; overflow: auto; border-spacing: 0px 10px"
+          >
+            <thead class="headers" style="background: #f8f9fa !important">
+              <tr>
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(0) >= 0)"
+                >
+                  Job No.
+                  <span [ngClass]="['pointer', isDesc ? 'desc' : 'asc']"></span>
+                </th>
+
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(25) >= 0)"
+                >
+                  Job Type
+                </th>
+
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(29) >= 0)"
+                >
+                  Camera ID
+                </th>
+
+                <th
+                  *ngIf="!(selectedColumn.indexOf(26) >= 0)"
+                  rowspan="2"
+                  scope="col"
+                >
+                  Department
+                </th>
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(2) >= 0)"
+                  rowspan="2"
+                  (click)="isDesc = !isDesc"
+                >
+                  Sub Area
+                </th>
+                <th
+                  scope="col"
+                  width="2em"
+                  *ngIf="!(selectedColumn.indexOf(3) >= 0)"
+                  rowspan="2"
+                  (click)="isDesc = !isDesc"
+                >
+                  Job Description
+                </th>
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(5) >= 0)"
+                  rowspan="2"
+                  (click)="isDesc = !isDesc"
+                >
+                  No of Isolating Points
+                </th>
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(6) >= 0)"
+                  rowspan="2"
+                  (click)="isDesc = !isDesc"
+                >
+                  Isolating Location
+                </th>
+                <th
+                  *ngIf="!(selectedColumn.indexOf(27) >= 0)"
+                  rowspan="2"
+                  scope="col"
+                >
+                  Switch Board Name
+                </th>
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(4) >= 0)"
+                  (click)="isDesc = !isDesc"
+                >
+                  Feeder Number
+                </th>
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(7) >= 0)"
+                  (click)="isDesc = !isDesc"
+                >
+                  IP Address
+                </th>
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(28) >= 0)"
+                >
+                  Tag Name
+                  <br />
+                </th>
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(8) >= 0)"
+                  (click)="isDesc = !isDesc"
+                >
+                  Job Status
+                </th>
+
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(18) >= 0)"
+                >
+                  Power Status
+                </th>
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(17) >= 0)"
+                >
+                  Magnetic Sticker
+                </th>
+                <th
+                  [attr.colspan]="roHeaderCount"
+                  *ngIf="roHeaderCount !== 0"
+                  scope="col"
+                  class="border-start border-end bg-warning bg-ro text-dark"
+                >
+                  RO Details
+                </th>
+                <th
+                  [attr.colspan]="riHeaderCount"
+                  scope="col"
+                  *ngIf="riHeaderCount !== 0"
+                  class="border-end bg-ri text-dark"
+                >
+                  RI Details
+                </th>
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(24) >= 0)"
+                  [attr.rowspan]="2"
+                >
+                  Not Recognized
+                </th>
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(14) >= 0)"
+                  [attr.rowspan]="2"
+                >
+                  PPE Violations
+                </th>
+                <th
+                  scope="col"
+                  [attr.rowspan]="2"
+                  *ngIf="!(selectedColumn.indexOf(30) >= 0)"
+                >
+                  Rack History
+                </th>
+
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(16) >= 0)"
+                  [attr.rowspan]="2"
+                  (click)="isDesc = !isDesc"
+                >
+                  Edit
+                </th>
+                <th scope="col" [attr.rowspan]="2">Manual Data Addition</th>
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(15) >= 0)"
+                >
+                  Remark
+                </th>
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(31) >= 0) && !isHistory"
+                >
+                  Delete Panel
+                </th>
+                <th
+                  scope="col"
+                  rowspan="2"
+                  *ngIf="!(selectedColumn.indexOf(32) >= 0) && !isHistory"
+                >
+                  Delete Job
+                </th>
+              </tr>
+              <tr>
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(9) >= 0)"
+                  class="border-start border-end"
+                >
+                  RO Time
+                </th>
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(10) >= 0)"
+                  class="border-start border-end"
+                >
+                  RO Method
+                </th>
+
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(12) >= 0)"
+                  class="border-start border-end"
+                >
+                  Tagging
+                </th>
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(13) >= 0)"
+                  class="border-start border-end"
+                >
+                  Locking
+                </th>
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(20) >= 0)"
+                  class="border-start border-end"
+                >
+                  5 Meter Violation
+                </th>
+                <!-- <th scope="col" *ngIf="!(selectedColumn.indexOf(15)>=0)" class="border-start border-end"> Remark </th> -->
+
+                <th
+                  scope="col"
+                  *ngIf="!(selectedColumn.indexOf(19) >= 0)"
+                  class="border-start border-end"
+                >
+                  RI Time
+                </th>
+
+                <th scope="col" *ngIf="!(selectedColumn.indexOf(21) >= 0)">
+                  RI Method
+                </th>
+
+                <th scope="col" *ngIf="!(selectedColumn.indexOf(22) >= 0)">
+                  UnTagging
+                </th>
+                <th scope="col" *ngIf="!(selectedColumn.indexOf(23) >= 0)">
+                  UnLocking
+                </th>
+                <th scope="col" *ngIf="!(selectedColumn.indexOf(20) >= 0)">
+                  5 Meter Violation
+                </th>
+                <!-- <th scope="col" *ngIf="!(selectedColumn.indexOf(15)>=0)" class="border-end"> Remark </th> -->
+              </tr>
+              <!-- <tr rowspan="2">
+              </tr> -->
+            </thead>
+            <tbody *ngIf="(jobsheetData | async).length > 0; else noData">
+              <tr
+                *ngFor="let data of jobsheetData | async; let i = index"
+                (click)="SetSelectedRow(i)"
+                [ngClass]="{
+                  inprogress: data.live_status,
+                  edited: data.exception_status && !data.live_status,
+                  highlight:
+                    data?.type == 'HT'
+                      ? data?.data?.panel_data?.panel_id == 'NA'
+                      : false,
+                  break: data?.isbreak,
+                  isolated: !data.live_status && data.sticker_status_isolation,
+                  active: highlightedRow == i
+                }"
+              >
+                <td *ngIf="!(selectedColumn.indexOf(0) >= 0)">
+                  <div>{{ data?.job_no }}</div>
+                </td>
+                <td *ngIf="!(selectedColumn.indexOf(25) >= 0)">
+                  <div>{{ data?.type }}</div>
+                </td>
+                <td *ngIf="!(selectedColumn.indexOf(29) >= 0)">
+                  <div>
+                    {{ data?.data.camera_id ? data.data.camera_id : "---" }}
+                  </div>
+                </td>
+
+                <td *ngIf="!(selectedColumn.indexOf(26) >= 0)">
+                  <div
+                    (click)="selectEditField(EditField, data, 'department')"
+                    class="editable-text"
+                  >
+                    {{ data?.department ? data.department : "---" }}
+                  </div>
+                </td>
+                <td *ngIf="!(selectedColumn.indexOf(2) >= 0)">
+                  <div
+                    (click)="selectEditField(EditField, data, 'sub_area')"
+                    class="editable-text"
+                  >
+                    {{ data?.sub_area ? data.sub_area : "---" }}
+                  </div>
+                </td>
+                <td *ngIf="!(selectedColumn.indexOf(3) >= 0)">
+                  <div
+                    style="text-overflow: ellipsis !important"
+                    class="editable-text"
+                    (click)="
+                      selectEditField(EditField, data, 'job_description')
+                    "
+                  >
+                    <div class="">
+                      {{ data?.job_description ? data.job_description : "---" }}
+                    </div>
+                  </div>
+                </td>
+
+                <td *ngIf="!(selectedColumn.indexOf(5) >= 0)">
+                  {{ data?.no_of_isolating_points }}
+                </td>
+                <td *ngIf="!(selectedColumn.indexOf(6) >= 0)">
+                  {{ data?.isolating_location }}
+                </td>
+                <td *ngIf="!(selectedColumn.indexOf(27) >= 0)">
+                  <div
+                    *ngIf="data?.type == 'HT'; else noHT"
+                    class="editable-text"
+                    (click)="selectEditField(EditField, data, 'board')"
+                  >
+                    {{ data?.board ? data.board : "---" }}
+                  </div>
+                </td>
+
+                <td *ngIf="!(selectedColumn.indexOf(4) >= 0)">
+                  <div class="div" *ngIf="data?.type == 'HT'; else common_no">
+                    {{ data?.data?.panel_data?.panel_id }}<br />
+                  </div>
+                  <ng-template #common_no>{{ data?.common_no }}</ng-template>
+                </td>
+                <td
+                  *ngIf="!(selectedColumn.indexOf(7) >= 0)"
+                  tyle="width:6rem !important"
+                >
+                  <div class="column-flex">
+                    <span>
+                      {{
+                        data.ip_address ? data.ip_address : "--"
+                      }}&nbsp;&nbsp;</span
+                    >
+                  </div>
+                </td>
+                <td *ngIf="!(selectedColumn.indexOf(28) >= 0)">
+                  <div
+                    *ngIf="data?.type == 'HT'; else noHT"
+                    class="editable-text"
+                    (click)="selectEditField(EditField, data, 'tagname')"
+                  >
+                    {{ data.tagname ? data.tagname : "---" }}
+                  </div>
+                </td>
+                <td *ngIf="!(selectedColumn.indexOf(8) >= 0)">
+                  <div
+                    class="d-flex justify-centent-center align-items-center"
+                    *ngIf="
+                      data.riro_data != null && data.riro_data.length !== 0
+                    "
+                  >
+                    <div
+                      *ngIf="data.type.toLowerCase() == 'ht'"
+                      [ngClass]="{
+                        'text-success': data?.data?.panel_data?.panel_status,
+                        'info-text': !data?.data?.panel_data?.panel_status,
+                        'text-warning':
+                          (data.riro_data[0] != null
+                            ? data.riro_data[0].rack_process == 'rack_out'
+                            : false) && !data?.data?.panel_data?.panel_status
+                      }"
+                    >
+                      <span>
+                        {{
+                          data?.data?.panel_data?.panel_status
+                            ? "Completed"
+                            : data.riro_data[0] != null
+                            ? data.riro_data[0].rack_process == "rack_out"
+                              ? "Work
+                      In Progress"
+                              : "Pending"
+                            : "Pending"
+                        }}
+                      </span>
+                    </div>
+                    &nbsp;&nbsp;
+
+                    <div
+                      *ngIf="
+                        data.type.toLowerCase() == 'hydraulic' ||
+                        data.type.toLowerCase() == 'pneumatic'
+                      "
+                    >
+                      <div
+                        *ngIf="false"
+                        [ngClass]="
+                          data.riro_data[0].panel_status
+                            ? 'success-badge'
+                            : 'info-badge'
+                        "
+                      >
+                        <!-- {{data?.hydraulic_data[0].panel_status?'Completed':'Pending'}} -->
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td *ngIf="!(selectedColumn.indexOf(18) >= 0)">
+                  <div
+                    style="width: 6rem"
+                    class=""
+                    [ngClass]="{
+                      'text-success': data.isolation_status == 'isolated',
+                      'text-danger': data.isolation_status == 'live',
+                      'info-text': data.isolation_status == null
+                    }"
+                  >
+                    {{
+                      data.isolation_status ? data.isolation_status : "Unknown"
+                    }}
+                  </div>
+                </td>
+
+                <td
+                  *ngIf="!(selectedColumn.indexOf(17) >= 0)"
+                  class="border-end"
+                >
+                  <div
+                    *ngIf="
+                      data.riro_data !== null && data.riro_data.length !== 0
+                    "
+                  >
+                    <div
+                      *ngIf="data.type == 'HT' || data.type == 'LT'; else noHT"
+                    >
+                      <div *ngIf="data.riro_data[1] != null; else riro1">
+                        <div
+                          *ngIf="
+                            data.riro_data[1].magnetic_flasher != null;
+                            else elsep
+                          "
+                          class="column-flex"
+                          style="width: 8rem"
+                        >
+                          <div
+                            style="width: 5rem"
+                            (click)="
+                              FlasherImage(data.riro_data[1], Flasher, data)
+                            "
+                            *ngIf="
+                              data.riro_data[1].magnetic_flasher.status != null;
+                              else elsep
+                            "
+                            [ngClass]="{
+                              'success-badge':
+                                data.riro_data[1].magnetic_flasher.status ==
+                                'yes',
+                              'danger-badge':
+                                data.riro_data[1].magnetic_flasher.status ==
+                                'no'
+                            }"
+                          >
+                            <fa-icon
+                              class="me-2"
+                              icon="image"
+                              *ngIf="
+                                data.riro_data[1].magnetic_flasher.flasher_image
+                              "
+                            >
+                            </fa-icon>
+                            {{
+                              data.riro_data[1].magnetic_flasher.status == "yes"
+                                ? "Yes"
+                                : "No"
+                            }}
+                          </div>
+                          <br />
+                          <span
+                            class="mt-1"
+                            *ngIf="
+                              data.riro_data[1].magnetic_flasher.status == 'yes'
+                            "
+                          >
+                            {{
+                              data.riro_data[1].magnetic_flasher.flasher_time
+                                ? (data.riro_data[1].magnetic_flasher
+                                    .flasher_time | dateFormater)
+                                : ""
+                            }}</span
+                          >
+                        </div>
+                      </div>
+                      <ng-template #riro1>
+                        <div *ngIf="data.riro_data[0] != null; else noFlasher">
+                          <div
+                            *ngIf="
+                              data.riro_data[0].magnetic_flasher != null;
+                              else elsep
+                            "
+                            style="width: 8rem"
+                            class="column-flex"
+                          >
+                            <div
+                              style="width: 5rem; cursor: pointer"
+                              (click)="
+                                FlasherImage(data.riro_data[0], Flasher, data)
+                              "
+                              *ngIf="
+                                data.riro_data[0].magnetic_flasher.status !=
+                                  null;
+                                else elsep
+                              "
+                              [ngClass]="{
+                                'success-badge':
+                                  data.riro_data[0].magnetic_flasher.status ==
+                                  'yes',
+                                'danger-badge':
+                                  data.riro_data[0].magnetic_flasher.status ==
+                                  'no'
+                              }"
+                            >
+                              <fa-icon
+                                class="me-2"
+                                icon="image"
+                                *ngIf="
+                                  data.riro_data[0].magnetic_flasher
+                                    .flasher_image
+                                "
+                              >
+                              </fa-icon>
+                              {{
+                                data.riro_data[0].magnetic_flasher.status ==
+                                "yes"
+                                  ? "Yes"
+                                  : "No"
+                              }}
+                            </div>
+                            <br />
+                            <span
+                              class="mt-1"
+                              *ngIf="
+                                data.riro_data[0].magnetic_flasher.status ==
+                                'yes'
+                              "
+                            >
+                              {{
+                                data.riro_data[0].magnetic_flasher.flasher_time
+                                  ? (data.riro_data[0].magnetic_flasher
+                                      .flasher_time | dateFormater)
+                                  : ""
+                              }}</span
+                            >
+
+                            <ng-template #elsep>---</ng-template>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <ng-template #noFlasher>---</ng-template>
+                    </div>
+                  </div>
+                </td>
+                <td
+                  *ngIf="!(selectedColumn.indexOf(9) >= 0)"
+                  class="border-start border-end"
+                >
+                  <div
+                    *ngIf="data.type == 'HT' || data.type == 'LT'; else elseHT"
+                  >
+                    <div *ngIf="data.riro_data[0] != null; else elsep">
+                      <div
+                        *ngIf="
+                          data.riro_data[0].rack_method != null;
+                          else elsep
+                        "
+                      >
+                        <div
+                          *ngIf="data.riro_data[0].rack_process == 'rack_out'"
+                        >
+                          <div
+                            class="mt-2"
+                            style="width: 8rem"
+                            *ngIf="
+                              data.riro_data[0].rack_process != null;
+                              else elsep
+                            "
+                          >
+                            <span>{{
+                              data.riro_data[0].irrd_in_time | dateFormater
+                            }}</span>
+                            <br />- <br /><span>{{
+                              data.riro_data[0].irrd_out_time | dateFormater
+                            }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <ng-template #elseHT>
+                    <div *ngIf="data.type == 'conveyor'">
+                      <button
+                        class="btn default-outline"
+                        (click)="ConveyorImage(conveyorImg, data, 'Conveyor')"
+                        *ngIf="data.type == 'conveyor'"
+                      >
+                        conveyor Image
+                      </button>
+                    </div>
+                  </ng-template>
+                  <div
+                    class="text-gray-medium"
+                    *ngIf="
+                      data.type.toLowerCase() == 'hydraulic' ||
+                      data.type.toLowerCase() == 'pneumatic'
+                    "
+                  >
+                    <b>NA</b>
+                  </div>
+                </td>
+                <td
+                  *ngIf="!(selectedColumn.indexOf(10) >= 0)"
+                  class="border-start border-end"
+                >
+                  <div
+                    *ngIf="data.type == 'HT' || data.type == 'LT'; else noHT"
+                  >
+                    <div *ngIf="data.riro_data[0] != null; else elsep">
+                      <div
+                        *ngIf="
+                          data.riro_data[0].rack_method != null;
+                          else elsep
+                        "
+                      >
+                        <div
+                          class=""
+                          *ngIf="
+                            data.riro_data[0].rack_method != null;
+                            else elsep
+                          "
+                          (click)="
+                            data.riro_data[0].riro_key_id
+                              ? selectEditField(
+                                  EditRiroField,
+                                  data.riro_data[0],
+                                  'rack_method'
+                                )
+                              : ''
+                          "
+                        >
+                          <div
+                            [ngClass]="
+                              data.riro_data[0].rack_method === 'automatic'
+                                ? 'success-badge'
+                                : 'danger-badge'
+                            "
+                            style="width: 8rem; cursor: pointer"
+                          >
+                            <fa-icon icon="image" class="me-2"></fa-icon>
+                            {{
+                              data.riro_data[0].rack_method
+                                ? data.riro_data[0].rack_method
+                                : "---"
+                            }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td
+                  scope="col"
+                  id="success"
+                  *ngIf="!(selectedColumn.indexOf(12) >= 0)"
+                  class="border-start border-end"
+                >
+                  <div
+                    *ngIf="data.type == 'HT' || data.type == 'LT'; else noHT"
+                  >
+                    <div *ngIf="data.riro_data[0] != null; else elsep">
+                      <div
+                        *ngIf="data.riro_data[0].tag != null; else elsep"
+                        (click)="
+                          data.riro_data[0].riro_key_id
+                            ? selectRiroEditField(
+                                EditRiroField,
+                                data.riro_data[0],
+                                'tag'
+                              )
+                            : ''
+                        "
+                      >
+                        <div
+                          class=""
+                          *ngIf="data.riro_data[0].tag != null; else elsep"
+                          [ngClass]="{
+                            'warning-badge':
+                              data.riro_data[0].tag == 'tag' &&
+                              !data.riro_data[0].within_15_min &&
+                              data.riro_data[0].within_15_min != null,
+                            'danger-badge': data.riro_data[0].tag == 'untag',
+                            'success-badge':
+                              data.riro_data[0].tag == 'tag' &&
+                              data.riro_data[0].within_15_min &&
+                              data.riro_data[0].within_15_min != null
+                          }"
+                          style="width: 6rem; cursor: pointer"
+                        >
+                          <fa-icon class="me-2" icon="image"></fa-icon>
+                          {{ data.riro_data[0].tag }}
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #elsep>---</ng-template>
+                  </div>
+                </td>
+
+                <td
+                  scope="col"
+                  id="success"
+                  *ngIf="!(selectedColumn.indexOf(13) >= 0)"
+                  class="border-start border-end w-full"
+                >
+                  <div
+                    *ngIf="
+                      data.type == 'HT' || data.type == 'LT';
+                      else elsePart
+                    "
+                  >
+                    <div *ngIf="data.riro_data[0] != null; else elsep">
+                      <tr
+                        (click)="
+                          data.riro_data[0].riro_key_id
+                            ? selectRiroEditField(
+                                EditRiroField,
+                                data.riro_data[0],
+                                'lock'
+                              )
+                            : ''
+                        "
+                      >
+                        <div
+                          class=""
+                          *ngIf="data.riro_data[0].lock != null; else elsep"
+                        >
+                          <div
+                            style="width: 6rem; cursor: pointer"
+                            [ngClass]="{
+                              'warning-badge':
+                                data.riro_data[0].lock == 'lock' &&
+                                !data.riro_data[0].within_15_min &&
+                                data.riro_data[0].within_15_min != null,
+                              'danger-badge':
+                                data.riro_data[0].lock == 'unlock',
+                              'success-badge':
+                                data.riro_data[0].lock == 'lock' &&
+                                data.riro_data[0].within_15_min &&
+                                data.riro_data[0].within_15_min != null
+                            }"
+                          >
+                            <fa-icon class="me-2" icon="image"></fa-icon
+                            >{{ data.riro_data[0].lock }}
+                          </div>
+                        </div>
+                        <ng-template #elsep>---</ng-template>
+                      </tr>
+                    </div>
+                  </div>
+                  <ng-template #elsePart>
+                    <div
+                      style="width: 8rem !important; cursor: pointer"
+                      *ngIf="
+                        data.type.toLowerCase() == 'hydraulic' ||
+                        data.type.toLowerCase() == 'pneumatic'
+                      "
+                    >
+                      <button
+                        *ngIf="
+                          data.data?.hydraulic_data &&
+                            data.data.hydraulic_data.length > 0;
+                          else noData
+                        "
+                        class="btn default-outline btn-sm w-100"
+                        (click)="ConveyorImage(conveyorImg, data, 'Lock')"
+                      >
+                        <fa-icon icon="image" class="me-1"></fa-icon> Lock Image
+                      </button>
+                    </div>
+                    <div *ngIf="data.type.toLowerCase() == 'conveyor'">NA</div>
+                  </ng-template>
+                  <ng-template #noData>---</ng-template>
+                </td>
+                <td
+                  style="width: 5rem"
+                  *ngIf="!(selectedColumn.indexOf(20) >= 0)"
+                  class="border-start border-end"
+                >
+                  <div
+                    *ngIf="data.riro_data[0]; else elsep"
+                    (click)="
+                      data.riro_data[0].riro_key_id
+                        ? selectRiroEditField(
+                            EditRiroField,
+                            data.riro_data[0],
+                            'five_meter'
+                          )
+                        : ''
+                    "
+                  >
+                    <div
+                      *ngIf="
+                        data.riro_data[0].five_meter != null
+                          ? !data.riro_data[0].five_meter.violation
+                          : false
+                      "
+                      [ngClass]="{
+                        'success-badge':
+                          data.riro_data[0].five_meter != null
+                            ? !data.riro_data[0].five_meter.violation
+                            : false,
+                        'danger-badge':
+                          data.riro_data[0].five_meter != null
+                            ? data.riro_data[0].five_meter.violation
+                            : false
+                      }"
+                    >
+                      {{
+                        data.riro_data[0].five_meter != null
+                          ? data.riro_data[0].five_meter.violation
+                            ? "Yes"
+                            : "No"
+                          : "--"
+                      }}
+                    </div>
+                    <button
+                      style="width: 5rem"
+                      *ngIf="
+                        data.riro_data[0].five_meter != null
+                          ? data.riro_data[0].five_meter.violation
+                          : false
+                      "
+                      class="danger-badge"
+                    >
+                      <fa-icon class="me-2" icon="image"></fa-icon>Yes
+                    </button>
+                  </div>
+                </td>
+
+                <td
+                  *ngIf="!(selectedColumn.indexOf(19) >= 0)"
+                  class="border-start border-end"
+                >
+                  <div
+                    *ngIf="data.type == 'HT' || data.type == 'LT'; else noHT"
+                  >
+                    <div *ngIf="data.riro_data[1] != null; else elsep">
+                      <div
+                        class="mt-2"
+                        style="width: 8rem"
+                        *ngIf="
+                          data.riro_data[1].rack_process != null;
+                          else elsep
+                        "
+                      >
+                        <span>{{
+                          data.riro_data[1].irrd_in_time | dateFormater
+                        }}</span>
+                        <br />- <br /><span>{{
+                          data.riro_data[1].irrd_out_time | dateFormater
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td
+                  *ngIf="!(selectedColumn.indexOf(21) >= 0)"
+                  class="border-start border-end"
+                >
+                  <div
+                    *ngIf="data.type == 'HT' || data.type == 'LT'; else noHT"
+                  >
+                    <div *ngIf="data.riro_data[1] != null; else elsep">
+                      <div
+                        class=""
+                        *ngIf="
+                          data.riro_data[1].rack_method != null;
+                          else elsep
+                        "
+                        style="width: 8rem; cursor: pointer"
+                        (click)="
+                          data.riro_data[1].riro_key_id
+                            ? selectRiroEditField(
+                                EditRiroField,
+                                data.riro_data[1],
+                                'rack_method'
+                              )
+                            : ''
+                        "
+                      >
+                        <!-- {{data.rack_method?data.rack_method:'---'}} -->
+                        <div
+                          [ngClass]="
+                            data.riro_data[1].rack_method === 'automatic'
+                              ? 'success-badge'
+                              : 'danger-badge'
+                          "
+                        >
+                          <fa-icon icon="image" class="me-2"></fa-icon>
+
+                          {{
+                            data.riro_data[1].rack_method
+                              ? data.riro_data[1].rack_method
+                              : "---"
+                          }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td
+                  scope="col"
+                  id="success"
+                  *ngIf="!(selectedColumn.indexOf(22) >= 0)"
+                  class="border-start border-end"
+                >
+                  <div
+                    *ngIf="data.type == 'HT' || data.type == 'LT'; else noHT"
+                  >
+                    <div *ngIf="data.riro_data[1] != null; else elsep">
+                      <tr
+                        *ngIf="data.riro_data[1].tag != null; else elsep"
+                        (click)="
+                          data.riro_data[1].riro_key_id
+                            ? selectRiroEditField(
+                                EditRiroField,
+                                data.riro_data[1],
+                                'tag'
+                              )
+                            : ''
+                        "
+                      >
+                        <div
+                          class=""
+                          *ngIf="data.riro_data[1].tag != null; else elsep"
+                        >
+                          <div
+                            class=""
+                            *ngIf="data.riro_data[1].tag != null; else elsep"
+                            [ngClass]="
+                              data.riro_data[1].rack_process == 'rack_in' &&
+                              data.riro_data[1].tag == 'tag'
+                                ? 'warning-badge'
+                                : 'success-badge'
+                            "
+                            style="width: 6rem; cursor: pointer"
+                          >
+                            <fa-icon class="me-2" icon="image"></fa-icon>
+                            {{ data.riro_data[1].tag }}
+                          </div>
+                        </div>
+                      </tr>
+                    </div>
+                    <ng-template #elsep>---</ng-template>
+                  </div>
+                </td>
+
+                <td
+                  scope="col"
+                  id="success"
+                  *ngIf="!(selectedColumn.indexOf(23) >= 0)"
+                  style="width: 7rem"
+                  class="border-start border-end"
+                >
+                  <div
+                    *ngIf="
+                      data.type == 'HT' || data.type == 'LT';
+                      else elsePart
+                    "
+                  >
+                    <div *ngIf="data.riro_data[1] != null; else elsep">
+                      <tr
+                        (click)="
+                          data.riro_data[1].riro_key_id
+                            ? selectRiroEditField(
+                                EditRiroField,
+                                data.riro_data[1],
+                                'lock'
+                              )
+                            : ''
+                        "
+                      >
+                        <div
+                          class=""
+                          *ngIf="data.riro_data[1].lock != null; else elsep"
+                        >
+                          <div
+                            [ngClass]="
+                              data.riro_data[1].rack_process == 'rack_in' &&
+                              data.riro_data[1].lock == 'lock'
+                                ? 'warning-badge'
+                                : 'success-badge'
+                            "
+                            style="width: 6rem; cursor: pointer"
+                          >
+                            <fa-icon class="me-2" icon="image"></fa-icon
+                            >{{ data.riro_data[1].lock }}
+                          </div>
+                        </div>
+                        <ng-template #elsep>---</ng-template>
+                      </tr>
+                    </div>
+                  </div>
+                  <ng-template #elsePart>
+                    <div
+                      *ngIf="
+                        data.type.toLowerCase() == 'hydraulic' ||
+                        data.type.toLowerCase() == 'pneumatic'
+                      "
+                      style="width: 10rem !important; cursor: pointer"
+                    >
+                      <button
+                        *ngIf="
+                          data?.data?.hydraulic_data &&
+                            data.data.hydraulic_data.length > 0;
+                          else noData
+                        "
+                        class="btn btn-sm default-outline w-100"
+                        (click)="ConveyorImage(conveyorImg, data, 'Unlock')"
+                      >
+                        <fa-icon icon="image"></fa-icon> Unlock Image
+                      </button>
+                    </div>
+                    <div *ngIf="data.type == 'conveyor'">NA</div>
+                  </ng-template>
+                  <ng-template #noData>---</ng-template>
+                </td>
+                <td
+                  *ngIf="!(selectedColumn.indexOf(20) >= 0)"
+                  class="border-start border-end"
+                >
+                  <div
+                    *ngIf="data.riro_data[1]; else elsep"
+                    style="width: 5rem"
+                    (click)="
+                      data.riro_data[1].riro_key_id
+                        ? selectRiroEditField(
+                            EditRiroField,
+                            data.riro_data[1],
+                            'five_meter'
+                          )
+                        : ''
+                    "
+                  >
+                    <div
+                      *ngIf="
+                        data.riro_data[1].five_meter != null
+                          ? !data.riro_data[1].five_meter.violation
+                          : false
+                      "
+                      [ngClass]="{
+                        'success-badge':
+                          data.riro_data[1].five_meter != null
+                            ? !data.riro_data[1].five_meter.violation
+                            : false,
+                        'danger-badge':
+                          data.riro_data[1].five_meter != null
+                            ? data.riro_data[1].five_meter.violation
+                            : false
+                      }"
+                    >
+                      {{
+                        data.riro_data[1].five_meter != null
+                          ? data.riro_data[1].five_meter.violation
+                            ? "Yes"
+                            : "No"
+                          : "--"
+                      }}
+                    </div>
+                    <span
+                      style="width: 5rem"
+                      *ngIf="
+                        data.riro_data[1].five_meter != null
+                          ? data.riro_data[1].five_meter.violation
+                          : false
+                      "
+                      class="danger-badge"
+                    >
+                      <fa-icon class="me-2" icon="images"></fa-icon>Yes
+                    </span>
+                  </div>
+                </td>
+                <!-- <td *ngIf="!(selectedColumn.indexOf(15)>=0)" class="border-end">
+      <div *ngIf="data.riro_data[1]!=null">
+        <div *ngIf="data.riro_data[1].riro_key_id"><button style="width: 7rem;" class="btn btn-sm default-outline"
+            (click)="data.riro_data[1].remarks==null?RemarkModal(addRemark,data.riro_data[1],'remark'):EditRemark(addRemark,data.riro_data[1],'ri_remark')">
+            <fa-icon *ngIf="!data.riro_data[1].remarks" icon="plus" class="me-2"
+              (click)="selectRiroEditField(EditRiroField,data.riro_data[1],'remarks')"></fa-icon> Remark
+          </button>
+        </div>
+      </div>
+    </td> -->
+
+                <td *ngIf="!(selectedColumn.indexOf(24) >= 0)">
+                  <div *ngIf="data.type == 'HT' || data.type == 'LT'">
+                    <div *ngIf="data.riro_data[2] != null; else elsep">
+                      <div
+                        *ngIf="
+                          data.riro_data[2].rack_method != null;
+                          else elsep
+                        "
+                      >
+                        <div
+                          style="width: 8rem"
+                          *ngIf="
+                            data.riro_data[2].rack_process == 'not_recognised'
+                          "
+                          (click)="
+                            RackEditModal(
+                              editRackProcess,
+                              data?.riro_data[2],
+                              'rack_process'
+                            )
+                          "
+                        >
+                          <span
+                            class="danger-badge"
+                            style="width: 9rem !important"
+                            *ngIf="
+                              data.riro_data[2].rack_process != null;
+                              else elsep
+                            "
+                          >
+                            <fa-icon icon="image" class="me-1"></fa-icon>
+                            <span class="text-danger">{{
+                              data.riro_data[2].rack_process == "not_recognised"
+                                ? "Not
+                  Recognized"
+                                : ""
+                            }}</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td *ngIf="!(selectedColumn.indexOf(14) >= 0)">
+                  <div class="" id="danger" *ngIf="data.violation">
+                    <button
+                      (click)="ToPPE(data)"
+                      style="width: 6rem"
+                      class="btn btn-sm danger"
+                    >
+                      Show Data
+                    </button>
+                  </div>
+                </td>
+                <td *ngIf="!(selectedColumn.indexOf(30) >= 0)">
+                  <div
+                    *ngIf="
+                      (data.type == 'HT' || data.type == 'LT') &&
+                      !Array.isArray(data.data.panel_data)
+                    "
+                  >
+                    <button
+                      *ngIf="data.data.panel_data"
+                      style="width: 7rem"
+                      (click)="ToRackEdit(data)"
+                      class="btn btn-sm default-outline"
+                    >
+                      <!-- <fa-icon icon="list" class="me-1"></fa-icon>  -->
+                      Rack History
+                    </button>
+                  </div>
+                  <div
+                    *ngIf="
+                      (data.type.toLowerCase() == 'hydraulic' ||
+                        data.type.toLowerCase() == 'pneumatic') &&
+                      data.data?.hydraulic_data
+                    "
+                  >
+                    <button
+                      *ngIf="data.data.hydraulic_data.length >= 0"
+                      style="width: 7rem"
+                      class="btn btn-sm default-outline"
+                      (click)="ToLockHistory(data)"
+                    >
+                      <!-- <fa-icon icon="list" class="me-1"></fa-icon>  -->
+                      Lock History
+                    </button>
+                  </div>
+                </td>
+
+                <td scope="col" *ngIf="!(selectedColumn.indexOf(16) >= 0)">
+                  <div>
+                    <button
+                      *ngIf="data.type"
+                      (click)="ToEditPage(data)"
+                      class="btn btn-sm default-outline"
+                    >
+                      <span class="">Edit </span>
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <div style="width: 7rem !important">
+                    <button
+                      class="btn default-outline"
+                      (click)="modalOpen(HTDataAddModal, null, data)"
+                    >
+                      Add Data
+                    </button>
+                  </div>
+                </td>
+
+                <td scope="col" *ngIf="!(selectedColumn.indexOf(15) >= 0)">
+                  <button
+                    style="width: 7rem"
+                    *ngIf="data.subCount === 1"
+                    class="btn btn-sm default-outline"
+                    (click)="RemarkModal(addRemark, data, 'remark')"
+                  >
+                    <fa-icon
+                      *ngIf="!data?.remark"
+                      icon="plus"
+                      class="me-2"
+                    ></fa-icon
+                    ><fa-icon
+                      *ngIf="data?.remark"
+                      icon="eye"
+                      class="me-2"
+                    ></fa-icon
+                    >Remark
+                  </button>
+                </td>
+                <td *ngIf="!isHistory && !(selectedColumn.indexOf(31) >= 0)">
+                  <button
+                    class="btn"
+                    *ngIf="
+                      data.type.toLowerCase() == 'ht' &&
+                      !Array.isArray(data.data.panel_data)
+                    "
+                    [disabled]="isActive"
+                    (click)="isDeleteJob(deleteField, data)"
+                  >
+                    <fa-icon class="text-danger" icon="trash"></fa-icon>
+                  </button>
+                </td>
+                <td *ngIf="!isHistory && !(selectedColumn.indexOf(32) >= 0)">
+                  <button
+                    class="btn"
+                    *ngIf="data.subCount === 1"
+                    [disabled]="isActive"
+                    (click)="isDeleteJob(deleteWholeJob, data)"
+                  >
+                    <fa-icon class="text-danger" icon="trash"></fa-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <ng-template #noData>
+              <tbody>
+                <tr>
+                  <td colspan="32">
+                    <div class="card card-body" id="data-card">
+                      <div
+                        class="d-flex justify-content-center align-items-center"
+                        *ngIf="dataFetchStatus == 'success'"
+                      >
+                        <h4>No shutdown details available.</h4>
+                      </div>
+                      <div
+                        class="d-flex justify-content-center align-items-center"
+                        *ngIf="dataFetchStatus == 'init'"
+                      >
+                        <span
+                          class="spinner-border spinner-border-sm me-2 text-prime"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        Loading...
+                      </div>
+                      <div
+                        class="d-flex justify-content-center align-items-center"
+                        *ngIf="dataFetchStatus == 'fail'"
+                      >
+                        <h5 class="text-muted">{{ responseMessage }}</h5>
+                      </div>
+                      <div
+                        class="d-flex justify-content-center align-items-center"
+                        *ngIf="dataFetchStatus == 'error'"
+                      >
+                        <h5 class="text-muted">
+                          Unable to fetch data from the server.
+                          <button
+                            class="btn btn-sm default-outline"
+                            (click)="RefreshData()"
+                          >
+                            Retry
+                          </button>
+                        </h5>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </ng-template>
+            <tfoot></tfoot>
+          </table>
+        </div>
+      </ng-scrollbar>
+    </div>
+    <div class="w-100 mb-3">
+      <div class="d-flex mx-auto justify-content-center">
+        <ngb-pagination
+          [collectionSize]="total | async"
+          [(page)]="page"
+          [pageSize]="pageSize"
+          style="width: 95vw; overflow-x: auto"
+          (pageChange)="sliceData()"
+        >
+        </ngb-pagination>
+
+        <div class="d-flex mx-auto justify-content-start">
+          <select
+            class="form-select"
+            style="width: auto"
+            [(ngModel)]="pageSize"
+            (ngModelChange)="sliceData()"
+          >
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="15">15</option>
+            <option [ngValue]="20">20</option>
+            <option [ngValue]="50">50</option>
+            <option [ngValue]="total | async">All Jobs</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display: none">
+  <div class="col-12">
+    <div #unAllocatedJobAlert>
+      <div
+        class="mb-0"
+        style="
+          border: 2px solid rgba(121, 20, 20, 0.699);
+          background-color: rgba(214, 148, 148, 0.459);
+        "
+      >
+        <div
+          class="modal-header"
+          style="text-align: center; color: rgba(121, 20, 20, 0.699)"
+        >
+          <h3 class="" style="color: rgb(196, 54, 54) !important"></h3>
+        </div>
+
+        <div class="modal-body" *ngIf="unallocatedJob">
+          <div class="row">
+            <div class="col-12">
+              <h4>Unplanned Job's Details</h4>
+              <img
+                [src]="
+                  IP +
+                  '/Unplannedriroimage/' +
+                  unallocatedJobData.riro_image.After
+                "
+                alt=""
+                class="violImage"
+                width="100%"
+                style="
+                  width: 25%;
+                  height: 25%;
+                  object-fit: fill;
+                  border-radius: 5px 5px 5px 5px;
+                "
+              />
+            </div>
+            <div
+              class="col-xl-12 col-md-12 col-lg-12 col-xs-12 text-white mt-2"
+            >
+              <h5>
+                <span class="text-gray"> Camera Ip :</span>
+                <b
+                  ><span class="text-white">{{
+                    unallocatedJobData.ip_address
+                      ? unallocatedJobData.ip_address
+                      : "null"
+                  }}</span></b
+                >
+              </h5>
+              <h5>
+                <span class="text-gray"> Department : </span>
+                <b
+                  ><span class="text-white">{{
+                    unallocatedJobData.department
+                      ? unallocatedJobData.department
+                      : "--"
+                  }}</span></b
+                >
+              </h5>
+              <h5>
+                <span class="text-gray"> Sub Area : </span>
+                <b
+                  ><span class="text-white">{{
+                    unallocatedJobData.sub_area
+                      ? unallocatedJobData.sub_area
+                      : "--"
+                  }}</span></b
+                >
+              </h5>
+              <h5>
+                <span class="text-gray"> Detected Time : </span>
+                <b
+                  ><span class="text-white">{{
+                    unallocatedJobData.irrd_in_time
+                      ? unallocatedJobData.irrd_in_time
+                      : "--"
+                  }}</span></b
+                >
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noHT>
+    <span class="text-gray-medium"><b>NA</b></span></ng-template
+  >
+
+  <ng-template #elsep>---</ng-template>
+  <ng-template let-modal #stopAppModal>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div>
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body" id="deleteModalBody">
+            <p>Do you really want to stop this Application?</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn danger"
+              (click)="StopApplication()"
+            >
+              Stop
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #stopHydroAppModal>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <div class="icon-box">
+              <i class="material-icons">&#xE5CD;</i>
+            </div>
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <p>Do you really want to stop this Application?</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn danger"
+              (click)="StopHydroApplication()"
+            >
+              Stop
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #startAppModal>
+    <div class="modal-body">
+      <div class="modal-confirm" id="startApp">
+        <div class="modal-content">
+          <div class="modal-body flex-column">
+            <h5 class="text-dark">Do you want to start the Application ?</h5>
+            <!-- <p class="text-muted"><small> If the jobsheet contains panels of named 'NA' it will be deleted.So Please edit those panels,further proceed</small></p> -->
+            <p class="text-muted">
+              <small>
+                If the jobsheet contains panels named 'NA', those will be
+                deleted.So please edit those panels before proceeding</small
+              >
+            </p>
+            <form action="">
+              <p><small>Config file creation method:</small></p>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="startAppConfig"
+                  [value]="0"
+                  (change)="StartAppConfig($event)"
+                  [defaultValue]="0"
+                  id="rackin"
+                  class="form-check-input"
+                />
+                <label for="rackin" class="form-check-label text-muted"
+                  >RTSP
+                </label>
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="startAppConfig"
+                  [value]="1"
+                  (change)="StartAppConfig($event)"
+                  [defaultValue]="1"
+                  id="rackout"
+                  class="form-check-input"
+                />
+                <label for="rackout" class="form-check-label text-muted"
+                  >RTSPT
+                </label>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn default"
+              (click)="StartApplication()"
+            >
+              Start
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #startHydroAppModal>
+    <div class="modal-body">
+      <div class="modal-confirm" id="startApp">
+        <div class="modal-content">
+          <div class="modal-body flex-column">
+            <h5 class="text-dark">Do you want to start the Application ?</h5>
+            <!-- <p class="text-muted"><small> If the jobsheet contains panels of named 'NA' it will be deleted.So Please edit those panels,further proceed</small></p> -->
+            <p class="text-muted">
+              <small>
+                If the jobsheet contains panels named 'NA', those will be
+                deleted.So please edit those panels before proceeding</small
+              >
+            </p>
+            <form action="">
+              <p><small>Config file creation method:</small></p>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="startAppConfig"
+                  [value]="0"
+                  (change)="StartAppConfig($event)"
+                  [defaultValue]="0"
+                  id="rackin"
+                  class="form-check-input"
+                />
+                <label for="rackin" class="form-check-label text-muted"
+                  >RTSP
+                </label>
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="startAppConfig"
+                  [value]="1"
+                  (change)="StartAppConfig($event)"
+                  [defaultValue]="1"
+                  id="rackout"
+                  class="form-check-input"
+                />
+                <label for="rackout" class="form-check-label text-muted"
+                  >RTSPT
+                </label>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn default"
+              (click)="StartHydroApplication()"
+            >
+              Start
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #deleteField>
+    <div class="modal-body">
+      <div class="modal-confirm" id="deletemodal">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <p>
+              Do you really want to delete this panel? This process cannot be
+              undone.
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" (click)="DeleteJob()" class="btn danger">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #deleteWholeJob>
+    <div class="modal-body">
+      <div class="modal-confirm" id="deletemodal">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <p>
+              Do you really want to delete this entire job? This process cannot
+              be undone.
+            </p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              (click)="DeleteEntireJob()"
+              class="btn danger"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #resetJobSheet>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <h4 class="modal-title w-100">Are you sure?</h4>
+            <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+          </div>
+          <div class="modal-body">
+            <h5>
+              Do you really want to reset this jobsheet? This process cannot be
+              undone.
+            </h5>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" (click)="ResetJobSheet()" class="btn danger">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #addRemark>
+    <div
+      style="font-size: 25px"
+      class="modal-header d-flex align-items-center justify-content-between"
+    >
+      <h4 class="modal-title w-50">
+        <span>{{ selectedRiro.remark ? "Edit" : "Add" }}</span> the
+        {{ editField }}
+      </h4>
+      <button
+        type="button"
+        class="btn-close float-end mb-2"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <!-- <div class="d-flex justify-content-between align-items-center"> 
+               <div> <h5 class="">Add the remark</h5> </div><button class="btn" type="button" (click)="modal.dismiss('Cross click')">
+         <span class="h1" aria-hidden="true"><b>&times;</b></span> </button>
+           
+          </div> -->
+          <div class="modal-body">
+            <form action="">
+              <textarea
+                rows="8"
+                [formControl]="remarkControl"
+                placeholder="Add the remark here..."
+                class="form-control"
+              >
+              </textarea>
+            </form>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <!-- <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+              data-dismiss="modal">Cancel</button> -->
+            <button
+              type="button"
+              class="btn danger"
+              *ngIf="selectedRiro.remark"
+              (click)="DeleteJobRemark()"
+              data-dismiss="modal"
+            >
+              Delete Remark
+            </button>
+            <button
+              type="button"
+              [disabled]="!remarkControl?.value"
+              class="btn default"
+              (click)="SaveRemark()"
+            >
+              Save Remark
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #EditField>
+    <div
+      style="font-size: 25px"
+      class="modal-header d-flex align-items-center justify-content-between"
+    >
+      <h4 class="modal-title w-50">
+        Edit the {{ editField.replace("_", " ") }}
+      </h4>
+      <button
+        type="button"
+        class="btn-close float-end mb-2"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="" id="editField">
+          <form
+            action=""
+            id="custome"
+            (keyup.enter)="SaveFieldChanges()"
+            *ngIf="editField != 'tagname'"
+          >
+            <input
+              value="Yes"
+              id="1"
+              type="text"
+              [autofocus]="true"
+              [formControl]="tempField"
+              class="form-control"
+            />
+            <div class="mt-3 justify-content-center">
+              <button
+                type="button"
+                class="btn danger"
+                *ngIf="selectedRiro[editField]"
+                (click)="DeleteSelectedfield()"
+                data-dismiss="modal"
+              >
+                Delete {{ editField.replace("_", " ") }}
+              </button>
+              <button
+                type="button"
+                class="btn default"
+                [disabled]="!tempField.valid"
+                (click)="SaveFieldChanges()"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+          <form action="" id="custome" *ngIf="editField == 'tagname'">
+            <input
+              value="Yes"
+              id="1"
+              type="text"
+              [autofocus]="true"
+              [formControl]="tempField"
+              class="form-control"
+            />
+            <div class="mt-3 justify-content-center">
+              <button
+                type="button"
+                class="btn danger"
+                *ngIf="selectedRiro.tagname"
+                (click)="DeleteTagname()"
+                data-dismiss="modal"
+              >
+                Delete Tagname
+              </button>
+              <button
+                type="button"
+                class="btn default"
+                [disabled]="!tempField.valid"
+                (click)="SaveFieldChanges()"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #EditRiroField>
+    <div
+      style="font-size: 25px"
+      class="modal-header d-flex align-items-center justify-content-between"
+    >
+      <h4 class="modal-title w-50">Edit the {{ editField }}</h4>
+      <button
+        type="button"
+        class="btn-close float-end mb-2"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <span class="float-end"
+          ><button
+            class="btn default-outline float-end"
+            (click)="ToggleShowdataHistory()"
+          >
+            <fa-icon icon="clock-rotate-left"></fa-icon></button
+        ></span>
+        <div
+          [ngClass]="{ 'col-12': !showDataHistory, 'col-8': showDataHistory }"
+        >
+          <div class="">
+            <div class="">
+              <div class="" id="editField">
+                <form
+                  action=""
+                  *ngIf="editField == 'rack_method'"
+                  id="custome"
+                  class="d-flex justify-content-center align-items-center"
+                >
+                  <div class="">
+                    <lib-ngx-image-zoom
+                      class="card-img-top"
+                      [enableScrollZoom]="true"
+                      [thumbImage]="
+                        IP + '/riro_image/' + selectedRiro.riro_merged_image
+                      "
+                      [fullImage]="
+                        IP + '/riro_image/' + selectedRiro.riro_merged_image
+                      "
+                    >
+                    </lib-ngx-image-zoom>
+                  </div>
+                  <div
+                    class="card p-3 mt-3 d-flex justify-centent-center align-items-center"
+                    id="data-card"
+                  >
+                    <div class="form-check form-check-inline">
+                      <input
+                        value="automatic"
+                        id="1"
+                        type="radio"
+                        [autofocus]="true"
+                        [formControl]="tempField"
+                        class="form-check-input"
+                      />
+
+                      <label for="1" class="form-check-label">Automatic</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        value="manual"
+                        id="2"
+                        type="radio"
+                        [autofocus]="true"
+                        [formControl]="tempField"
+                        class="form-check-input"
+                      />
+                      <label for="2">Manual</label>
+                    </div>
+                  </div>
+                </form>
+
+                <form
+                  action=""
+                  class="d-flex justify-content-center"
+                  *ngIf="editField == 'tag'"
+                  id="custome"
+                >
+                  <div class="card mb-3">
+                    <div class="card-img-top">
+                      <lib-ngx-image-zoom
+                        class="card-img-top"
+                        [enableScrollZoom]="true"
+                        [thumbImage]="
+                          IP + '/taglock_image/' + selectedRiro.lock_tag_image
+                        "
+                        [fullImage]="
+                          IP + '/taglock_image/' + selectedRiro.lock_tag_image
+                        "
+                      >
+                      </lib-ngx-image-zoom>
+                      <div
+                        class="d-flex justify-content-center align-items-center"
+                      >
+                        <p class="text-dark">
+                          Time: {{ selectedRiro.tag_time | dateFormater }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="card p-3 mt-3 d-flex justify-centent-center align-items-center"
+                    id="data-card"
+                  >
+                    <div class="form-check form-check-inline mt-3">
+                      <input
+                        rows="5"
+                        value="tag"
+                        id="1"
+                        [autofocus]="true"
+                        type="radio"
+                        [formControl]="tempField"
+                        class="form-check-input"
+                      />
+
+                      <label for="1" class="form-check-label">tag</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        rows="5"
+                        value="untag"
+                        id="2"
+                        type="radio"
+                        [formControl]="tempField"
+                        class="form-check-input"
+                      />
+
+                      <label for="2">untag</label>
+                    </div>
+                  </div>
+                </form>
+
+                <form action="" *ngIf="editField == 'lock'" id="custome">
+                  <div class="card">
+                    <div class="card-img-top">
+                      <lib-ngx-image-zoom
+                        class="card-img-top"
+                        [enableScrollZoom]="true"
+                        [thumbImage]="
+                          IP + '/taglock_image/' + selectedRiro.lock_tag_image
+                        "
+                        [fullImage]="
+                          IP + '/taglock_image/' + selectedRiro.lock_tag_image
+                        "
+                      >
+                      </lib-ngx-image-zoom>
+                      <div
+                        class="d-flex justify-content-center align-items-center"
+                      >
+                        <p class="mt-3 text-dark">
+                          Time: {{ selectedRiro.lock_time | dateFormater }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="card p-3 mt-3 d-flex justify-centent-center align-items-center"
+                    id="data-card"
+                  >
+                    <div class="form-check form-check-inline mt-3">
+                      <input
+                        rows="5"
+                        value="lock"
+                        id="1"
+                        type="radio"
+                        [autofocus]="true"
+                        [formControl]="tempField"
+                        class="form-check-input"
+                      />
+
+                      <label for="1" class="form-check-label">lock</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        rows="5"
+                        value="unlock"
+                        id="2"
+                        type="radio"
+                        [formControl]="tempField"
+                        class="form-check-input"
+                      />
+
+                      <label for="2" class="form-check-label">unlock</label>
+                    </div>
+                  </div>
+                </form>
+                <form
+                  action=""
+                  *ngIf="editField == 'five_meter'"
+                  class="d-flex justify-content-center align-items-center"
+                  id="custome"
+                >
+                  <div
+                    class="card-img-top"
+                    *ngIf="selectedRiro?.five_meter?.images"
+                  >
+                    <ngb-carousel>
+                      <ng-container
+                        *ngFor="let img of selectedRiro.five_meter.images"
+                      >
+                        <ng-template ngbSlide class="image-container m-4">
+                          <lib-ngx-image-zoom
+                            class="card-img-top"
+                            [enableScrollZoom]="true"
+                            [thumbImage]="
+                              IP + '/fivemeter_image/' + img.img_name
+                            "
+                            [fullImage]="
+                              IP + '/fivemeter_image/' + img.img_name
+                            "
+                          >
+                          </lib-ngx-image-zoom>
+                        </ng-template>
+                      </ng-container>
+                    </ngb-carousel>
+                  </div>
+                  <div
+                    class="card p-3 mt-3 d-flex justify-centent-center align-items-center"
+                    id="data-card"
+                  >
+                    <div class="form-check form-check-inline">
+                      <input
+                        rows="5"
+                        value="Yes"
+                        id="1"
+                        type="radio"
+                        [autofocus]="true"
+                        [formControl]="tempField"
+                        class="form-check-input"
+                      />
+
+                      <label for="1" class="form-check-label">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        rows="5"
+                        value="No"
+                        id="2"
+                        type="radio"
+                        [formControl]="tempField"
+                        class="form-check-input"
+                      />
+
+                      <label for="2">No</label>
+                    </div>
+                  </div>
+                </form>
+                <form action="" *ngIf="editField == 'tagname'" id="custome">
+                  <input
+                    rows="5"
+                    value="Yes"
+                    id="1"
+                    type="text"
+                    [autofocus]="true"
+                    [formControl]="tempField"
+                    class="form-control"
+                  />
+                </form>
+              </div>
+              <div class="modal-footer justify-content-center">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  (click)="modal.close('Cross click')"
+                  data-dismiss="modal"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class="btn default"
+                  (click)="SaveRiroFieldChanges()"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-4" *ngIf="showDataHistory">
+          <div class="p-2 border rounded mt-3">
+            <div class="border-bottom">History</div>
+            <span class="text-muted"> Tag details are not edited before.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #cameraAddModal>
+    <div class="p-2">
+      <div class="modal-header">
+        <h5>
+          <b>Add Job Details</b>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="radio-cards" *ngIf="true">
+          <div class="radio-card">
+            <div class="radio-input">
+              <input
+                type="radio"
+                [formControl]="jobAddMethod"
+                value="cameraIp"
+                id="cameraIp"
+              />
+              <label for="cameraIp"
+                ><span class="selected"
+                  ><fa-icon icon="circle-check" class="me-1"></fa-icon></span
+                >Add job through camera IP</label
+              >
+            </div>
+          </div>
+          <div class="radio-card">
+            <div class="radio-input">
+              <input
+                type="radio"
+                value="rtsp"
+                [formControl]="jobAddMethod"
+                id="cameraRtsp"
+              />
+              <label for="cameraRtsp"
+                ><span class="selected"
+                  ><fa-icon icon="circle-check" class="me-1"></fa-icon></span
+                >Add job through camera RTSP</label
+              >
+            </div>
+          </div>
+          <div class="radio-card">
+            <div class="radio-input">
+              <input
+                type="radio"
+                value="excel"
+                [formControl]="jobAddMethod"
+                id="excel"
+              />
+              <label for="excel"
+                ><span class="selected"
+                  ><fa-icon icon="circle-check" class="me-1"></fa-icon
+                ></span>
+                Add job through Excel</label
+              >
+            </div>
+          </div>
+        </div>
+        <form
+          action=""
+          *ngIf="jobAddMethod.value == 'cameraIp'"
+          class="border rounded-2 p-3"
+          [formGroup]="AddCameraForm"
+          id="addCameraForm"
+        >
+          <div class="wrapper-two">
+            <div (keyup.enter)="keytab($event)" class="form-floating">
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="department"
+                placeholder="Department"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('department').invalid &&
+                  AddCameraForm.get('department').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="department"
+              />
+              <label for="department"> Department</label>
+            </div>
+            <div (keyup.enter)="keytab($event)" class="form-floating">
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="area"
+                placeholder="Area"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('area').invalid &&
+                  AddCameraForm.get('area').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="Area"
+              />
+              <label for="Area"> Sub Area</label>
+            </div>
+
+            <div
+              (keyup.enter)="keytab($event)"
+              id="cameraBrand"
+              class="required form-floating"
+            >
+              <!-- <label for="type">Type</label> -->
+              <ng-multiselect-dropdown
+                #singleSelect
+                [placeholder]="'Job Type'"
+                [settings]="dropdownSettings2"
+                [data]="jobTypes | async"
+                formControlName="type"
+              >
+              </ng-multiselect-dropdown>
+            </div>
+            <div
+              class="form-floating"
+              *ngIf="
+                AddCameraForm.get('type').valid &&
+                AddCameraForm.get('type').touched
+                  ? AddCameraForm.get('type').value[0].text != 'HT'
+                    ? true
+                    : false
+                  : false
+              "
+            >
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="jobInfo"
+                placeholder="Area"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('jobInfo').invalid &&
+                  AddCameraForm.get('jobInfo').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="isolating_locations"
+              />
+              <label for="isolating_locations">
+                {{
+                  AddCameraForm.value["type"][0].text == "conveyor"
+                    ? "Conveyor
+                No"
+                    : AddCameraForm.value["type"][0].text.toLowerCase() ==
+                        "hydraulic" ||
+                      AddCameraForm.value["type"][0].text.toLowerCase() ==
+                        "pneumatic"
+                    ? "Valve
+                No"
+                    : "Feeder no"
+                }}</label
+              >
+            </div>
+
+            <div
+              (keyup.enter)="keytab($event)"
+              class="form-floating"
+              *ngIf="
+                AddCameraForm.get('type').value &&
+                AddCameraForm.get('type').value[0]
+                  ? this.AddCameraForm.get('type').value[0].text == 'HT'
+                    ? true
+                    : false
+                  : false
+              "
+            >
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="board"
+                placeholder="Department"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('board').invalid &&
+                  AddCameraForm.get('board').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="board"
+              />
+              <label for="board"
+                ><span class="text-danger me-1"></span>Board name</label
+              >
+            </div>
+            <div (keyup.enter)="keytab($event)" class="form-floating">
+              <input
+                type="text"
+                formControlName="no_of_isolating_points"
+                placeholder="Area"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('no_of_isolating_points').invalid &&
+                  AddCameraForm.get('no_of_isolating_points').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="no_of_isolating_points"
+              />
+              <label for="no_of_isolating_points">
+                No of Isolating Points</label
+              >
+            </div>
+            <div class="form-floating">
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="isolating_locations"
+                placeholder="Area"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('isolating_locations').invalid &&
+                  AddCameraForm.get('isolating_locations').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="isolating_locations"
+              />
+              <label for="isolating_locations"> Isolating Locations</label>
+            </div>
+            <div
+              class="form-floating"
+              *ngIf="
+                AddCameraForm.get('type').value &&
+                AddCameraForm.get('type').value[0]
+                  ? this.AddCameraForm.get('type').value[0].text == 'HT'
+                    ? true
+                    : false
+                  : false
+              "
+            >
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="tagname"
+                placeholder="tag name"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('tagname').invalid &&
+                  AddCameraForm.get('tagname').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="tagname"
+              />
+              <label for="tagname"> Tag Name</label>
+            </div>
+          </div>
+          <div class="form-floating">
+            <textarea
+              type="text"
+              style="height: 7rem"
+              rows="12"
+              formControlName="job_description"
+              placeholder="Area"
+              class="form-control"
+              [ngClass]="
+                AddCameraForm.get('job_description').invalid &&
+                AddCameraForm.get('job_description').touched
+                  ? 'is-invalid'
+                  : ''
+              "
+              id="job_description"
+            ></textarea>
+            <label for="job_description"> Job Description</label>
+          </div>
+
+          <div
+            class="d-flex justify-centent-center align-items-center mt-3 mb-3"
+          >
+            <h5 class="sub-header me-2 ms-2">
+              <span class="ms-2"> Camera Details</span>
+            </h5>
+          </div>
+          <div class="wrapper">
+            <div class="form-floating w-100" id="cameraBrand">
+              <ng-multiselect-dropdown
+                #singleSelect
+                [placeholder]="'Camera Brand'"
+                [settings]="dropdownSettings2"
+                [data]="cameraBrandList | async"
+                formControlName="camera_brand"
+              >
+              </ng-multiselect-dropdown>
+            </div>
+          </div>
+          <div class="wrapper-two">
+            <div class="form-floating">
+              <input
+                type="text"
+                formControlName="username"
+                placeholder="Camera User Name"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('username').invalid &&
+                  AddCameraForm.get('username').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="username"
+              />
+              <label for="username">Camera User Name</label>
+            </div>
+            <div class="form-floating">
+              <input
+                type="password"
+                formControlName="password"
+                placeholder="Camera Password"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('password').invalid &&
+                  AddCameraForm.get('password').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="password"
+              />
+              <label for="password">Camera Password</label>
+              <span
+                class="text-danger"
+                *ngIf="AddCameraForm.get('password').hasError('pattern')"
+                >password should not contain special charecters
+              </span>
+            </div>
+            <div class="form-floating">
+              <input
+                type="text"
+                formControlName="cameraip"
+                placeholder="Camera ip"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('cameraip').invalid &&
+                  AddCameraForm.get('cameraip').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="cameraip"
+              />
+              <label for="cameraip">Camera IP</label>
+            </div>
+            <div class="form-floating">
+              <input
+                type="text"
+                formControlName="port"
+                placeholder="Port"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('port').invalid &&
+                  AddCameraForm.get('port').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="port"
+              />
+              <label for="port">Port</label>
+            </div>
+          </div>
+          <!-- <div class="alert alert-success mb-2 mt-2 w-80" *ngIf="isSuccess" role="alert">
+            {{responseMessage}}
+          </div> -->
+          <div
+            class="alert alert-danger mb-2 mt-3 w-80"
+            *ngIf="isFail"
+            role="alert"
+          >
+            {{ responseMessage }}
+          </div>
+          <div
+            class="card card-body"
+            *ngIf="tempAddedJob ? !tempAddedJob.new_job : false"
+          >
+            <div>
+              <span class="float-start"
+                >A job is already there for this camera IP , Do you want to add
+                this to a same job or as a new job?</span
+              ><span class="float-end"
+                ><button
+                  class="btn default m-2"
+                  (click)="OnConfirmAddedIPJob()"
+                >
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    role="status"
+                    aria-hidden="true"
+                    *ngIf="loading3"
+                  ></span
+                  >New Job</button
+                ><button class="btn default m-2" (click)="OnConfirmJobAsSame()">
+                  Same Job
+                </button></span
+              >
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="mt-3"
+            (click)="AddJobByCameraIP()"
+            [disabled]="!isFormValid || isLoading"
+          >
+            <span *ngIf="!isLoading">Submit Job Details</span>
+            <span
+              class="spinner-border spinner-border-sm me-1"
+              role="status"
+              aria-hidden="true"
+              *ngIf="isLoading"
+            ></span>
+          </button>
+        </form>
+        <form
+          action=""
+          *ngIf="jobAddMethod.value == 'rtsp'"
+          class="border rounded-2 p-3"
+          [formGroup]="AddCameraForm"
+          id="addCameraForm"
+        >
+          <div class="wrapper-two">
+            <div (keyup.enter)="keytab($event)" class="form-floating">
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="department"
+                placeholder="Department"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('department').invalid &&
+                  AddCameraForm.get('department').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="department"
+              />
+              <label for="department"> Department</label>
+            </div>
+            <div (keyup.enter)="keytab($event)" class="form-floating">
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="area"
+                placeholder="Area"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('area').invalid &&
+                  AddCameraForm.get('area').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="Area"
+              />
+              <label for="Area"> Sub Area</label>
+            </div>
+
+            <div
+              (keyup.enter)="keytab($event)"
+              id="cameraBrand"
+              class="required form-floating"
+            >
+              <!-- <label for="type">Type</label> -->
+              <ng-multiselect-dropdown
+                #singleSelect
+                [placeholder]="'Job Type'"
+                [settings]="dropdownSettings2"
+                [data]="jobTypes | async"
+                formControlName="type"
+              >
+              </ng-multiselect-dropdown>
+            </div>
+            <div
+              class="form-floating"
+              *ngIf="
+                AddCameraForm.get('type').valid &&
+                AddCameraForm.get('type').touched
+                  ? AddCameraForm.get('type').value[0].text != 'HT'
+                    ? true
+                    : false
+                  : false
+              "
+            >
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="jobInfo"
+                placeholder="Area"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('jobInfo').invalid &&
+                  AddCameraForm.get('jobInfo').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="isolating_locations"
+              />
+              <label for="isolating_locations">
+                {{
+                  AddCameraForm.value["type"][0].text == "conveyor"
+                    ? "Conveyor
+                No"
+                    : AddCameraForm.value["type"][0].text.toLowerCase() ==
+                        "hydraulic" ||
+                      AddCameraForm.value["type"][0].text.toLowerCase() ==
+                        "pneumatic"
+                    ? "Valve
+                No"
+                    : "Feeder no"
+                }}</label
+              >
+            </div>
+
+            <div
+              (keyup.enter)="keytab($event)"
+              class="form-floating"
+              *ngIf="
+                this.AddCameraForm.get('type').value
+                  ? this.AddCameraForm.get('type').value[0].text == 'HT'
+                    ? true
+                    : false
+                  : false
+              "
+            >
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="board"
+                placeholder="Department"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('board').invalid &&
+                  AddCameraForm.get('board').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="board"
+              />
+              <label for="board"
+                ><span class="text-danger me-1"></span>Board name</label
+              >
+            </div>
+            <div (keyup.enter)="keytab($event)" class="form-floating">
+              <input
+                type="text"
+                formControlName="no_of_isolating_points"
+                placeholder="Area"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('no_of_isolating_points').invalid &&
+                  AddCameraForm.get('no_of_isolating_points').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="no_of_isolating_points"
+              />
+              <label for="no_of_isolating_points">
+                No of Isolating Points</label
+              >
+            </div>
+            <div class="form-floating">
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="isolating_locations"
+                placeholder="Area"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('isolating_locations').invalid &&
+                  AddCameraForm.get('isolating_locations').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="isolating_locations"
+              />
+              <label for="isolating_locations"> Isolating Locations</label>
+            </div>
+            <div
+              class="form-floating"
+              *ngIf="
+                this.AddCameraForm.get('type').value
+                  ? this.AddCameraForm.get('type').value[0].text == 'HT'
+                    ? true
+                    : false
+                  : false
+              "
+            >
+              <input
+                (keyup.enter)="keytab($event)"
+                type="text"
+                formControlName="tagname"
+                placeholder="tag name"
+                class="form-control"
+                [ngClass]="
+                  AddCameraForm.get('tagname').invalid &&
+                  AddCameraForm.get('tagname').touched
+                    ? 'is-invalid'
+                    : ''
+                "
+                id="tagname"
+              />
+              <label for="tagname"> Tag Name</label>
+            </div>
+          </div>
+          <div class="form-floating">
+            <textarea
+              type="text"
+              style="height: 7rem"
+              rows="12"
+              formControlName="job_description"
+              placeholder="Area"
+              class="form-control"
+              [ngClass]="
+                AddCameraForm.get('job_description').invalid &&
+                AddCameraForm.get('job_description').touched
+                  ? 'is-invalid'
+                  : ''
+              "
+              id="job_description"
+            ></textarea>
+            <label for="job_description"> Job Description</label>
+          </div>
+          <div
+            class="d-flex justify-centent-center align-items-center mt-3 mb-3"
+          >
+            <h5 class="sub-header me-2 ms-2">
+              <span class="ms-2"> Camera Details</span>
+            </h5>
+          </div>
+          <div class="wrapper"></div>
+          <div class="">
+            <div class="wrapper-two">
+              <div class="form-floating w-100" id="cameraBrand">
+                <ng-multiselect-dropdown
+                  #singleSelect
+                  [placeholder]="'Camera Brand'"
+                  [settings]="dropdownSettings2"
+                  [data]="cameraBrandList | async"
+                  formControlName="camera_brand"
+                >
+                </ng-multiselect-dropdown>
+              </div>
+              <div class="form-floating">
+                <input
+                  type="text"
+                  formControlName="rtsp_url"
+                  placeholder="User name"
+                  class="form-control"
+                  [ngClass]="
+                    AddCameraForm.get('rtsp_url').invalid &&
+                    AddCameraForm.get('rtsp_url').touched
+                      ? 'is-invalid'
+                      : ''
+                  "
+                  id="username"
+                />
+                <label for="username">RTSP Url</label>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="alert alert-success mb-2 mt-2 w-80" *ngIf="isSuccess" role="alert">
+            {{responseMessage}}
+          </div> -->
+          <div
+            class="alert alert-danger mb-2 mt-3 w-80"
+            *ngIf="isFail"
+            role="alert"
+          >
+            {{ responseMessage }}
+          </div>
+          <div
+            class="card card-body mt-2"
+            *ngIf="tempAddedJob ? !tempAddedJob.new_job : false"
+          >
+            <div>
+              <span class="float-start"
+                >A job is already there for this camera RTSP , Do you want to
+                add this to a same job or as a new job?</span
+              ><span class="float-end"
+                ><button
+                  class="btn default m-2"
+                  (click)="OnConfirmAddedRTSPJob()"
+                >
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    role="status"
+                    aria-hidden="true"
+                    *ngIf="loading3"
+                  ></span
+                  >New Job</button
+                ><button class="btn default m-2" (click)="OnConfirmJobAsSame()">
+                  Same Job
+                </button></span
+              >
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="mt-3"
+            (click)="AddJobByCameraRtsp()"
+            [disabled]="!isFormValid || isLoading"
+          >
+            <span *ngIf="!isLoading">Submit Job Details</span>
+            <span
+              class="spinner-border spinner-border-sm me-1"
+              role="status"
+              aria-hidden="true"
+              *ngIf="isLoading"
+            ></span>
+          </button>
+        </form>
+        <div *ngIf="jobAddMethod.value == 'excel'" class="column-flex">
+          <div class="column-grid">
+            <div class="w-100 h-50">
+              <app-file-uploader
+                (OnFileUploaded)="OnJobsheetUploaded($event)"
+              ></app-file-uploader>
+            </div>
+            <button
+              type="submit"
+              class="mb-2 mt-2"
+              *ngIf="jobFileStatus"
+              (click)="OnAddJobsBySheet()"
+            >
+              <span *ngIf="!isLoading2">Submit Jobsheet </span
+              ><span *ngIf="isLoading2">
+                <span
+                  class="spinner-border spinner-border-sm me-1"
+                  role="status"
+                  aria-hidden="true"
+                ></span
+                >Adding...</span
+              >
+            </button>
+            <div class="row">
+              <div
+                *ngIf="isLoading2"
+                class="d-flex justify-centent-center align-items-center ms-3"
+              >
+                <span class="text-warning"
+                  >Do not close the popup or switch to other job adding type
+                  untill you get the response.</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="mt-2">
+            <div
+              class="alert alert-success mb-2"
+              *ngIf="isSuccess"
+              role="alert"
+            >
+              {{ responseMessage }}
+            </div>
+            <div class="alert alert-danger mb-2" *ngIf="isFail" role="alert">
+              {{ responseMessage }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #editRackProcess>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-body" id="rackEdit">
+            <div class="row mb-5">
+              <div class="modal-header">
+                <h5 class="sub-header mb-3">Rack Process</h5>
+                <button class="btn-close" (click)="modal.dismiss()"></button>
+              </div>
+
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-img-top">
+                    <lib-ngx-image-zoom
+                      class="card-img-top"
+                      [enableScrollZoom]="true"
+                      [thumbImage]="
+                        IP + '/riro_image/' + selectedRiro.riro_merged_image
+                      "
+                      [fullImage]="
+                        IP + '/riro_image/' + selectedRiro.riro_merged_image
+                      "
+                    >
+                    </lib-ngx-image-zoom>
+                  </div>
+                  <div class="card-body">
+                    <p>
+                      <span class="text-muted me-2">Rack Process:</span
+                      >{{
+                        selectedRiro.rack_process == "rack_in"
+                          ? "Rack
+                      In"
+                          : selectedRiro.rack_process == "rack_out"
+                          ? "Rack Out"
+                          : "No Process"
+                      }}
+                    </p>
+                    <p class="d-flex justify-content-center align-items-center">
+                      <span class="text-dark me-2">Time :</span
+                      ><b
+                        >{{ selectedRiro.irrd_in_time }} -
+                        {{ selectedRiro.irrd_out_time | dateFormater }}</b
+                      >
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <form action="form-inline">
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="rackProcess"
+                  value="rack_in"
+                  [autofocus]="true"
+                  (change)="EditRack($event)"
+                  defaultValue="rack_in"
+                  id="rackin"
+                  class="form-check-input"
+                />
+                <label for="rackin" class="form-check-label text-muted"
+                  >Rack in</label
+                >
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="rackProcess"
+                  value="rack_out"
+                  (change)="EditRack($event)"
+                  defaultValue="rack_out"
+                  id="rackout"
+                  class="form-check-input"
+                />
+                <label for="rackout" class="form-check-label text-muted"
+                  >Rack Out
+                </label>
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="rackProcess"
+                  value="maintenance"
+                  (change)="EditRack($event)"
+                  defaultValue="maintenance"
+                  id="maintenance"
+                  class="form-check-input"
+                />
+                <label for="maintenance" class="form-check-label text-muted"
+                  >Maintenance</label
+                >
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="rackProcess"
+                  value="not_recognised"
+                  (change)="EditRack($event)"
+                  defaultValue="maintenance"
+                  id="notRecognized"
+                  class="form-check-input"
+                />
+                <label for="notRecognized" class="form-check-label text-muted"
+                  >Not Recognized</label
+                >
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="rackProcess"
+                  value="noProcess"
+                  (change)="EditRack($event)"
+                  defaultValue="noProcess"
+                  id="noProcess"
+                  class="form-check-input"
+                />
+                <label for="noProcess" class="form-check-label text-muted"
+                  >None</label
+                >
+              </div>
+            </form>
+            <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn default"
+              (click)="SaveRackChanges()"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #conveyorImg let-modal>
+    <div style="width: auto; height: auto !important">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <h4 class="modal-title w-100">{{ selectedField }} Image</h4>
+        </h4>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="jobImg" class="p-2">
+          <div
+            class="d-flex justify-content-center"
+            id="conveyor"
+            *ngIf="selectedField == 'Conveyor'"
+          >
+            <lib-ngx-image-zoom
+              [enableScrollZoom]="true"
+              [zoomMode]="'click'"
+              [thumbImage]="IP + '/mech_jobimage/' + (conveyorImage | async)"
+              [fullImage]="IP + '/mech_jobimage/' + (conveyorImage | async)"
+            >
+            </lib-ngx-image-zoom>
+          </div>
+          <div
+            class="d-flex justify-content-center"
+            *ngIf="selectedField == 'Lock' || selectedField == 'Unlock'"
+          >
+            <lib-ngx-image-zoom
+              [enableScrollZoom]="true"
+              [zoomMode]="'click'"
+              [thumbImage]="IP + '/hydralockimage/' + (conveyorImage | async)"
+              [fullImage]="IP + '/hydralockimage/' + (conveyorImage | async)"
+            >
+            </lib-ngx-image-zoom>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="selectedField == 'conveyor'"
+        class="modal-footer justify-content-center"
+      >
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="modal.close('Cross click')"
+          data-dismiss="modal"
+        >
+          Close
+        </button>
+        <button type="button" class="btn default" (click)="getConveyorImg()">
+          Refresh
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #c>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <h4 class="modal-title w-100">{{ selectedField }} Image</h4>
+          </div>
+          <div class="modal-body">
+            <div id="jobImg">
+              <div style="width: 20rem; height: 15rem" id="conveyorImg">
+                <lib-ngx-image-zoom
+                  [enableScrollZoom]="true"
+                  [thumbImage]="
+                    IP + '/mech_jobimage/' + (conveyorImage | async)
+                  "
+                  [fullImage]="IP + '/mech_jobimage/' + (conveyorImage | async)"
+                >
+                </lib-ngx-image-zoom>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn default"
+              (click)="getConveyorImg()"
+            >
+              Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #errorMessage>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-header flex-column">
+            <div class="icon-box">
+              <i class="material-icons">&#33;</i>
+            </div>
+            <h4 class="modal-title w-100">Limit has reached!</h4>
+          </div>
+          <div class="modal-body">
+            <p>{{ licenseMessage }}</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Okay
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #AlertDetails>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        Live Violations
+        <button
+          type="button"
+          class="btn-close float-end mb-2"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+
+        <div class="modal-content" *ngIf="violationDetails.length > 0">
+          <ngb-carousel>
+            <ng-container *ngFor="let violation of violationDetails">
+              <ng-template ngbSlide class="m-4">
+                <div class="card-wrapper m-3 p-3">
+                  <div *ngIf="violation.riro_data[1] != null; else riro0">
+                    <div
+                      *ngIf="violation.riro_data[1].magnetic_flasher != null"
+                    >
+                      <img
+                        [src]="
+                          this.IP +
+                          '/magneticflasher_image/' +
+                          violation.riro_data[1].magnetic_flasher.flasher_image
+                        "
+                        alt="Flasher Image"
+                      />
+                    </div>
+                  </div>
+                  <ng-template #riro0>
+                    <div *ngIf="violation.riro_data[0] != null">
+                      <div
+                        *ngIf="violation.riro_data[0].magnetic_flasher != null"
+                      >
+                        <img
+                          [src]="
+                            this.IP +
+                            '/magneticflasher_image/' +
+                            violation.riro_data[0].magnetic_flasher
+                              .flasher_image
+                          "
+                          alt="Flasher Image"
+                        />
+                      </div>
+                    </div>
+                  </ng-template>
+                  <div class="column-flex me-3">
+                    <span class="mb-3"
+                      ><span class="text-muted me-2">job No: </span
+                      ><b>{{ violation.job_no }}</b></span
+                    >
+                    <span class="m-2">
+                      <span class="m-2" *ngIf="violation.camera_id"> </span
+                    ></span>
+                    <span class="m-2" *ngIf="violation.camera_name">
+                      <span class="text-muted"
+                        >Camera Name :<b>{{ violation.camera_name }}</b></span
+                      >
+                    </span>
+                    <span class="m-2" *ngIf="violation.camera_id">
+                      <span class="text-muted">camera ID :</span
+                      ><span
+                        ><b>{{ violation.camera_id }}</b></span
+                      ></span
+                    >
+
+                    <span class="mb-3"
+                      ><span class="text-muted me-2"> Camera IP: </span
+                      ><b>{{ violation.ip_address }}</b></span
+                    >
+                    <span *ngIf="violation.type == 'HT'"
+                      ><span class="text-muted me-2">Feeder Number: </span>
+                      <b>{{ violation.data.panel_data.panel_id }}</b></span
+                    >
+                  </div>
+                </div>
+              </ng-template>
+            </ng-container>
+          </ngb-carousel>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #flasherLiveTemplate>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-header">
+          <h4>Magnetic Flasher Log</h4>
+          <button
+            type="button"
+            class="btn-close float-end mb-2"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+          ></button>
+        </div>
+
+        <div class="modal-content" *ngIf="(flasherLiveLog | async).length > 0">
+          <ngb-carousel>
+            <ng-container
+              *ngFor="let violation of flasherLiveLog | async; let i = index"
+            >
+              <ng-template ngbSlide class="m-4">
+                <div class="card-wrapper m-3 p-3">
+                  <div *ngIf="violation.flasher_status != null">
+                    <img
+                      [src]="
+                        this.IP +
+                        '/magneticflasher_image/' +
+                        violation.flasher_status.flasher_image
+                      "
+                      alt="Flasher Image"
+                    />
+                  </div>
+                  <div class="column-flex me-3">
+                    <div class="">
+                      <span class="me-2 mb-3">{{ i + 1 + "." }}</span>
+                      <span class="mb-3"
+                        ><span class="text-muted">Time : </span
+                        ><b>{{
+                          violation.flasher_status.flasher_time | dateFormater
+                        }}</b></span
+                      ><br />
+                      <span class="mb-3"
+                        ><span class="text-muted">Sticker Status:</span>
+                        <span
+                          style="
+                            width: 3rem;
+                            cursor: pointer;
+                            text-align: center;
+                          "
+                          *ngIf="
+                            violation.flasher_status.status != null;
+                            else elsep
+                          "
+                          [ngClass]="{
+                            'text-success':
+                              violation.flasher_status.status == 'yes',
+                            'text-danger':
+                              violation.flasher_status.status == 'no'
+                          }"
+                        >
+                          {{
+                            violation.flasher_status.status == "yes"
+                              ? "Yes"
+                              : "No"
+                          }} </span
+                        ><br />
+                      </span>
+                    </div>
+                    <span class="mb-3"
+                      ><span class="text-muted me-2">job No: </span
+                      ><b>{{ violation.job_no }}</b></span
+                    >
+                    <span class="mb-3" *ngIf="violation?.data?.camera_id">
+                      <span class="text-muted me-2"> Camera ID: </span
+                      ><b>{{
+                        violation.data.camera_id
+                          ? violation.data.camera_id
+                          : "--"
+                      }}</b></span
+                    >
+                    <span class="mb-3" *ngIf="violation?.camera_name">
+                      <span class="text-muted me-2"> Camera Name: </span
+                      ><b>{{
+                        violation.camera_name ? violation.camera_name : "--"
+                      }}</b></span
+                    >
+                    <span class="mb-3"
+                      ><span class="text-muted me-2"> Camera IP: </span
+                      ><b>{{ violation.ip_address }}</b></span
+                    >
+                    <span *ngIf="violation.type == 'HT'"
+                      ><span class="text-muted me-2">Feeder Number: </span>
+                      <b>{{ violation.panel_no }}</b></span
+                    >
+                  </div>
+                </div>
+              </ng-template>
+            </ng-container>
+          </ngb-carousel>
+        </div>
+        <ng-template #noData>Details not found</ng-template>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-modal #Flasher>
+    <div style="width: auto; height: auto !important">
+      <div class="modal-body">
+        <div class="">
+          <div class="">
+            <div class="modal-header">
+              <h4 class="modal-title w-100">{{ selectedField }} Image</h4>
+              <button
+                type="button"
+                class="btn-close float-end mb-2"
+                aria-label="Close"
+                (click)="modal.dismiss('Cross click')"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div
+                class="column-flex align-items-center justify-centent-center"
+              >
+                <div
+                  id="flasher"
+                  style="
+                    width: auto;
+                    height: auto;
+                    z-index: inherit;
+                    position: relative !important;
+                  "
+                  class="d-flex align-items-center justify-centent-center mb-3 mt-3"
+                >
+                  <lib-ngx-image-zoom
+                    [enableScrollZoom]="true"
+                    style="position: relative !important"
+                    [thumbImage]="
+                      IP +
+                      '/magneticflasher_image/' +
+                      selectedViolation.magnetic_flasher.flasher_image
+                    "
+                    [fullImage]="
+                      IP +
+                      '/magneticflasher_image/' +
+                      selectedViolation.magnetic_flasher.flasher_image
+                    "
+                  >
+                  </lib-ngx-image-zoom>
+                </div>
+                <button
+                  class="btn default-tertiary"
+                  (click)="ShowLog(flasherLog, selectedJob)"
+                >
+                  See Log
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #flasherLog let-offcanvas>
+    <div class="offcanvas-header">
+      <h4>Magnetic Sticker Log</h4>
+      <button
+        class="btn default-tertiary"
+        (click)="offcanvas.dismiss('Cross Click')"
+      >
+        &times;
+      </button>
+    </div>
+    <div
+      class="offcanvas-body"
+      class="h-100 pb-3"
+      style="height: 80vh !important"
+      id="logContainer"
+    >
+      <div class="column-flex justify-content-between align-items-center m-3">
+        <span class="m-2"
+          ><span class="text-muted">Job No :</span
+          ><span
+            ><b>{{ selectedJob.job_no }}</b></span
+          >
+        </span>
+        <span class="m-2" *ngIf="selectedJob.camera_name">
+          <span class="text-muted">Camera Name :</span></span
+        >
+        <span class="m-2" *ngIf="selectedJob.camera_name"
+          ><span
+            ><b>{{ selectedJob.camera_name }}</b></span
+          >
+        </span>
+        <span class="m-2" *ngIf="selectedJob.camera_id">
+          <span class="text-muted">camera ID :</span></span
+        >
+        <span class="m-2" *ngIf="selectedJob.camera_id"
+          ><span
+            ><b>{{ selectedJob.camera_id }}</b></span
+          >
+        </span>
+        <span class="m-2">
+          <span class="text-muted">Camera IP :</span
+          ><span
+            ><b>{{ selectedJob.ip_address }}</b></span
+          >
+        </span>
+        <span class="m-2">
+          <span class="text-muted">Feeder Number :</span
+          ><span
+            ><b>{{ selectedJob.data.panel_data.panel_id }}</b></span
+          >
+        </span>
+      </div>
+      <ng-scrollbar
+        style="height: 85vh !important"
+        #scrollable
+        track="vertical"
+        pointerEventsMethod="scrollbar"
+        [autoHeightDisabled]="true"
+        [disabled]="false"
+      >
+        <div class="">
+          <ul class="w-100 list-group">
+            <li class="list-group-item" *ngFor="let data of flasherLogDetails">
+              <div
+                class="column-flex justify-content-center align-items-center"
+              >
+                <div
+                  id="flasher"
+                  style="
+                    width: 168px;
+                    height: auto;
+                    z-index: inherit;
+                    position: relative !important;
+                  "
+                  class="d-flex align-items-center justify-centent-center mb-2"
+                >
+                  <lib-ngx-image-zoom
+                    [enableScrollZoom]="true"
+                    [thumbImage]="
+                      IP +
+                      '/magneticflasher_image/' +
+                      data.flasher_status.flasher_image
+                    "
+                    [fullImage]="
+                      IP +
+                      '/magneticflasher_image/' +
+                      data.flasher_status.flasher_image
+                    "
+                  >
+                  </lib-ngx-image-zoom
+                  ><br />
+                </div>
+                <div class="">
+                  <span class="m-2"
+                    ><span class="text-muted">Time : </span
+                    >{{ data.flasher_status.flasher_time | dateFormater }}</span
+                  ><br />
+                  <span class="m-2"
+                    ><span class="text-muted">Sticker Status:</span>
+                    <span
+                      style="width: 3rem; cursor: pointer; text-align: center"
+                      *ngIf="data.flasher_status.status != null; else elsep"
+                      [ngClass]="{
+                        'text-success': data.flasher_status.status == 'yes',
+                        'text-danger': data.flasher_status.status == 'no'
+                      }"
+                    >
+                      {{
+                        data.flasher_status.status == "yes" ? "Yes" : "No"
+                      }} </span
+                    ><br />
+                  </span>
+                </div>
+              </div>
+              <!-- </div>  -->
+            </li>
+          </ul>
+        </div>
+      </ng-scrollbar>
+    </div>
+  </ng-template>
+
+  <ng-template #liveStream let-modal>
+    <span class="float-end" style="right: -20px">
+      <button
+        #closeBtn
+        class="float-end btn btn-sm m-2 p-2"
+        style="background-color: none !important"
+        (click)="modal.dismiss('Cross click')"
+      >
+        &times;
+      </button>
+    </span>
+    <div class="d-block" *ngIf="isImgLoading">
+      <div class="d-flex justify-centent-center align-items-center">
+        <div class="">
+          <span
+            class="spinner-border spinner-border-sm me-1 p-3"
+            role="status"
+            aria-hidden="true"
+          ></span>
+        </div>
+      </div>
+    </div>
+
+    <img
+      [src]="
+        IP + '/camera_liveview?rtsp=' + server.ModifyRtspString(rtspLiveIp)
+      "
+      alt="Loading..."
+      (load)="onImageLoad()"
+    />
+  </ng-template>
+
+  <ng-template #editTitle let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">New Title</h4>
+      <button
+        type="button"
+        class="btn-close float-end"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+      <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+    </div>
+    <div class="modal-body">
+      <div class="row justify-content-md-center">
+        <div class="col-12">
+          <form action="" class="p-3">
+            <label for="">Shutdown name:</label>
+            <div class="form-group">
+              <input
+                type="text"
+                [formControl]="shutdownName"
+                name="title"
+                style="
+                  background-color: white;
+                  border: 1px #dee2e6 solid !important;
+                "
+                placeholder="Enter shutdown name here..."
+                class="form-control"
+              />
+            </div>
+            <button
+              class="btn"
+              type="submit"
+              [disabled]="shutdownName.invalid"
+              (click)="OnNewTitle()"
+            >
+              Submit
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #noDetails>
+    <div class="card" id="data-card">
+      <div class="row col-12">
+        <div class="d-flex justify-centent-center align-items-center">
+          <h5 class="text-muted">Jobsheet Details Not Found.</h5>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #l1DataTable let-modal>
+    <div class="card">
+      <div class="modal-header">
+        <span>
+          <h5 class="float-start">L1 Data</h5>
+        </span>
+        <span class="flaot-end">
+          <button
+            type="button"
+            class="btn-close float-end mb-2"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+          ></button>
+        </span>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <div class="float-end mb-2">
+              <p-dropdown
+                [options]="tagnames"
+                (onChange)="getFilteredL1Data($event)"
+                [(ngModel)]="filterTagname"
+                optionLabel="name"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                placeholder="Search by tagname"
+                class="w-100"
+              >
+              </p-dropdown>
+            </div>
+          </div>
+        </div>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Si no</th>
+              <th scope="col">Tag Name</th>
+              <th scope="col">L1 Value</th>
+              <th scope="col">Isolation Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let data of (l1Data | async).l1data; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ data.tagname }}</td>
+              <td>{{ data.value }}</td>
+              <td
+                [ngClass]="
+                  data.isolation_status == 'isolated'
+                    ? 'text-success'
+                    : 'text-danger'
+                "
+              >
+                {{ data.isolation_status }}
+              </td>
+              <td [attr.row]></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template let-modal #editRack>
+    <div class="modal-header">
+      <h4 class="modal-title w-60">Rack Process</h4>
+      <button
+        type="button"
+        class="btn-close float-end mb-2"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-confirm">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="row mb-5">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-img-top">
+                    <lib-ngx-image-zoom
+                      class="card-img-top"
+                      [enableScrollZoom]="true"
+                      [thumbImage]="
+                        IP + '/riro_image/' + selectedRiro.riro_merged_image
+                      "
+                      [fullImage]="
+                        IP + '/riro_image/' + selectedRiro.riro_merged_image
+                      "
+                    >
+                    </lib-ngx-image-zoom>
+                  </div>
+                  <div
+                    class="card-body d-flex justify-centent-center align-items-center"
+                  >
+                    <p class="text-dark">
+                      <span class="text-muted me-2">Rack Process:</span
+                      >{{
+                        selectedRiro.rack_process == "rack_in"
+                          ? "Rack
+                      In"
+                          : selectedRiro.rack_process == "rack_out"
+                          ? "Rack Out"
+                          : "No Process"
+                      }}
+                    </p>
+                    <p class="text-dark">
+                      <span class="text-muted me-2">Time :</span
+                      ><b
+                        >{{ selectedRiro.irrd_in_time | dateFormater }} -
+                        {{ selectedRiro.irrd_out_time | dateFormater }}</b
+                      >
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <form action="">
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="rackProcess"
+                  value="rack_in"
+                  (change)="EditRack($event)"
+                  defaultValue="rack_in"
+                  id="rackin"
+                  class="form-check-input"
+                />
+                <label for="rackin" class="form-check-label text-muted"
+                  >Rack in</label
+                >
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="rackProcess"
+                  value="rack_out"
+                  (change)="EditRack($event)"
+                  defaultValue="rack_out"
+                  id="rackout"
+                  class="form-check-input"
+                />
+                <label for="rackout" class="form-check-label text-muted"
+                  >Rack Out
+                </label>
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="rackProcess"
+                  value="maintenance"
+                  (change)="EditRack($event)"
+                  defaultValue="maintenance"
+                  id="maintenance"
+                  class="form-check-input"
+                />
+                <label for="maintenance" class="form-check-label text-muted"
+                  >Maintenance</label
+                >
+              </div>
+              <div class="form-check form-check-inline" id="custome">
+                <input
+                  type="radio"
+                  [formControl]="rackProcess"
+                  value="not_recognised"
+                  (change)="EditRack($event)"
+                  defaultValue="not_recognised"
+                  id="notRecognised"
+                  class="form-check-input"
+                />
+                <label for="notRecognised" class="form-check-label text-muted"
+                  >Not Recognised</label
+                >
+              </div>
+            </form>
+            <!-- <p>Do you really want to delete these Camera? This process cannot be undone.</p> -->
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close('Cross click')"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn default"
+              (click)="SaveRackChanges()"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <!-- modal to add the HT data manually -->
+  <ng-template #HTDataAddModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title w-50">Manual Addition of HT Job Details</h4>
+      <button
+        type="button"
+        class="btn-close float-end mb-2"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="border rounded p-2 m-3">
+        <div class="border-bottom pb-2">Job Details</div>
+        <div class="grid-5">
+          <div>
+            <span class="text-muted">Job Number :</span
+            ><span>{{ selectedJob.job_no }}</span>
+          </div>
+          <div>
+            <span class="text-muted">Department :</span
+            ><span>{{ selectedJob.department }}</span>
+          </div>
+          <div>
+            <span class="text-muted">Sub Area :</span
+            ><span>{{ selectedJob.sub_area }}</span>
+          </div>
+          <div>
+            <span class="text-muted">Camera IP :</span
+            ><span>{{ selectedJob.ip_address }}</span>
+          </div>
+          <div>
+            <span class="text-muted">Camera Name :</span
+            ><span>{{ selectedJob.data.camera_name }}</span>
+          </div>
+        </div>
+        <div class="grid-5">
+          <div>
+            <span class="text-muted">Camera ID :</span
+            ><span>{{
+              selectedJob.data.camera_id ? selectedJob.data.camera_id : "---"
+            }}</span>
+          </div>
+          <div>
+            <span class="text-muted">Isolating Points :</span
+            ><span>{{
+              selectedJob.no_of_isolating_points
+                ? selectedJob.no_of_isolating_points
+                : "---"
+            }}</span>
+          </div>
+          <div>
+            <span class="text-muted">Isolating Location :</span
+            ><span>{{
+              selectedJob.isolating_location
+                ? selectedJob.isolating_location
+                : "---"
+            }}</span>
+          </div>
+        </div>
+        <div class="grid-5">
+          <div>
+            <span class="text-muted">Board Name :</span
+            ><span>{{ selectedJob.board ? selectedJob.board : "---" }}</span>
+          </div>
+          <div>
+            <span class="text-muted">Tag Name :</span
+            ><span>{{
+              selectedJob.tagname ? selectedJob.tagname : "---"
+            }}</span>
+          </div>
+          <div>
+            <span class="text-muted">Board Name :</span
+            ><span>{{ selectedJob.board ? selectedJob.board : "---" }}</span>
+          </div>
+          <div>
+            <span class="text-muted">Power Status :</span>
+            <span
+              style="width: 6rem"
+              class=""
+              [ngClass]="{
+                'text-success': selectedJob.isolation_status == 'isolated',
+                'text-danger': selectedJob.isolation_status == 'live',
+                'info-text': selectedJob.isolation_status == null
+              }"
+            >
+              {{
+                selectedJob.isolation_status
+                  ? selectedJob.isolation_status
+                  : "Unknown"
+              }}
+            </span>
+          </div>
+          <div>
+            <span class="text-muted">Magnetic Sticker :</span
+            ><span>
+              <span
+                *ngIf="
+                  selectedJob.riro_data !== null &&
+                  selectedJob.riro_data.length !== 0
+                "
+              >
+                <div
+                  *ngIf="
+                    selectedJob.type == 'HT' || selectedJob.type == 'LT';
+                    else noHT
+                  "
+                >
+                  <div *ngIf="selectedJob.riro_data[1] != null; else riro1">
+                    <div
+                      *ngIf="
+                        selectedJob.riro_data[1].magnetic_flasher != null;
+                        else elsep
+                      "
+                      class="column-flex"
+                      style="width: 8rem"
+                    >
+                      <div
+                        style=""
+                        (click)="
+                          FlasherImage(
+                            selectedJob.riro_data[1],
+                            Flasher,
+                            selectedJob
+                          )
+                        "
+                        *ngIf="
+                          selectedJob.riro_data[1].magnetic_flasher.status !=
+                            null;
+                          else elsep
+                        "
+                        [ngClass]="{
+                          'success-badge':
+                            selectedJob.riro_data[1].magnetic_flasher.status ==
+                            'yes',
+                          'danger-badge':
+                            selectedJob.riro_data[1].magnetic_flasher.status ==
+                            'no'
+                        }"
+                      >
+                        <fa-icon
+                          class="me-2"
+                          icon="image"
+                          *ngIf="
+                            selectedJob.riro_data[1].magnetic_flasher
+                              .flasher_image
+                          "
+                        >
+                        </fa-icon>
+                        {{
+                          selectedJob.riro_data[1].magnetic_flasher.status ==
+                          "yes"
+                            ? "Yes"
+                            : "No"
+                        }}
+                      </div>
+                      <br />
+                      <span
+                        class="mt-1"
+                        *ngIf="
+                          selectedJob.riro_data[1].magnetic_flasher.status ==
+                          'yes'
+                        "
+                      >
+                        {{
+                          selectedJob.riro_data[1].magnetic_flasher.flasher_time
+                            ? (selectedJob.riro_data[1].magnetic_flasher
+                                .flasher_time | dateFormater)
+                            : ""
+                        }}</span
+                      >
+                    </div>
+                  </div>
+                  <ng-template #riro1>
+                    <div
+                      *ngIf="selectedJob.riro_data[0] != null; else noFlasher"
+                    >
+                      <div
+                        *ngIf="
+                          selectedJob.riro_data[0].magnetic_flasher != null;
+                          else elsep
+                        "
+                        style="width: 8rem"
+                        class="column-flex"
+                      >
+                        <div
+                          style="width: 5rem; cursor: pointer"
+                          (click)="
+                            FlasherImage(
+                              selectedJob.riro_data[0],
+                              Flasher,
+                              selectedJob
+                            )
+                          "
+                          *ngIf="
+                            selectedJob.riro_data[0].magnetic_flasher.status !=
+                              null;
+                            else elsep
+                          "
+                          [ngClass]="{
+                            'success-badge':
+                              selectedJob.riro_data[0].magnetic_flasher
+                                .status == 'yes',
+                            'danger-badge':
+                              selectedJob.riro_data[0].magnetic_flasher
+                                .status == 'no'
+                          }"
+                        >
+                          <fa-icon
+                            class="me-2"
+                            icon="image"
+                            *ngIf="
+                              selectedJob.riro_data[0].magnetic_flasher
+                                .flasher_image
+                            "
+                          >
+                          </fa-icon>
+                          {{
+                            selectedJob.riro_data[0].magnetic_flasher.status ==
+                            "yes"
+                              ? "Yes"
+                              : "No"
+                          }}
+                        </div>
+                        <br />
+                        <span
+                          class="mt-1"
+                          *ngIf="
+                            selectedJob.riro_data[0].magnetic_flasher.status ==
+                            'yes'
+                          "
+                        >
+                          {{
+                            selectedJob.riro_data[0].magnetic_flasher
+                              .flasher_time
+                              ? (selectedJob.riro_data[0].magnetic_flasher
+                                  .flasher_time | dateFormater)
+                              : ""
+                          }}</span
+                        >
+
+                        <ng-template #elsep>---</ng-template>
+                      </div>
+                    </div>
+                  </ng-template>
+                  <ng-template #noFlasher>---</ng-template>
+                </div>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="row p-2 border rounded m-3">
+        <div class="pb-2 border-bottom">Added Details</div>
+        <div>
+          <ng-scrollbar
+            #scrollable
+            style="width: 100% !; height: 6rem !important"
+            track="vertical"
+            pointerEventsMethod="scrollbar"
+            [autoHeightDisabled]="false"
+            [disabled]="false"
+          >
+            <table *ngIf="selectedJob.riro_data.length > 0; else noRiroData">
+              <thead>
+                <tr>
+                  <th scope="col"></th>
+                  <th scope="col">Rack Process</th>
+                  <th scope="col">Rack Process Method</th>
+                  <th scope="col">IRRD In Time</th>
+                  <th scope="col">IRRD Out Time</th>
+                  <th scope="col">Tag</th>
+                  <th scope="col">Lock</th>
+                  <th scope="col">Five Meter</th>
+                  <th scope="col">PPE Violations</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr
+                  class=""
+                  *ngFor="
+                    let addedValue of selectedJob.riro_data;
+                    let in = index
+                  "
+                >
+                  <td>
+                    <span>{{ in + 1 }}.</span>
+                  </td>
+                  <td>
+                    <span>
+                      <!-- <span class="text-muted">Rack Process :</span -->
+                      <span class="bold"
+                        ><span *ngIf="addedValue.rack_process == 'rack_in'">
+                          <b>Rack In</b>
+                        </span>
+                        <span *ngIf="addedValue.rack_process == 'rack_out'">
+                          <b>Rack Out</b>
+                        </span>
+                        <span *ngIf="addedValue.rack_process == 'maintenance'">
+                          <b>Maintenance</b>
+                        </span>
+                        <span
+                          *ngIf="addedValue.rack_process == 'not_recognised'"
+                        >
+                          <b> Not Recognised</b></span
+                        >
+                      </span>
+                    </span>
+                  </td>
+                  <td>
+                    <span>
+                      <span
+                        [ngClass]="
+                          addedValue.rack_method == 'automatic'
+                            ? 'text-success'
+                            : 'text-danger'
+                        "
+                        >{{ addedValue.rack_method }}</span
+                      ></span
+                    >
+                  </td>
+                  <td>
+                    <span>{{ addedValue.irrd_in_time | dateFormater }}</span>
+                  </td>
+                  <td>
+                    <span>{{ addedValue.irrd_out_time | dateFormater }}</span>
+                  </td>
+                  <td>
+                    <span
+                      [ngClass]="
+                        (addedValue.rack_process == 'rack_in' &&
+                          addedValue.tag == 'untag') ||
+                        (addedValue.rack_process == 'rack_out' &&
+                          addedValue.tag == 'tag')
+                          ? 'text-success'
+                          : 'text-danger'
+                      "
+                      >{{ addedValue.tag }}</span
+                    >
+                  </td>
+                  <td>
+                    <span
+                      [ngClass]="
+                        (addedValue.rack_process == 'rack_in' &&
+                          addedValue.lock == 'unlock') ||
+                        (addedValue.rack_process == 'rack_out' &&
+                          addedValue.lock == 'lock')
+                          ? 'text-success'
+                          : 'text-danger'
+                      "
+                      >{{ addedValue.lock }}</span
+                    >
+                  </td>
+                  <td>
+                    <span [ngClass]="addedValue.five_meter ? 'text-danger' : ''"
+                      >{{ addedValue?.five_meter ? "Yes" : "No" }}
+                    </span>
+                  </td>
+                  <td>
+                    <span
+                      [ngClass]="
+                        selectedJob.violation ? 'text-danger' : 'text-success'
+                      "
+                      >{{ selectedJob?.violation ? "Yes" : "No" }}</span
+                    ><span></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <ng-template #noRiroData>
+              <div class="d-flex justify-content-center align-items-center p-2">
+                No details found regarding this job.
+              </div>
+            </ng-template>
+          </ng-scrollbar>
+        </div>
+      </div>
+      <div class="row mb-2 mt-2">
+        <div class="float-end">
+          <button
+            class="btn default float-end w-auto"
+            (click)="OnSaveNewManualData()"
+          >
+            Save</button
+          ><button
+            class="btn default-outline float-end w-auto me-2"
+            (click)="addNewValue()"
+          >
+            <fa-icon icon="plus"></fa-icon>Add
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-2" [formGroup]="manualDataAddForm">
+        <div [formArrayName]="'newValues'">
+          <div
+            class="card mb-2"
+            id="data-card"
+            *ngFor="
+              let manualNewData of getNewValueControls.controls;
+              let i = index
+            "
+          >
+            <div class="" [formGroupName]="i">
+              <div class="row">
+                <div class="col-11">
+                  <div class="row mb-2">
+                    <div class="col-3">
+                      <div class="border rounded p-1">
+                        <div
+                          class="card block-card d-flex justify-content-center align-items-center"
+                          id="data-card"
+                        >
+                          <div>
+                            <div class="mb-2 text-prime">Rack Process</div>
+                            <div class="form-check">
+                              <input
+                                type="radio"
+                                [formControlName]="'rackProcess'"
+                                value="rack_in"
+                                [autofocus]="true"
+                                defaultValue="rack_in"
+                                id="rackin-{{ i }}"
+                                class="form-check-input"
+                              />
+                              <label
+                                for="rackin-{{ i }}"
+                                class="form-check-label text-muted"
+                                >Rack in</label
+                              >
+                            </div>
+                            <div class="form-check" id="custome">
+                              <input
+                                type="radio"
+                                [formControlName]="'rackProcess'"
+                                value="rack_out"
+                                defaultValue="rack_out"
+                                id="rackout-{{ i }}"
+                                class="form-check-input"
+                              />
+                              <label
+                                for="rackout-{{ i }}"
+                                class="form-check-label text-muted"
+                                >Rack Out
+                              </label>
+                            </div>
+                            <div class="form-check" id="custome">
+                              <input
+                                type="radio"
+                                [formControlName]="'rackProcess'"
+                                value="maintenance"
+                                defaultValue="maintenance"
+                                id="maintenance-{{ i }}"
+                                class="form-check-input"
+                              />
+                              <label
+                                for="maintenance-{{ i }}"
+                                class="form-check-label text-muted"
+                                >Maintenance</label
+                              >
+                            </div>
+                            <div class="form-check" id="custome">
+                              <input
+                                type="radio"
+                                [formControlName]="'rackProcess'"
+                                value="not_recognised"
+                                (change)="EditRack($event)"
+                                defaultValue="maintenance"
+                                id="notRecognized-{{ i }}"
+                                class="form-check-input"
+                              />
+                              <label
+                                for="notRecognized-{{ i }}"
+                                class="form-check-label text-muted"
+                                >Not Recognized</label
+                              >
+                            </div>
+                            <!-- <div class="form-check form-check-inline" id="custome">
+                          <input
+                            type="radio"
+                            [formControlName]="'rackProcess'"
+                            value="noProcess"
+                            defaultValue="noProcess"
+                            id="noProcess"
+                            class="form-check-input"
+                          />
+                          <label
+                            for="noProcess"
+                            class="form-check-label text-muted"
+                            >None</label
+                          >
+                        </div> -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <div class="border rounded p-2">
+                        <div
+                          class="card block-card d-flex justify-content-center align-items-center"
+                          id="data-card"
+                        >
+                          <div>
+                            <div class="mb-2 text-prime">
+                              Rack Process Method
+                            </div>
+                            <div class="form-check">
+                              <input
+                                value="automatic"
+                                id="automatic-{{ i }}"
+                                type="radio"
+                                [autofocus]="true"
+                                [formControlName]="'rackMethod'"
+                                class="form-check-input"
+                              />
+
+                              <label
+                                for="automatic-{{ i }}"
+                                class="form-check-label"
+                                >Automatic</label
+                              >
+                            </div>
+                            <div class="form-check">
+                              <input
+                                value="manual"
+                                id="manual-{{ i }}"
+                                type="radio"
+                                [autofocus]="true"
+                                [formControlName]="'rackMethod'"
+                                class="form-check-input"
+                              />
+                              <label
+                                for="manual-{{ i }}"
+                                class="form-check-label"
+                                >Manual</label
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <div class="border rounded p-2">
+                        <div class="card block-card" id="data-card">
+                          <label class="mb-2 text-prime">IRRD In Time</label>
+                          <div class="date-picker container">
+                            <input
+                              ngxDaterangepickerMd
+                              #datepicker1
+                              [locale]="{
+                                displayFormat: 'HH:mm:ss DD-MM-YYYY'
+                              }"
+                              (ngModelChange)="ondate1valueChange($event)"
+                              [timePicker]="true"
+                              [timePickerSeconds]="true"
+                              placeholder="Select Date"
+                              class="form-control"
+                              [singleDatePicker]="true"
+                              formControlName="IRRDInTime"
+                              required
+                            />
+                            <fa-icon icon="calendar"></fa-icon>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <div class="border rounded p-2">
+                        <div class="card block-card" id="data-card">
+                          <div class="">
+                            <label class="text-prime mb-2">IRRD Out Time</label>
+                            <div class="date-picker container">
+                              <input
+                                ngxDaterangepickerMd
+                                [locale]="{
+                                  displayFormat: 'HH:mm:ss DD-MM-YYYY'
+                                }"
+                                #datepicker2
+                                [singleDatePicker]="true"
+                                type="text"
+                                [timePicker]="true"
+                                placeholder="Select Date"
+                                class="form-control"
+                                formControlName="IRRDOutTime"
+                                required
+                              />
+                              <fa-icon icon="calendar"></fa-icon>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-3">
+                      <div class="border rounded p-2">
+                        <div
+                          class="card block-card d-flex justify-content-center align-items-center"
+                          id="data-card"
+                        >
+                          <div class="">
+                            <div class="text-prime mb-2">Tag Process</div>
+
+                            <div class="form-check">
+                              <input
+                                rows="5"
+                                value="tag"
+                                id="tag-{{ i }}"
+                                [autofocus]="true"
+                                type="radio"
+                                [formControlName]="'tag'"
+                                class="form-check-input"
+                              />
+
+                              <label for="tag-{{ i }}" class="form-check-label"
+                                >Tag</label
+                              >
+                            </div>
+                            <div class="form-check">
+                              <input
+                                rows="5"
+                                value="untag"
+                                id="untag-{{ i }}"
+                                type="radio"
+                                [formControlName]="'tag'"
+                                class="form-check-input"
+                              />
+
+                              <label
+                                for="untag-{{ i }}"
+                                class="form-check-label"
+                                >Untag</label
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-3">
+                      <div class="border rounded p-2">
+                        <div
+                          class="card block-card d-flex justify-content-center align-items-center"
+                          id="data-card"
+                        >
+                          <div class="">
+                            <div class="text-prime mb-2">Lock Process</div>
+                            <div class="form-check" id="custome">
+                              <input
+                                value="lock"
+                                id="lock-{{ i }}"
+                                type="radio"
+                                formControlName="lock"
+                                class="form-check-input"
+                              />
+
+                              <label for="lock-{{ i }}" class="form-check-label"
+                                >Lock</label
+                              >
+                            </div>
+
+                            <div class="form-check">
+                              <input
+                                value="unlock"
+                                id="unlock-{{ i }}"
+                                type="radio"
+                                formControlName="lock"
+                                class="form-check-input"
+                              />
+
+                              <label
+                                for="unlock-{{ i }}"
+                                class="form-check-label"
+                                >Unlock</label
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-3">
+                      <div class="border rounded p-2">
+                        <div
+                          class="card block-card d-flex justify-content-center align-items-center"
+                          id="data-card"
+                        >
+                          <div>
+                            <div class="mb-2 text-prime">
+                              Is PPE Violations?
+                            </div>
+                            <div class="form-check">
+                              <input
+                                [value]="true"
+                                id="ppe_yes-{{ i }}"
+                                type="radio"
+                                [autofocus]="true"
+                                [formControlName]="'ppeViolations'"
+                                class="form-check-input"
+                              />
+
+                              <label
+                                for="ppe_yes-{{ i }}"
+                                class="form-check-label"
+                                >Yes</label
+                              >
+                            </div>
+                            <div class="form-check">
+                              <input
+                                [value]="false"
+                                id="ppe_no-{{ i }}"
+                                type="radio"
+                                [autofocus]="true"
+                                [formControlName]="'ppeViolations'"
+                                class="form-check-input"
+                              />
+                              <label
+                                for="ppe_no-{{ i }}"
+                                class="form-check-label"
+                                >No</label
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <div class="border rounded p-2">
+                        <div
+                          class="card block-card d-flex justify-content-center align-items-center"
+                          id="data-card"
+                        >
+                          <div>
+                            <div class="mb-2 text-prime">
+                              Is Five Meter Violations?
+                            </div>
+                            <div class="form-check">
+                              <input
+                                [value]="true"
+                                id="five_meter_yes-{{ i }}"
+                                type="radio"
+                                [autofocus]="true"
+                                [formControlName]="'fiveMeter'"
+                                class="form-check-input"
+                              />
+
+                              <label
+                                for="five_meter_yes-{{ i }}"
+                                class="form-check-label"
+                                >Yes</label
+                              >
+                            </div>
+                            <div class="form-check">
+                              <input
+                                [value]="false"
+                                id="five_meter_no-{{ i }}"
+                                type="radio"
+                                [autofocus]="true"
+                                [formControlName]="'fiveMeter'"
+                                class="form-check-input"
+                              />
+                              <label
+                                for="five_meter_no-{{ i }}"
+                                class="form-check-label"
+                                >No</label
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-1">
+                  <button class="btn" (click)="deleteNewValue(i)">
+                    <fa-icon icon="trash" class="text-danger"></fa-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>

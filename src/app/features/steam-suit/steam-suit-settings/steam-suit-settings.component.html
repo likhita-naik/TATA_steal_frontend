@@ -1,0 +1,1173 @@
+<div class="container-fluid dashboard-content">
+  <div class="card-header">
+    <h5><b>Steam Suit Camera Details</b></h5>
+  </div>
+
+  <div class="row">
+    <div class="float-end">
+      <button
+        class="float-end btn primary me-2"
+        *ngIf="false"
+        (click)="StartAppModal(startAppModal)"
+      >
+        <!-- <fa-icon icon="plus"></fa-icon>  -->
+        Start Application
+      </button>
+
+      <button
+        class="float-end btn danger me-2"
+        *ngIf="appIsOn"
+        (click)="StartAppModal(stopAppModal)"
+      >
+        <!-- <fa-icon icon="plus"></fa-icon>  -->
+        Stop Application
+      </button>
+      <button
+        class="float-end btn default me-2"
+        (click)="OpenModal(SystemAddModal, 'lg')"
+      >
+        <fa-icon icon="plus"></fa-icon> Steam Suit Camera Details
+      </button>
+      <button
+        class="float-end btn me-2 default-outline"
+        (click)="OpenModal(addSetValueForm, 'md')"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        {{ l1Data.length > 0 ? "Edit" : "Add" }} Set Values
+      </button>
+    </div>
+  </div>
+  <div class="p-3">
+    <div class="row">
+      <div class="col-12">
+        <div class="card-body" id="">
+          <table class="table">
+            <thead>
+              <tr>
+                <th rowspan="2">S.No</th>
+
+                <th
+                  colspan="5"
+                  style="
+                    text-align: center;
+                    border-right: 1px solid #ccc !important;
+                  "
+                >
+                  First Camera Details
+                </th>
+                <th
+                  colspan="5"
+                  style="text-align: center; border-right: 1px solid #ccc"
+                >
+                  Second Camera Details
+                </th>
+                <th colspan="3" style="text-align: center">Alert details</th>
+              </tr>
+              <tr
+                style="background-color: rgb(247, 248, 250)"
+                class="text-muted"
+              >
+                <th>Camera Name</th>
+                <th>Camera Ip</th>
+                <th>Camera Image</th>
+                <th>Camera Status</th>
+                <th>Actions</th>
+
+                <th>Camera Name</th>
+                <th>Camera Ip</th>
+                <th>Camera Image</th>
+                <th>Camera Status</th>
+
+                <th>Actions</th>
+                <th scope="">Alarm Type</th>
+                <th scope="col">Alarm IP Address</th>
+                <th scope="col">Alarm Enable Status</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="(cameraDetails | async).length > 0; else noData">
+              <tr *ngFor="let camera of cameraDetails | async; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ camera.main_camera.cameraname }}</td>
+                <td>{{ camera.main_camera.camera_ip }}</td>
+                <td>
+                  <!-- <fa-icon icon="image"></fa-icon> -->
+                  <img
+                    class="cam-image"
+                    (click)="onImageClick(camera, 'first')"
+                    [src]="
+                      Server.IP +
+                      '/get_steamroi_image/' +
+                      camera.main_camera.imagename
+                    "
+                    alt=""
+                  />
+                </td>
+                <td>
+                  {{ camera.main_camera.camera_status ? "active" : "inactive" }}
+                </td>
+                <td>
+                  <fa-icon
+                    icon="trash"
+                    class="btn text-danger"
+                    (click)="IsDeleteCamera(deleteField, camera)"
+                    style="cursor: pointer"
+                  ></fa-icon>
+                </td>
+
+                <td>{{ camera.sub_camera.cameraname }}</td>
+                <td>{{ camera.sub_camera.camera_ip }}</td>
+                <td>
+                  <!-- <fa-icon icon="image"></fa-icon>  -->
+                  <img
+                    *ngIf="
+                      camera?.sub_camera
+                        ? keys(camera?.sub_camera).length > 0
+                        : false
+                    "
+                    class="cam-image"
+                    (click)="onImageClick(camera, 'second')"
+                    [src]="
+                      Server.IP +
+                      '/get_steamroi_image/' +
+                      camera.sub_camera.imagename
+                    "
+                    alt=""
+                  />
+                </td>
+                <td>
+                  <div
+                    *ngIf="
+                      camera?.sub_camera
+                        ? keys(camera?.sub_camera).length > 0
+                        : false
+                    "
+                  >
+                    {{
+                      camera.sub_camera.camera_status ? "Active" : "Inactive"
+                    }}
+                  </div>
+                </td>
+                <td>
+                  <fa-icon
+                    *ngIf="
+                      camera?.sub_camera
+                        ? keys(camera?.sub_camera).length > 0
+                        : false
+                    "
+                    (click)="IsDeleteCamera(deleteField, camera)"
+                    icon="trash"
+                    class="btn text-danger"
+                    style="cursor: pointer"
+                  ></fa-icon>
+                </td>
+                <td>{{ camera.alarm_details.alarm_type }}</td>
+                <td>{{ camera.alarm_details.alarm_ip_address }}</td>
+                <td>
+                  <div class="d-flex justify-content-center align-items-center">
+                  <div
+                    class="float-center"
+                    *ngIf="
+                      camera?.alarm_details
+                        ? keys(camera.alarm_details).length > 0
+                        : false
+                    "
+                  >
+                    <div class="form-check form-switch">
+                      <input
+                        class="form-check-input"
+                        [checked]="camera.alarm_details.alarm_enable"
+                        style="color: var(--label-color)"
+                        type="checkbox"
+                        role="switch"
+                        id="flexSwitchCheckDefault"
+                      />
+                      <!-- <label class="form-check-label" for="flexSwitchCheckDefault">Unallocated Job</label> -->
+                    </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <ng-template #noData>
+              <tbody>
+                <tr>
+                  <td colspan="14">
+                    <div class="card card-body" id="data-card">
+                      <div
+                        class="d-flex justify-content-center align-items-center"
+                        *ngIf="dataFetchStatus == 'success'"
+                      >
+                        <h4>No violation details found</h4>
+                      </div>
+                      <div
+                        class="d-flex justify-content-center align-items-center"
+                        *ngIf="dataFetchStatus == 'init'"
+                      >
+                        <span
+                          class="spinner-border spinner-border-sm me-2 text-prime"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        Loading...
+                      </div>
+                      <div
+                        class="d-flex justify-content-center align-items-center"
+                        *ngIf="dataFetchStatus == 'error'"
+                      >
+                        <h5>Error while fetching data</h5>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </ng-template>
+          </table>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template let-modal #SystemAddModal>
+  <div class="border p-3" style="background-color: white">
+    <div class="modal-header">
+      <h3>
+        <b>Add Steam Suit Detection Camera Details</b>
+      </h3>
+      <button
+        type="button"
+        class="btn-close float-end mb-2"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="mb-3 mt-2 d-block" style="margin-bottom: 10px !important">
+        <p-steps
+          [model]="items"
+          [style]="{ 'margin-bottom': '10px' }"
+          [activeIndex]="activeStepIndex"
+          [readonly]="true"
+        >
+          <ng-template let-index pTemplate="menuitem">
+            <div [ngClass]="{ 'completed-step': index <= activeStepIndex }">
+              {{ items[index].label }}
+            </div>
+          </ng-template></p-steps
+        >
+      </div>
+      <div class="step1 active m-3" id="step1">
+        <div class="card p-3" id="data-card">
+          <h5 class="m-3" class="text-custome">Door Camera Details</h5>
+          <div class="m-3 p-3" style="border-radius: 10px" id="step1">
+            <form
+              action=""
+              class=""
+              [formGroup]="AddCameraForm"
+              id="addCameraForm"
+            >
+              <div class="wrapper-two" id="input">
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    formControlName="area"
+                    placeholder="Area"
+                    class="form-control"
+                    [ngClass]="
+                      AddCameraForm.get('area').invalid &&
+                      AddCameraForm.get('area').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    id="Area"
+                  />
+                  <label for="Area">Area</label>
+                </div>
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    formControlName="department"
+                    placeholder="Department"
+                    class="form-control"
+                    [ngClass]="
+                      AddCameraForm.get('department').invalid &&
+                      AddCameraForm.get('department').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    id="department"
+                  />
+                  <label for="department">Department</label>
+                </div>
+              </div>
+
+              <!-- <div class="sub-header">Camera Details</div> -->
+              <div class="wrapper-two">
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    [ngClass]="
+                      AddCameraForm.get('cameraname').invalid &&
+                      AddCameraForm.get('cameraname').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    formControlName="cameraname"
+                    placeholder="Camera name"
+                    class="form-control"
+                    id="cameraname"
+                  />
+                  <label for="cameraname">Camera Name</label>
+                </div>
+                <div class="form-floating" id="cameraBrand">
+                  <ng-multiselect-dropdown
+                    #singleSelect
+                    [placeholder]="'Camera Brand'"
+                    [settings]="dropdownSettings2 | async"
+                    [data]="cameraBrandList | async"
+                    formControlName="camera_brand"
+                  >
+                  </ng-multiselect-dropdown>
+                  <!-- <label>Camera brand</label> -->
+                </div>
+              </div>
+
+              <div class="camera-display" id="input">
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    formControlName="username"
+                    placeholder="User name"
+                    class="form-control"
+                    [ngClass]="
+                      AddCameraForm.get('username').invalid &&
+                      AddCameraForm.get('username').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    id="username"
+                  />
+                  <label for="username">User name</label>
+                </div>
+                <div class="form-floating"></div>
+                <div></div>
+
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    type="password"
+                    formControlName="password"
+                    placeholder="Password"
+                    class="form-control"
+                    [ngClass]="
+                      AddCameraForm.get('password').invalid &&
+                      AddCameraForm.get('password').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    id="password"
+                  />
+                  <label for="password">Password</label>
+                  <span
+                    class="text-danger"
+                    *ngIf="AddCameraForm.get('password').hasError('pattern')"
+                    >password should not contain special charecters
+                  </span>
+                </div>
+                <div class="icon-circle-medium icon-circle-lg bg-info-light">
+                  <div class="or">
+                    <div class="ms-2 me-2 mt-2 mb-2">or</div>
+                  </div>
+                </div>
+                <div class="">
+                  <div class="form-floating">
+                    <input
+                      type="text"
+                      formControlName="rtsp_url"
+                      placeholder="User name"
+                      class="form-control"
+                      [ngClass]="
+                        AddCameraForm.get('rtsp_url').invalid &&
+                        AddCameraForm.get('rtsp_url').touched
+                          ? 'is-invalid'
+                          : ''
+                      "
+                      id="username"
+                    />
+                    <label for="username">Rtsp Url</label>
+                  </div>
+                </div>
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    formControlName="cameraip"
+                    placeholder="Camera ip"
+                    class="form-control"
+                    [ngClass]="
+                      AddCameraForm.get('cameraip').invalid &&
+                      AddCameraForm.get('cameraip').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    id="cameraip"
+                  />
+                  <label for="cameraip">Camera IP</label>
+                </div>
+
+                <div></div>
+                <div></div>
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    formControlName="port"
+                    placeholder="Port"
+                    class="form-control"
+                    [ngClass]="
+                      AddCameraForm.get('port').invalid &&
+                      AddCameraForm.get('port').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    id="port"
+                  />
+                  <label for="port">Port</label>
+                </div>
+              </div>
+
+              <div
+                class="alert alert-success mb-2 mt-2"
+                *ngIf="isSuccess"
+                role="alert"
+              >
+                {{ responseMessage }}
+              </div>
+              <div
+                class="alert alert-danger mb-2 mt-3"
+                *ngIf="isFail"
+                role="alert"
+              >
+                {{ responseMessage }}
+              </div>
+              <div
+                class="w-100 p-3 d-flex justify-centent-center align-items-center"
+              >
+                <button
+                  type="submit"
+                  class="mt-3 w-100"
+                  (click)="OnAddFirstCamera()"
+                  [disabled]="!isFormValid || isLoading"
+                >
+                  <span *ngIf="!isLoading">Submit</span>
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    role="status"
+                    aria-hidden="true"
+                    *ngIf="isLoading"
+                  ></span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- step2 starts -->
+      <div class="step2" id="step2">
+        <div class="card p-3" id="data-card">
+          <h5 class="m-3" class="text-custome">Wall Camera Details</h5>
+          <div
+            class="m-3 p-3 border border-rounded"
+            style="border-radius: 10px"
+          >
+            <form
+              action=""
+              class=""
+              [formGroup]="AddCameraForm"
+              id="addCameraForm"
+            >
+              <div class="wrapper-two" id="input">
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    [ngClass]="
+                      AddCameraForm.get('cameraname').invalid &&
+                      AddCameraForm.get('cameraname').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    formControlName="cameraname"
+                    placeholder="Camera name"
+                    class="form-control"
+                    id="cameraname"
+                  />
+                  <label for="cameraname">Camera Name</label>
+                </div>
+                <div class="form-floating" id="cameraBrand">
+                  <ng-multiselect-dropdown
+                    #singleSelect
+                    [placeholder]="'Camera Brand'"
+                    [settings]="dropdownSettings2 | async"
+                    [data]="cameraBrandList | async"
+                    formControlName="camera_brand"
+                  >
+                  </ng-multiselect-dropdown>
+                  <!-- <label>Camera brand</label> -->
+                </div>
+              </div>
+              <div class="camera-display" id="input">
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    formControlName="username"
+                    placeholder="User name"
+                    class="form-control"
+                    [ngClass]="
+                      AddCameraForm.get('username').invalid &&
+                      AddCameraForm.get('username').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    id="username"
+                  />
+                  <label for="username">User name</label>
+                </div>
+                <div class="form-floating"></div>
+                <div></div>
+
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    type="password"
+                    formControlName="password"
+                    placeholder="Password"
+                    class="form-control"
+                    [ngClass]="
+                      AddCameraForm.get('password').invalid &&
+                      AddCameraForm.get('password').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    id="password"
+                  />
+                  <label for="password">Password</label>
+                </div>
+                <div class="icon-circle-medium icon-circle-lg bg-info-light">
+                  <div class="or">
+                    <div class="ms-2 me-2 mt-2 mb-2">or</div>
+                  </div>
+                </div>
+                <div class="">
+                  <div class="form-floating">
+                    <input
+                      type="text"
+                      formControlName="rtsp_url"
+                      placeholder="User name"
+                      class="form-control"
+                      [ngClass]="
+                        AddCameraForm.get('rtsp_url').invalid &&
+                        AddCameraForm.get('rtsp_url').touched
+                          ? 'is-invalid'
+                          : ''
+                      "
+                      id="username"
+                    />
+                    <label for="username">Rtsp Url</label>
+                  </div>
+                </div>
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    formControlName="cameraip"
+                    placeholder="Camera ip"
+                    class="form-control"
+                    [ngClass]="
+                      AddCameraForm.get('cameraip').invalid &&
+                      AddCameraForm.get('cameraip').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    id="cameraip"
+                  />
+                  <label for="cameraip">Camera IP</label>
+                </div>
+
+                <div></div>
+                <div></div>
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    formControlName="port"
+                    placeholder="Port"
+                    class="form-control"
+                    [ngClass]="
+                      AddCameraForm.get('port').invalid &&
+                      AddCameraForm.get('port').touched
+                        ? 'is-invalid'
+                        : ''
+                    "
+                    id="port"
+                  />
+                  <label for="port">Port</label>
+                </div>
+              </div>
+
+              <div
+                class="alert alert-success mb-2 mt-2"
+                *ngIf="isSuccess"
+                role="alert"
+              >
+                {{ responseMessage }}
+              </div>
+              <div
+                class="alert alert-danger mb-2 mt-3"
+                *ngIf="isFail"
+                role="alert"
+              >
+                {{ responseMessage }}
+              </div>
+              <div class="w-100 p-3 column-flex">
+                <button
+                  type="submit"
+                  class="mt-3 w-100"
+                  (click)="OnAddSecondCamera()"
+                  [disabled]="!isFormValid || isLoading"
+                >
+                  <span *ngIf="!isLoading">Submit</span>
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    role="status"
+                    aria-hidden="true"
+                    *ngIf="isLoading"
+                  ></span>
+                </button>
+                <button
+                  class="w-100 btn border rounded"
+                  (click)="SkipSecondcamera()"
+                >
+                  <span>Skip Second Camera</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- step2 ends -->
+      <!-- step3 starts -->
+      <div class="step3" id="step3">
+        <!-- alert settings -->
+        <form action="" class="" [formGroup]="alertForm">
+          <div class="d-flex justify-content-center align-items-center">
+            <div class="wrapper p-3 border border-rounded" id="input">
+              <div class="form-group p-3">
+                <!-- <div class="form-control"> -->
+                <label class="label mb-3">Select Alarm Type</label><br />
+                <div class="form-check form-check-inline" id="custome">
+                  <input
+                    type="radio"
+                    formControlName="alarmType"
+                    value="hooter"
+                    (change)="hooterOrRelayConfig($event)"
+                    defaultValue="hooter"
+                    id="hooter"
+                    class="form-check-input"
+                  />
+                  <label for="hooter" class="form-check-label text-muted"
+                    >Hooter</label
+                  >
+                  <!-- </div> -->
+                </div>
+                <div class="form-check form-check-inline" id="custome">
+                  <input
+                    type="radio"
+                    formControlName="alarmType"
+                    value="relay"
+                    (change)="hooterOrRelayConfig($event)"
+                    defaultValue="relay"
+                    id="relay"
+                    class="form-check-input"
+                  />
+                  <label for="relay" class="form-check-label text-muted"
+                    >Relay</label
+                  >
+                </div>
+              </div>
+              <div
+                class="form-floating"
+                *ngIf="alertForm.get('alarmType').value == 'hooter'"
+              >
+                <input
+                  type="text"
+                  formControlName="hooterIp"
+                  placeholder="User name"
+                  class="form-control"
+                  [ngClass]="
+                    AddCameraForm.get('hooterIp').invalid &&
+                    AddCameraForm.get('hooterIp').touched
+                      ? 'is-invalid'
+                      : ''
+                  "
+                  id="hooterIp"
+                />
+                <label for="hooterIp">Hooter IP</label>
+              </div>
+              <div
+                class="form-floating"
+                *ngIf="alertForm.get('alarmType').value == 'relay'"
+              >
+                <input
+                  type="text"
+                  formControlName="relayIp"
+                  placeholder="User name"
+                  class="form-control"
+                  [ngClass]="
+                    AddCameraForm.get('relayIp').invalid &&
+                    AddCameraForm.get('relayIp').touched
+                      ? 'is-invalid'
+                      : ''
+                  "
+                  id="relayIp"
+                />
+                <label for="relayIp">Relay IP</label>
+              </div>
+
+              <div
+                class="p-3 column-flex justify-centent-center align-items-center"
+              >
+                <button
+                  type="submit"
+                  class="mt-3 w-100"
+                  (click)="onAddAlarm()"
+                  [disabled]="false"
+                >
+                  <span *ngIf="!isLoading">Submit</span>
+                  <span
+                    class="spinner-border spinner-border-sm me-1"
+                    role="status"
+                    aria-hidden="true"
+                    *ngIf="isLoading"
+                  ></span>
+                </button>
+                <button
+                  class="w-100 btn border rounded"
+                  (click)="OnCloseModals()"
+                >
+                  <span>Skip</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!-- end of alert settings-->
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template let-modal #roiConfig>
+  <div class="modal-body">
+    <app-steam-suit-roi
+      [cameraData]="cameraRoiData"
+      (onModalClose)="onCamRoiModalClose($event)"
+    ></app-steam-suit-roi>
+  </div>
+</ng-template>
+
+<ng-template let-modal #addSetValueForm>
+  <div class="modal-header text-custome">
+    <h4>{{ l1Data.length > 0 ? "Edit" : "Add" }} Set Values</h4>
+    <button
+      type="button"
+      class="btn-close float-end mb-2"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="">
+      <form action="" class="" [formGroup]="setValueForm" id="addCameraForm">
+        <div class="w-100 p-3" id="input">
+          <div class="mb-3" formGroupName="set1">
+            <span class="mb-2">Set-1 (On/Off) : </span>
+
+            <div class="form-group">
+              <input
+                type="text"
+                formControlName="value"
+                placeholder="0 or 1"
+                class="form-control"
+                id="cameraname"
+                [ngClass]="{
+                  'is-invalid': setValueForm.get('set1').get('value').invalid
+                }"
+              />
+              <div *ngIf="setValueForm.get('set1').get('value').errors != null">
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('set1').get('value').errors['min'] !=
+                      undefined &&
+                    setValueForm.get('set1').get('value').errors['pattern'] ==
+                      undefined
+                  "
+                  >Allowed value is 0 or 1</span
+                >
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('set1').get('value').errors['pattern'] !=
+                    undefined
+                  "
+                  >Allowed value is 0 or 1
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3" formGroupName="set2">
+            <span class="mb-2">Set-2 (Operating/Not Operating): </span>
+
+            <div class="form-group">
+              <input
+                type="text"
+                formControlName="value"
+                placeholder="0 or 1"
+                class="form-control"
+                id="cameraname"
+                [ngClass]="{
+                  'is-invalid': setValueForm.get('set2').get('value').invalid
+                }"
+              />
+              <div *ngIf="setValueForm.get('set2').get('value').errors != null">
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('set2').get('value').errors['min'] !=
+                      undefined &&
+                    setValueForm.get('set2').get('value').errors['pattern'] ==
+                      undefined
+                  "
+                  >Allowed value is 0 or 1</span
+                >
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('set2').get('value').errors['pattern'] !=
+                    undefined
+                  "
+                  >Allowed value is 0 or 1
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3" formGroupName="set3">
+            <span class="mb-2">Set-3 (Remotely/Not Remotely) : </span>
+
+            <div class="form-group">
+              <input
+                type="text"
+                formControlName="value"
+                placeholder="0 or 1"
+                class="form-control"
+                id="cameraname"
+                [ngClass]="{
+                  'is-invalid': setValueForm.get('set3').get('value').invalid
+                }"
+              />
+              <div *ngIf="setValueForm.get('set3').get('value').errors != null">
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('set3').get('value').errors['min'] !=
+                      undefined &&
+                    setValueForm.get('set3').get('value').errors['pattern'] ==
+                      undefined
+                  "
+                  >Allowed value is 0 or 1</span
+                >
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('set3').get('value').errors['pattern'] !=
+                    undefined
+                  "
+                  >Allowed value is 0 or 1
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3" formGroupName="set4">
+            <span class="mb-2">Set-4 (Healthy/Not Healthy): </span>
+
+            <div class="form-group">
+              <input
+                type="text"
+                formControlName="value"
+                placeholder="0 or 1"
+                class="form-control"
+                id="cameraname"
+                [ngClass]="{
+                  'is-invalid': setValueForm.get('set4').get('value').invalid
+                }"
+              />
+              <div *ngIf="setValueForm.get('set4').get('value').errors != null">
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('set4').get('value').errors['min'] !=
+                      undefined &&
+                    setValueForm.get('set4').get('value').errors['pattern'] ==
+                      undefined
+                  "
+                  >Allowed value is 0 or 1</span
+                >
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('set4').get('value').errors['pattern'] !=
+                    undefined
+                  "
+                  >Allowed value is 0 or 1
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <span class="mb-2">Person Count for Manual : </span>
+
+            <div class="form-group">
+              <input
+                type="text"
+                formControlName="manualPersonCount"
+                placeholder="0 or 1"
+                class="form-control"
+                id="cameraname"
+                [ngClass]="{
+                  'is-invalid': setValueForm.get('manualPersonCount').invalid
+                }"
+              />
+              <div *ngIf="setValueForm.get('manualPersonCount').errors != null">
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('manualPersonCount').errors['min'] !=
+                      undefined &&
+                    setValueForm.get('manualPersonCount').errors['pattern'] ==
+                      undefined
+                  "
+                  >Value should be number</span
+                >
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('manualPersonCount').errors['pattern'] !=
+                    undefined
+                  "
+                  >Value should be number
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <span class="mb-2">Person Count for Remote : </span>
+
+            <div class="form-group">
+              <input
+                type="text"
+                formControlName="remotePersonCount"
+                placeholder=""
+                class="form-control"
+                id="cameraname"
+                [ngClass]="{
+                  'is-invalid': setValueForm.get('remotePersonCount').invalid
+                }"
+              />
+              <div *ngIf="setValueForm.get('remotePersonCount').errors != null">
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('remotePersonCount').errors['min'] !=
+                      undefined &&
+                    setValueForm.get('remotePersonCount').errors['pattern'] ==
+                      undefined
+                  "
+                  >Value should be number</span
+                >
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('remotePersonCount').errors['pattern'] !=
+                    undefined
+                  "
+                  >Value should be number
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <span class="mb-2">Analytics Time(in seconds) : </span>
+
+            <div class="form-group">
+              <input
+                type="text"
+                formControlName="analyticsTime"
+                placeholder=""
+                class="form-control"
+                id="cameraname"
+                [ngClass]="{
+                  'is-invalid': setValueForm.get('analyticsTime').invalid
+                }"
+              />
+              <div *ngIf="setValueForm.get('analyticsTime').errors != null">
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('analyticsTime').errors['min'] !=
+                      undefined &&
+                    setValueForm.get('analyticsTime').errors['pattern'] ==
+                      undefined
+                  "
+                  >Value should be number</span
+                >
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    setValueForm.get('analyticsTime').errors['pattern'] !=
+                    undefined
+                  "
+                  >Value should be number
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 d-flex justify-centent-center align-items-center">
+            <button
+              type="submit"
+              class="mt-3 w-100"
+              (click)="AddSetValues()"
+              [disabled]="setValueForm.invalid"
+            >
+              <span *ngIf="!isLoading">Submit</span>
+              <span
+                class="spinner-border spinner-border-sm me-1"
+                role="status"
+                aria-hidden="true"
+                *ngIf="isLoading"
+              ></span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-template>
+<ng-template let-modal #startAppModal>
+  <div class="modal-body">
+    <div class="modal-confirm" id="startApp">
+      <div class="modal-content">
+        <!-- <div class="modal-header"> -->
+        <!-- <div class="icon-box">
+                <i class="material-icons">&#xE5CD;</i>
+              </div>
+              <h4 class="modal-title w-100">Are you sure?</h4> -->
+        <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+        <!-- </div> -->
+        <div class="modal-body flex-column">
+          <h5 class="text-dark">
+            Do you want to start the Steam Suit Detection Application ?
+          </h5>
+          <!-- <p class="text-muted"><small> If the jobsheet contains panels of named 'NA' it will be deleted.So Please edit those panels,further proceed</small></p> -->
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="modal.close('Cross click')"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn default"
+            (click)="StartApplication()"
+          >
+            Start
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template let-modal #deleteField>
+  <div class="modal-body">
+    <div class="modal-confirm" id="deletemodal">
+      <div class="modal-content">
+        <div class="modal-header flex-column">
+          <!-- <div class="icon-box">
+                <i class="material-icons">&#xE5CD;</i>
+              </div> -->
+          <h4 class="modal-title w-100">Are you sure?</h4>
+          <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+        </div>
+        <div class="modal-body">
+          <p>
+            Do you really want to delete this Camera? This process cannot be
+            undone.
+          </p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="modal.close('Cross click')"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            (click)="DeleteFirstCamera()"
+            class="btn danger"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template let-modal #stopAppModal>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="modal-header flex-column">
+          <div class="icon-box">
+            <i class="material-icons">&#xE5CD;</i>
+          </div>
+          <h4 class="modal-title w-100">Are you sure?</h4>
+          <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+        </div>
+        <div class="modal-body">
+          <p>Do you really want to stop this Application?</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="modal.close('Cross click')"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="button" class="btn danger" (click)="StopApplication()">
+            Stop
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,138 @@
+.card.analytics .card-body h3{
+  /* max-height: 140px; */
+  max-width: inherit !important;
+  overflow-x:hidden !important;
+  text-overflow: clip !important;
+  overflow-y: hidden !important;
+  
+}
+
+#analytic .card {
+  max-height: 6em;
+  min-height: 6em;
+  padding:0.3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* #analytic .card .card-body{
+  display: flex;
+  justify-content: center;
+  /* align-items:center; */
+
+
+
+
+.canvas-class{
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 4px;
+  overflow-x: scroll !important;
+  overflow-y: scroll !important;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+body {
+  font-family: sans-serif;
+  padding: 50px 100px;
+  text-align: center;
+}
+h2 {
+  font-size: 16px;
+  margin-bottom: 1.5em;
+  color: #333;
+}
+
+#canvas-container{
+  max-width: 100%;
+  /* min-width: 100%; */
+  max-height: 100%;
+  /* min-width: 100%; */
+  overflow-x: scroll;
+  overflow-y: scroll;
+  position: relative;
+
+}
+
+/**
+ * Simple HTML/CSS switch
+ */
+ #container-canvas ng-scrollbar {
+  --scrollbar-size: 20px;
+  --scrollbar-thumb-color: rgb(155, 154, 154);
+  --scrollbar-hover-size: 20px;
+  --scrollbar-track-color: rgba(241, 241, 241, 0);
+  --scrollbar-border-radius: 10px;
+
+  height: 200px;
+
+  
+}
+
+#table ng-scrollbar {
+  --scrollbar-size: 10px;
+  --scrollbar-thumb-color: rgb(155, 154, 154);
+  --scrollbar-hover-size: 15px;
+  --scrollbar-track-color: rgba(241, 241, 241, 0);
+  --scrollbar-border-radius: 10px;
+
+  height: 200px;
+
+  
+}
+
+ drag-scroll {
+  width: 100% !important;
+  max-width: 100vw !important;
+  height: 350px !important;
+  display: flex !important;
+  z-index: 18 !important;
+ }
+
+
+ .btn-wrapper{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+}
+.box-container{
+width:100%;
+max-width:100%;
+overflow-x: auto;
+display: block;
+transition: all 0.5s;
+
+}
+.box-md{
+  display:inline-block;
+  justify-content: center;
+  align-items: center;
+  width:10rem;
+  height:5rem;
+  max-width:100%;
+  overflow: scroll;
+  border: 1px solid #ccc;
+  padding:0.3rem;
+  margin:0.2rem;
+  border-radius: 7px;
+}
+
+.box-md span{
+  padding: 0.2rem 0.5rem !important;
+}
+
+.flex{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.CC-container{
+  background-color: var(--prime-color);
+  color:white;
+  border-radius: 5px;
+
+}
+.p-menubar-overlay {
+  position: absolute;
+  top: 50px; /* Adjust the top position as needed */
+  right: 0; /* Adjust the right position as needed */
+}

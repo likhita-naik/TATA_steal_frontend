@@ -1,0 +1,126 @@
+.image{
+    margin-left: 0px;
+    margin-right: 0px;
+    height: 174px;
+    width: 330px;
+    border-radius: 5px 5px 5px  5px !important;
+    object-fit:contain;
+}
+.card.analytics.card-body{
+   
+  display: flex !important;
+  justify-content: center !important;
+ align-items: center !important;  
+overflow-x: auto !important;
+/* padding-left:10px !important;
+padding-right:10px !important; */
+
+ 
+}
+  
+  
+#info-card .card{
+  max-height: 7rem !important;
+  min-height: 7rem !important;
+  overflow-y: auto !important;
+}
+
+#info-card .card h4{
+  max-width: inherit !important;
+  text-overflow: ellipsis !important;
+  overflow-x: auto !important;
+  
+}
+  ngb-pagination ::ng-deep ul > li:not(.active) > a {
+    background-color:  #f8f8f8 !important;
+    border-radius: 5px !important;
+    box-shadow: none;
+  }
+  
+  ngb-pagination ::ng-deep ul > li.active > a {
+    background-color: hsl(212, 50%, 35%) !important;
+    border-radius: 5px!important;
+    box-shadow: none;
+
+  }
+  
+
+ngb-pagination ::ng-deep ul > li:not(.active) > a {
+  background-color:  #f8f8f8 !important;
+  border-radius: 5px !important;
+  /* border: 1px solid var(--label-color) !important; */
+  color: var(--label-color) !important;
+  box-shadow: none;
+}
+
+ngb-pagination ::ng-deep ul > li.active > a {
+  background-color: var(--label-color) !important;
+  border-radius: 5px !important;
+  border: 1px solid var(--label-color) !important;
+
+  box-shadow: none;
+
+}
+#violationCount .card.card-body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+td{
+  text-align: center !important;
+  align-content: center !important;
+}
+
+td > div,span,button{
+  display: flex !important;
+  justify-content:center !important;
+  align-items: center !important;
+
+}
+
+.image-container{
+  max-width:inherit !important;
+  overflow-x: scroll !important;
+}
+
+.tableFixHead {
+  height: inherit !important;
+  overflow-y: scroll; /* make the table scrollable if height is more than 200 px  */
+  max-height: inherit !important; /* gives an initial height of 200px to the table */
+}
+.tableFixHead table {
+  height: 100%;
+  max-height: 100%;
+}
+
+.tableFixHead thead {
+  /* z-index: 1000 !important; */
+  height: 10%;
+  opacity: 1 !important;
+}
+.tableFixHead thead {
+  z-index: 1000 !important;
+  position: sticky; /* make the table heads sticky */
+  top: 0px; /* table head will be placed from the top of the table and sticks to it */
+  background: #f8f9fa !important;
+  border-collapse: separate;
+  opacity: 1;
+  /* border:1px #dee2e6 solid !important; */
+}
+.tableFixHead tbody {
+  z-index: 700 !important;
+  flex-grow: 1;
+  /* max-height: 100% !important; */
+  overflow-y: scroll !important;
+}
+.tableFixHead tbody th {
+  position: sticky !important;
+  left: 0;
+  background: #f8f9fa;
+  z-index: 1;
+}
+table {
+  width: 100%;
+}
