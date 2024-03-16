@@ -166,6 +166,7 @@ export class CameraSettingsComponent
   cameraBrandList: Observable<any[]> = of([{ id: 1, text: "cp_plus" }]);
   selectedBrand: FormControl = new FormControl();
   cameraImages: any[] = [];
+  checkApplicationStatusInterval:any
 
   headers: any[] = [
     { item_text: "SI No", item_id: 0 },
@@ -284,6 +285,7 @@ export class CameraSettingsComponent
         presetId: new FormControl("", Validators.required),
       })
     );
+    this.checkApplicationStatusInterval = setInterval(()=>{
     this.server.CheckApplicationStatus().subscribe((response: any) => {
       console.log(response);
       if (response.success) {
@@ -307,7 +309,10 @@ export class CameraSettingsComponent
         });
         this.isSpillageActive = process4 ? process4.process_status : "";
       }
-    });
+    }
+    );
+  },this.server.checkApplicationStatusInterval
+  )
 
     this.server.GetMockDrillStatus().subscribe(
       (response: any) => {
@@ -360,6 +365,7 @@ export class CameraSettingsComponent
   }
 
   ngOnInit(): void {
+    this.CheckApplicationStatus();
     this.startAppConfig.get("rtspConfig").setValue("0");
     this.server.CameraSettingsChanges.subscribe((value: boolean) => {
       if (value) {
@@ -1650,7 +1656,38 @@ export class CameraSettingsComponent
     );
   }
 
+  CheckApplicationStatus(){
+
+    this.server.CheckApplicationStatus().subscribe((response: any) => {
+      console.log(response);
+      if (response.success) {
+        //this.isActive=true
+        localStorage.setItem("appStatus", response.message[0].process_status);
+        var process = response.message.find((el: any) => {
+          return el.process_name == "docketrun-app" ? el : "";
+        });
+        this.isActive = process.process_status;
+
+        var process2 = response.message.find((el: any) => {
+          return el.process_name == "smrec" ? el : "";
+        });
+        var process3 = response.message.find((el: any) => {
+          return el.process_name == "fire_smoke_app" ? el : "";
+        });
+        this.isActive3 = process3.process_status;
+
+        var process4 = response.message.find((el: any) => {
+          return el.process_name == "spillage_app" ? el : "";
+        });
+        this.isSpillageActive = process4 ? process4.process_status : "";
+      }
+    }
+    );
+
+  }
+
   ngOnDestroy(): void {
     this.modalService.dismissAll();
+    clearInterval(this.checkApplicationStatusInterval)
   }
 }

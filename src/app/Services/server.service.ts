@@ -34,6 +34,7 @@ export class ServerService {
   ppeLiveInterval: any;
   public userType: string = "admin";
   CameraSettingsChanges: Subject<boolean> = new Subject();
+  checkApplicationStatusInterval:number
 
   isCollapse: Subject<boolean> = new Subject();
   constructor(
@@ -59,6 +60,7 @@ export class ServerService {
     this.unplannedInterval=res.unallocatedInterval
     this.delay=res.hooterDelay
     this.relayDelay=res.relayDelay
+    this.checkApplicationStatusInterval = res.checkApplicationStatusInterval
   }
 
   JobSheetUpload(file: any): Observable<HttpResponse<any>> {
@@ -523,7 +525,7 @@ export class ServerService {
   }
 
   GetLicenseDetails() {
-    return this.http.get(this.IP + "/license_count");
+    return this.http.get(this.IP + "/licenseNewcount");
   }
   GetPPECameraDetails() {
     return this.http.get(this.IP + "/camera_detailsPPE");

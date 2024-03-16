@@ -290,10 +290,10 @@
                                                         <div *ngFor="let key of objectKeys(object);">
                                                             
                                                             <div class="items"
-                                                                *ngIf="(key==='Helmet'?object[key]==='none'?false:object[key]===false?true:false:key.toLowerCase()==='vest'?object[key]!=='vest'?true:false:false)">
+                                                                *ngIf="(key==='Helmet'?object[key]==='none'?false:object[key]===false?true:false:key.toLowerCase()==='vest'?object[key]==='null'?false:object[key]==='none'?false:object[key]!=='vest'?true:false:false)">
                                                                 <input id="item1" type="checkbox"
-                                                                    [checked]="key==='Vest'?object[key].toLowerCase()=='vest'?true:false:object[key]">
-                                                                <label for="item1">{{key==='Vest'?'Vest':key}}</label>
+                                                                    [checked]="key==='Vest'?object[key].toLowerCase()=='vest'?object[key]==='null'?false:object[key]==='none'?false:true:false:object[key]">
+                                                                <label for="item1">{{key==='Vest'?object[key]:key}}</label>
                                                             </div>
 
                                                         </div>

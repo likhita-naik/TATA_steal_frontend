@@ -2,27 +2,31 @@ import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { UserManagementComponent } from './user-management.component';
-import { ServerService } from '../Services/server.service';
-import { AuthGuard } from '../Services/auth.guard';
+
 import { MessageService } from 'primeng/api';
 import { NgbCarouselConfig } from '@ng-bootstrap/ng-bootstrap';
+import { ServerService } from 'src/app/Services/server.service';
+import { AuthGuard } from 'src/app/Services/auth.guard';
+import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
+import { CommonModules } from "../../common/common.module";
+
 const routes:Routes=[{path:'',component:UserManagementComponent}]
 
 
 @NgModule({
-  declarations: [],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes), 
-  ],
-
-  exports:[RouterModule],
-    
-    providers:
-     [ServerService, 
-        DatePipe, 
+    declarations: [UserManagementComponent],
+    exports: [RouterModule],
+    providers: [ServerService,
+        DatePipe,
         AuthGuard,
         MessageService,
         NgbCarouselConfig],
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        FormsModule,
+        ReactiveFormsModule,
+        CommonModules
+    ]
 })
 export class UserManagementModule { }

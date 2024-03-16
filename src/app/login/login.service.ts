@@ -2,6 +2,8 @@ import { DatePipe } from '@angular/common';
 import { HttpClient, HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+
+// import * as FingerprintJS from 'fingerprintjs2';
 import { Observable } from 'rxjs';
 // import { LocalStorage } from '@ngx-pwa/local-storage';
 
@@ -112,5 +114,25 @@ export class LoginService {
   UserLogout(httpOptions:any){
     return this.http.get(this.IP+'/user/logout',httpOptions)
   }
+
+  // encodePassword(password: string): string {
+  //   let encodedPassword = '';
+  //   for (let i = 0; i < password.length; i++) {
+  //     encodedPassword += password.charCodeAt(i) + ' '; // Concatenate ASCII value of each character
+  //   }
+  //   return encodedPassword.trim(); // Trim to remove trailing space
+  // }
+
+  encodePassword(password: string): string {
+    let encodedPassword = '';
+    for (let i = 0; i < password.length; i++) {
+      encodedPassword += password.charCodeAt(i);
+      if (i !== password.length - 1) {
+        encodedPassword += ', '; // Add comma and space if it's not the last character
+      }
+    }
+    return encodedPassword;
+  }
+  
   
 }

@@ -141,6 +141,7 @@ export class CameraRoiComponent implements OnInit, AfterViewInit, OnDestroy {
     Validators.min(1),
   ])
   pinchRole:FormControl=new FormControl(false,Validators.requiredTrue)
+  
   ccObjectsMinMax: any[] = [
     new FormGroup({
       object: new FormControl("person"),
@@ -175,6 +176,9 @@ export class CameraRoiComponent implements OnInit, AfterViewInit, OnDestroy {
       ]),
     }),
   ]);
+
+  
+  tagName: FormControl = new FormControl("", Validators.required);
   SensGizInfo: any[] = [];
   sensgizModal: any;
   crowdCountRoiName: FormControl = new FormControl("", Validators.required);
@@ -257,6 +261,9 @@ export class CameraRoiComponent implements OnInit, AfterViewInit, OnDestroy {
   alertType: FormControl = new FormControl("", Validators.required);
   @ViewChild("ROINameChangeModal", { static: false })
   ROIChangeModal: TemplateRef<any>;
+  @ViewChild("TagNameChangeModal", { static: false })
+  TagChangeModal: TemplateRef<any>;
+
   @ViewChild("canvasContainer", { static: true }) canvasContainer: ElementRef;
   @ViewChild("ROINameModal", { static: false }) RoiNameModal: TemplateRef<any>;
   @ViewChild("TCNameModal", { static: false }) TCNameModal: TemplateRef<any>;
@@ -938,6 +945,7 @@ export class CameraRoiComponent implements OnInit, AfterViewInit, OnDestroy {
               label_name: this.classIds,
               hooter_shutdown_time:this.hooterShutdownTime.value,
               pinch_role:this.pinchRole.value,
+              tag_name:this.tagName.value,
               alarm_type: {
                 hooter: null,
                 relay: null,
@@ -1605,6 +1613,20 @@ export class CameraRoiComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+
+  AlterTagName(id: number) {
+    this.isEditText = !this.isEditText;
+    this.selectedId = id;
+    this.selectedEditId = id;
+    this.tempROIID.setValue(this.allCameraData[id].roi_name);
+    this.modalService.open(this.TagChangeModal, {
+      size: "small",
+      animation: true,
+      centered: true,
+      backdrop: "static",
+    });
+  }
+
   ChangeROIName() {
     this.allCameraData[this.selectedId].roi_name = this.tempROIID.value;
 
@@ -1616,6 +1638,19 @@ export class CameraRoiComponent implements OnInit, AfterViewInit, OnDestroy {
     this.modalService.dismissAll();
     this.SaveEditedRoi();
   }
+
+  // ChangeTagName() {
+  //   this.allCameraData[this.selectedId].tag_name = this.tempTagID.value;
+
+  //   this.allCameraData[this.selectedId].roi_name_canvas.text =
+  //     this.tempROIID.value;
+  //   this.allCameraData[this.selectedId].roi_data.roi_name =
+  //     this.tempROIID.value;
+  //   this.canvas.renderAll();
+  //   this.modalService.dismissAll();
+  //   this.SaveEditedRoi();
+  // }
+
   ChangeCCName() {
     this.CcRois[this.selectedId].roi_name = this.tempROIID.value;
 

@@ -134,7 +134,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       const tempResponse = { ...Rdata };
       if (tempResponse.success) {
         var cviol = [...tempResponse.message];
-        console.log(cviol, "cviol");
+        // console.log(cviol, "cviol");
         if (tempResponse.now_live_count - this.prevLiveCount > 0) {
           if (this.alert) {
             for (
@@ -142,7 +142,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
               i >= 0;
               i--
             ) {
-              console.log(i, "i");
+              // console.log(i, "i");
               var todayi = new Date();
               var tempi = new Date(cviol[i].timestamp);
 

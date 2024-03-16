@@ -7,17 +7,18 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   providedIn: 'root'
 })
 export class CreateAccountService {
+
   IP:string
 
   constructor(
     public http:HttpClient,
     public snackbar:MatSnackBar,
     public datePipe:DatePipe
-  ) {
+  ) 
+  {
     var res=this.loadConfigFile('assets/config.json')
     res=JSON.parse(res)
     this.IP=res.IP
-    
    }
 
    loadConfigFile(filepath:any){
@@ -39,8 +40,7 @@ export class CreateAccountService {
     else{
         return null
     }
-  }
-  
+  } 
   }
 
   dateTransform(date:Date){
@@ -63,4 +63,17 @@ export class CreateAccountService {
   CreateAccount(data:any){
     return this.http.post(this.IP+'/admin/admin_signup',data)
   }
+
+  encodePassword(password: string): string {
+    let encodedPassword = '';
+    for (let i = 0; i < password.length; i++) {
+      encodedPassword += password.charCodeAt(i);
+      if (i !== password.length - 1) {
+        encodedPassword += ', '; // Add comma and space if it's not the last character
+      }
+    }
+    return encodedPassword;
+  }
+
+  
 }

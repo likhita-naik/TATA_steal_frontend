@@ -163,13 +163,14 @@
                   "
                 >
                   <div class="" id="data-card"><h5>ROI Details</h5></div>
-                  <table class="table">
-                    <thead>
+                  <table class="table"  >
+                    <thead  >
                       <tr style="text-align: center">
                         <th scope="col">S.No</th>
                         <th scope="col">ROI name</th>
                         <th scope="col">Objects</th>
-                        <th>Pinch Role </th>
+                        <th scope="col">Pinch Role </th>
+                        <th scope="col">Tag Name</th>
                         <th scope="col">Alarms</th>
                         <th scope="col">
                           <fa-icon class="me-2" icon="cog"></fa-icon>Settings
@@ -178,11 +179,11 @@
                     </thead>
                     <tbody>
                       <tr
-                        style="text-align: center"
-                        *ngFor="
-                          let ROIs of cameraData[0].roi_data;
-                          let i = index
-                        "
+                        style="text-align: center" *ngFor="
+                        let ROIs of cameraData[0].roi_data;
+                        let i = index
+                      "
+                        
                       >
                         <td>{{ i + 1 }}</td>
                         <td (dblclick)="AlterROIName(i)">
@@ -210,9 +211,36 @@
                                 [checked]="ROIs?.pinch_role"
                                 [id]="'pinchRole' + i"
                               />
+
+                             
+
                             </div>
                           </div>
                         </td>
+
+                        <td >
+                          <!-- <div
+                            class="d-flex justify-content-center align-items-center"
+                          >
+                            <div>
+                              <span>Tag Name</span>
+                              <input
+                                style="color: var(--primary-color) !important"
+                                type="text"
+                               
+                                [id]="'tagName' + i"
+                              />
+
+                             
+
+                            </div>
+                          </div> -->
+
+                          <div  class="flex" >
+                            {{ ROIs.tag_name }}
+                          </div>
+                        </td>
+
                         <td>
                           <div class="">
                             <div class="flex">
@@ -1960,16 +1988,36 @@
                   name=""
                   id="pinchRole"
                 />
-                <label for="pinchRole" c lass="form-check-label"
+                <label for="pinchRole" class="form-check-label"
                   >Pinch Role</label
                 >
               </div>
             </div>
-          </div>
+          </div><br>
+
+
+          <div class="border rounded p-3" *ngIf="pinchRole.valid">
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="form-group" >
+                <label class="d-flex justify-content-center align-items-center">
+                  Tag Name:</label
+                >
+                <input
+                class="form-control"
+                  type="text"
+                  [formControl]="tagName"
+                  name="tagname"
+                  id="tagname"
+                  
+                />
+                
+              </div>
+            </div>
+          </div><br>
 
           <div class="mb-3 mt-3 border rounded p-3" *ngIf="false">
             Hooter and Relay are not added to this Camera.
-          </div>
+          </div><br>
 
           <button
             class="btn success ms-1 float-end"

@@ -1,3 +1,4 @@
+
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -76,4 +77,15 @@ export class UserManagementService {
     return this.http.post(this.IP+'/admin/userdelete',data,httpOptions)
   }
   
+
+  encodePassword(password: string): string {
+    let encodedPassword = '';
+    for (let i = 0; i < password.length; i++) {
+      encodedPassword += password.charCodeAt(i);
+      if (i !== password.length - 1) {
+        encodedPassword += ', '; // Add comma and space if it's not the last character
+      }
+    }
+    return encodedPassword;
+  }
 }

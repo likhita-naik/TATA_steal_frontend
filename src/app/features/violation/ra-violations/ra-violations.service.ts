@@ -72,7 +72,7 @@ department==="all_departments"?department=null:''
 
 }
 
-DatewiseRAViolations(from: any, to: any, page?: number|null, size?: number|null, department?:string|null, cameraName?: string | null) {
+DatewiseRAViolations(from: any, to: any, page?: number|null, size?: number|null, department_name?:string|null, cameraName?: string | null) {
   var fromD = this.dateTransform(from)
   var toD = this.dateTransform(to)
  
@@ -80,21 +80,20 @@ DatewiseRAViolations(from: any, to: any, page?: number|null, size?: number|null,
 
   cameraName==="all_cameras"?cameraName=null:''
   // violType==="all_violations"?violType=null:''
-  department==="all_departments"?department='none':''
+  department_name==="all_departments"?department_name='none':''
   var body;
   // violType!==null?body={from_date:fromD,to_date:toD,violation_type:violType}:
-  body={from_date:fromD,to_date:toD,cameraName,department}
+  body={from_date:fromD,to_date:toD,cameraName,department_name}
  
    
  return page && size && cameraName ? this.http.post(this.IP + '/datewiseRA/' + cameraName + '/' + page + '/' + size, body) : 
-   page && size && department ? this.http.post(this.IP + '/datewiseRA/' + department + '/' + page + '/' + size, body) : 
+    page && size  && cameraName && department_name ? this.http.post(this.IP + '/datewiseRA/' + cameraName + '/' + page + '/' + size, body) : 
  
   page && size && (!cameraName)  ? this.http.post(this.IP + '/datewiseRA/'+ page + '/' + size , body):
-  page && size && (!department)  ? this.http.post(this.IP + '/datewiseRA/'+ page + '/' + size , body):
+  // page && size && (!department)  ? this.http.post(this.IP + '/datewiseRA/'+ page + '/' + size , body):
    !page && !size &&cameraName ? this.http.post(this.IP + '/datewiseRA/'  + cameraName, body) :
-    !page && !size &&department ? this.http.post(this.IP + '/datewiseRA/department'+department, body) :
-
-   !page && !size &&department ? this.http.post(this.IP + '/datewiseRA' , body) :
+    !page && !size &&department_name ? this.http.post(this.IP + '/datewiseRA/department'+department_name, body) :
+   !page && !size &&department_name ? this.http.post(this.IP + '/datewiseRA' , body) :
    this.http.post(this.IP + '/datewiseRA', body)
 
 }

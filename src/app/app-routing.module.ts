@@ -11,15 +11,15 @@ const routes: Routes = [
   {
     path: "login",
     loadChildren: () =>
-      import("./login/login.module").then((m) => m.LoginModule),
+      import("./login/login.module").then(m => m.LoginModule),
   },
-//   {path:'create-account',
-//   loadChildren: () => import('./create-account/create-account.module').then(m => m.CreateAccountModule)
-//  },
+  {path:"create-account",
+  loadChildren: () => import("./create-account/create-account.module").then(m => m.CreateAccountModule)
+ },
   {
     path: "",
     loadChildren: () =>
-      import("./login/login.module").then((m) => m.LoginModule),
+      import("./login/login.module").then(m => m.LoginModule),
     pathMatch: "full",
   },
   { path: "app/Home", component: HomeComponent },
@@ -152,6 +152,14 @@ const routes: Routes = [
         loadChildren: () =>
           import("./mechanical-jobs/mechanical-jobs.module").then(
             (m) => m.MechanicalJobsModule
+          ),
+      },
+
+      {
+        path: "user-management",
+        loadChildren: () =>
+          import("./features/user-management/user-management.module").then(
+            (m) => m.UserManagementModule
           ),
       },
     ],

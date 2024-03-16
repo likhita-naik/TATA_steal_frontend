@@ -1,110 +1,117 @@
-<div class="wrapper fadeInDown">
+<div class="wrapper ">
     <div id="formContent">
-      <div class="fadeIn first">
-        <!-- <img src="assets/images/customer_logo.png" id="icon" /><br> -->
-        <div class="page-header">
-            <br><h3>Create New Account</h3>
-        </div><br>
-      </div>
+
+        <div class="fadeIn first">
+            <!-- <img src="assets/images/customer_logo.png" id="icon" /><br> -->
+            <div class="page-header">
+                <br><h3>Create New Account</h3>
+            </div><br>
+        </div>
       
-      <form  [formGroup]="CreateAccountForm">
-        <div >
-        <input
-          type="text"
-          id="fullName"
-          class="fadeIn second"
-          ngModel
-          name="fullName"
-          placeholder="Full Name"
-          required
-          formControlName="fullName"
-          (keyup.enter)="ToNextField('department')"
-        />
-    
-        <input
-          type="text"
-          id="department"
-          class="fadeIn third"
-          id="department"
-          ngModel
-          name="department"
-          placeholder="Department"
-          formControlName="department"
-          (keyup.enter)="ToNextField('contactNumber')"
-          required
-        />
+        <form  [formGroup]="CreateAccountForm" >
 
+            <div id="input" >
 
-        <input
-          type="text"
-          id="contactNumber"
-          class="fadeIn fourth"
-          id="contactNumber"
-          ngModel
-          name="contactNumber"
-          placeholder="Contact Number"
-          formControlName="contactNumber"
-          (keyup.enter)="ToNextField('emailid')"
-          required
-        />
+                <div class="form-floating">
+                    <input
+                        type="text"
+                        id="fullName"
+                        class="form-control"
+                        placeholder="Full Name"
+                        formControlName="fullName"
+                        (keyup.enter)="ToNextField('department')"
+                        required
+                    />
+                    <label for="fullName" class="center-label">Full Name</label>
+                </div>
+
+                <div class="form-floating">
+                    <input
+                        type="text"
+                        id="department"
+                        class="form-control"
+                        placeholder="Department"
+                        formControlName="department"
+                        (keyup.enter)="ToNextField('contactNumber')"
+                        required
+                    />
+                    <label for="department" class="center-label">Department</label>
+                </div>
+
+                <div class="form-floating">
+                    <input
+                        type="text"
+                        id="contactNumber"
+                        class="form-control"
+                        placeholder="Contact Number"
+                        formControlName="contactNumber"
+                        (keyup.enter)="ToNextField('emailid')"
+                        required
+                    />
+                    <label for="contactNumber" class="center-label">Contact Number</label>
+                </div>
   
-        <input
-            type="text"
-            id="emailid"
-            class="fadeIn fifth"
-            id="emailid"
-            ngModel
-            name="emailid"
-            placeholder="Email Id"
-            formControlName="emailid"
-            (keyup.enter)="ToNextField('password')"
-            required
-          />
+                <div class="form-floating">
+                    <input
+                        type="text"
+                        id="emailid"
+                        class="form-control"
+                        placeholder="Email Id"
+                        formControlName="emailid"
+                        (keyup.enter)="ToNextField('password')"
+                        required
+                    />
+                    <label for="emailid" class="center-label">Email Id</label>
+                </div>
 
-          <input
-            type="password"
-            id="password"
-            class="fadeIn sixth"
-            id="password"
-            ngModel
-            name="password"
-            placeholder="Password"
-            formControlName="password"
-            (keyup.enter)="ToNextField('token')"
-            required
-          />
+                <div class="form-floating">
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-control"
+                        placeholder="Password"
+                        formControlName="password"
+                        (keyup.enter)="ToNextField('token')"
+                        required
+                    />
+                    <label for="password" class="center-label">password</label>
+                </div>
 
-
-          <input
-          type="text"
-          id="token"
-          class="fadeIn seventh"
-          id="token"
-          ngModel
-          name="token"
-          placeholder="Token"
-          formControlName="token"
-          (keyup.enter)="OnSubmit()"
-          required
-        />
+                <div class="form-floating">
+                    <input
+                        type="password"
+                        id="token"
+                        class="form-control"
+                        placeholder="Token"
+                        formControlName="token"  
+                        required
+                    />
+                    <label for="token" class="center-label">Token</label>
+                </div>
   
-        <!-- <p *ngIf="fail" style="color: rgb(208, 30, 30)">
-          <small>Email Id OR password is incorrect</small>
-        </p> -->
+                <!-- <p *ngIf="fail" style="color: rgb(208, 30, 30)">
+                    <small>Email Id OR password is incorrect</small>
+                </p> -->
 
-        <button type="submit"  (click)="OnSubmit()" class="fadeIn eightth">
-          <div *ngIf="isLoading">
-            <span
-              class="spinner-border spinner-border-sm me-1"
-              role="status"
-              aria-hidden="true"
-            ></span
-            >LOGGING IN...
-          </div>
-          <div *ngIf="!isLoading"><b>Sign In</b></div>
-        </button>
+                <button type="submit" [disabled]="!CreateAccountForm.valid" (click)="CreateAccountSubmit()" class="fadeIn second">
+
+                    <div *ngIf="isLoading">
+                        <span
+                            class="spinner-border spinner-border-sm me-1"
+                            role="status"
+                            aria-hidden="true">
+                        </span>SIGNNING IN...
+                    </div>
+
+                    <div *ngIf="!isLoading">
+                        <b>Sign In</b>
+                    </div>
+
+                </button>
         
-      </div>
-      </form>
+            </div>
+
+        </form>
+        
     </div>
   </div>

@@ -336,7 +336,7 @@ input[type="text"]:placeholder {
 
 .disabled {
  
-    background-color: disable-background-color;
+  color: disable-background-color;
   
 }
 
@@ -346,3 +346,39 @@ input[type="text"]:placeholder {
   justify-content: center !important;
 }
 
+
+
+.form-floating {
+  position: relative;
+}
+
+.center-label {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+  color: #495057;
+  opacity: 0.6;
+  transition: all 0.3s ease-in-out;
+}
+
+.form-control:focus + .center-label,
+.form-control:not(:focus):not(:placeholder-shown) + .center-label {
+  left: 20px;
+  top: 0;
+  font-size: 1.2rem;
+  opacity: 1;
+}
+
+/* Center-align the tab headers */
+::ng-deep .ui-tabview-nav {
+  display: flex;
+  justify-content: center;
+}
+
+/* Optional: Adjust the width of tab headers */
+::ng-deep .ui-tabview-nav .ui-tabview-nav-item {
+  flex: 1;
+  text-align: center;
+}

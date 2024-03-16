@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class SidebarService {
 
   IP:string
+  autoLogoutInterval:any
 
   constructor(
     public http:HttpClient,
@@ -18,7 +19,7 @@ export class SidebarService {
     var res=this.loadConfigFile('assets/config.json')
     res=JSON.parse(res)
     this.IP=res.IP
-    
+    this.autoLogoutInterval = res.autoLogoutInterval
    }
 
    loadConfigFile(filepath:any){
@@ -91,6 +92,17 @@ export class SidebarService {
 
   UpdateUserProfile(data:any,httpOptions:any){
     return this.http.post(this.IP+'/user/update_user_profile',data,httpOptions)
+  }
+
+  encodePassword(password: string): string {
+    let encodedPassword = '';
+    for (let i = 0; i < password.length; i++) {
+      encodedPassword += password.charCodeAt(i);
+      if (i !== password.length - 1) {
+        encodedPassword += ', '; // Add comma and space if it's not the last character
+      }
+    }
+    return encodedPassword;
   }
 
   }

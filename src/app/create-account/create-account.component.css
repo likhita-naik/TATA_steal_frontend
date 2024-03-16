@@ -38,6 +38,8 @@ h2 {
   padding: 20px;
 }
 
+
+
 #formContent {
   -webkit-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px;
@@ -338,3 +340,85 @@ input[type="text"]:placeholder {
 #icon {
   width: 40%;
 }
+
+.form-floating {
+  position: relative;
+}
+
+/* .center-label {
+  position: absolute ;
+  top: 50%;
+  left: 230px; 
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: #495057;
+  opacity: 0.6;
+  transition: all 0.3s ease-in-out;
+}
+
+.form-control:focus + .center-label,
+.form-control:not(:placeholder-shown) + .center-label {
+  top: 0;
+  font-size: 1.2rem; 
+  opacity: 1;
+} */
+
+
+
+/* .center-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2rem;
+  color: #495057;
+  opacity: 0.6;
+  transition: all 0.3s ease-in-out;
+}
+
+.form-control:focus + .center-label,
+.form-control:not(:placeholder-shown) + .center-label {
+  top: 0;
+  font-size: 1.2rem;
+  opacity: 1;
+} */
+.center-label {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+  color: #495057;
+  opacity: 0.6;
+  transition: all 0.3s ease-in-out;
+}
+
+.form-control:focus + .center-label,
+.form-control:not(:focus):not(:placeholder-shown) + .center-label {
+  left: 20px;
+  top: 0;
+  font-size: 1.2rem;
+  opacity: 1;
+}
+
+
+
+
+
+
+ /* .center-label {
+  position: absolute;
+  top: 50%;
+  left: 10px; 
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: #495057;
+  opacity: 0.6;
+  transition: all 0.3s ease-in-out;
+}
+
+.form-control:not(:placeholder-shown) + .center-label {
+  top: 0;
+  font-size: 1.2rem; 
+  opacity: 1;
+} */

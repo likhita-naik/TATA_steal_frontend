@@ -29,6 +29,7 @@
     "@ng-bootstrap/ng-bootstrap": "^13.0.0",
     "@popperjs/core": "^2.11.5",
     "bootstrap": "^5.2.0",
+    "chart.js": "^4.4.2",
     "chartjs-chart-matrix": "^2.0.1",
     "crypto-browserify": "^3.12.0",
     "crypto-js": "^4.2.0",

@@ -70,20 +70,20 @@ dateTransform(date:Date){
 
 }
 
-DatewisePPEViolations(from: any, to: any, page?: number|null, size?: number|null,department?:string|null, cameraName?: string | null) {
+DatewisePPEViolations(from: any, to: any, page?: number|null, size?: number|null,department_name?:string|null, cameraName?: string | null) {
   var fromD = this.dateTransform(from)
   var toD = this.dateTransform(to)
 
   cameraName==="all_cameras"?cameraName=null:''
   // violType==="all_violations"?violType=null:''
-  department==="all_departments"?department='none':''
+  department_name==="all_departments"?department_name='none':''
   var body;
   // page && size && cameraName && violType? this.http.post(this.IP + '/datewise_violationPPE/' + cameraName + '/' + page + '/' + size, body): 
   // !page && !size && cameraName && violType? this.http.post(this.IP + '/datewise_violationPPE/' + cameraName , body):
   // !page && !size && !cameraName && violType ? this.http.post(this.IP + '/datewise_violationPPE' , body)
   // : page && size && !cameraName && violType? this.http.post(this.IP + '/datewise_violationPPE/' + page + '/' + size, body) :
-  body={from_date:fromD,to_date:toD,cameraName,department}
-  return    page && size && cameraName ? this.http.post(this.IP + '/datewisePPE/' + cameraName + '/' + page + '/' + size, body) : 
+  body={from_date:fromD,to_date:toD,cameraName,department_name}
+  return  page && size && cameraName ? this.http.post(this.IP + '/datewisePPE/' + cameraName + '/' + page + '/' + size, body) : 
   
   page && size && (!cameraName)  ? this.http.post(this.IP + '/datewisePPE/'+ page + '/' + size , body):
    !page && !size &&cameraName ? this.http.post(this.IP + '/datewisePPE/'  + cameraName, body) :
@@ -120,11 +120,7 @@ GetPPEDepartmentDetails(from:any,to:any){
   return from === null && to === null? this.http.get(this.IP+'/department_detailsPPE'):this.http.post(this.IP+'/department_detailsPPE',{from_date:from,to_date:to})
 }
 
-// GetRACameraDetails(from:any,to:any){
-//   // var fromD = this.dateTransform(from)
-//   // var toD = this.dateTransform(to)
-//   return from === null && to === null? this.http.get(this.IP+'/camera_detailsRA'):this.http.post(this.IP+'/camera_detailsRA',{from_date:from,to_date:to})
-// }
+
 GetViolationList(){
   return this.http.get(this.IP+'/violation_type_details')
 }

@@ -1,8 +1,9 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { ServerService } from "../Services/server.service";
-import crypto from "crypto-js";
+ import crypto from "crypto-js";
+// import * as CryptoJS from 'crypto-js';
 import * as CryptoJS from 'crypto-js';
 // import * as FingerprintJS from 'fingerprintjs2';
 import { LoginService } from './login.service'
@@ -16,17 +17,21 @@ import { HttpHeaders } from "@angular/common/http";
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.css"],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit{
   userType:string
   userIsAdmin:boolean = false
   userIsUser:boolean = false
   secretKey: string = "docketrun@123"; 
   userName: string = "";
-  password: any;
-  token:any
+  Password: any;
+  Token:any
   
   fail: boolean = false;
-  isLoading: boolean = false;
+  // isLoading: boolean = false;
+  adminLoginLoading:boolean = false
+  userLoginLoading:boolean = false
+  adminLogoutLoginLoading:boolean = false
+  userLogoutLoginLoading:boolean = false
 
   OTP:any
   captcha: string;
@@ -36,12 +41,17 @@ export class LoginComponent implements OnInit {
 
   Website :string=''
   jwtoken: string;
-  emailid:string;
+  emailId:string;
 
   loginNotification:string
-  alreadyLoggedIn:boolean =false
+  adminAlreadyLoggedIn:boolean =false
+  userAlreadyLoggedIn:boolean = false
 
  userLoggedType:string =''
+ adminAccountCreated:string=''
+ selectedTabIndex: number 
+ firstTabSelected: boolean = false;
+ wantToLogin:boolean = false
   
 
   AdminLoginForm: FormGroup = new FormGroup({
@@ -70,6 +80,12 @@ export class LoginComponent implements OnInit {
   })
 
 
+  @ViewChild('emailid')emailid: ElementRef;
+  @ViewChild('password')password: ElementRef;
+  @ViewChild('token')token: ElementRef;
+  @ViewChild('forgottenNewPassword')forgottenNewPassword: ElementRef;
+  @ViewChild('forgottenConfirmPassword')forgottenConfirmPassword: ElementRef;
+
   constructor(
     private Router: Router, 
     private Server: ServerService,
@@ -77,12 +93,32 @@ export class LoginComponent implements OnInit {
     public modalService: NgbModal,
     ) {
       this.uniqueId = uuidv4();
-      this.captcha = this.generateRandomString(6);
-      this.jwtoken = localStorage.getItem('jwtoken')
+      this.captcha = this.generateRandomString(10);
+      
+
+      this.adminAccountCreated = localStorage.getItem('admin')
+      // console.log(this.adminAccountCreated,'this is from the login page ')
+      if(this.adminAccountCreated ==='admin Account is created successfully')
+      {
+        this.firstTabSelected = true
+        // console.log(this.firstTabSelected,'this is form the login page and first tab selected')
+
+      }
+      else{
+        this.selectedTabIndex = 1
+        this.firstTabSelected = false
+      }
+
+      
+
   }
+  // ngOnDestroy(): void {
+  //   throw new Error("Method not implemented.");
+  // }
 
   CreateAccount(){
     this.Router.navigate(['/create-account'])
+    //  this.firstTabSelected = true
   }
 
 
@@ -111,38 +147,11 @@ export class LoginComponent implements OnInit {
   
   AdminLoginSubmit() {
 
-    this.isLoading = true;
-
-//     // Extract the password from the form
-// const password = this.AdminLoginForm.value["password"];
-// console.log(password,'this is entered password')
-// // Encrypt the password using AES encryption
-// const encryptedPassword = crypto.AES.encrypt(password, this.Server.secretKey).toString();
-// console.log(encryptedPassword,'this is encryptedPassword')
-
-// // Decrypt the password to verify
-// const decryptedBytes = crypto.AES.decrypt(encryptedPassword, this.Server.secretKey);
-// const decryptedPassword = decryptedBytes.toString(CryptoJS.enc.Utf8);
-// console.log(decryptedPassword,'this is decrypted password ')
-     
-
-// // Extract the password from the form
-// const password = this.AdminLoginForm.value["password"];
-// console.log(password, 'this is entered password');
-
-// // Encrypt the password using AES encryption
-// const encryptedPassword = CryptoJS.AES.encrypt(password, this.Server.secretKey).toString();
-// console.log(encryptedPassword, 'this is encryptedPassword');
-
-// // Decrypt the password to verify
-// const decryptedBytes = CryptoJS.AES.decrypt(encryptedPassword, this.Server.secretKey);
-// const decryptedPassword = decryptedBytes.toString(CryptoJS.enc.Utf8);
-// console.log(decryptedPassword, 'this is decrypted password ');
-
+    this.adminLoginLoading = true;
 
     var data:any = {
       email:this.AdminLoginForm.value["emailid"],
-      password:crypto.AES.encrypt(this.AdminLoginForm.value["password"],this.Server.secretKey).toString(),      
+      password:this.service.encodePassword(this.AdminLoginForm.value["password"]),     
       token:this.AdminLoginForm.value["token"]
     }
    
@@ -159,8 +168,8 @@ export class LoginComponent implements OnInit {
         this.userIsAdmin = true
 
         var userData = JSON.stringify({
-          emailid: this.emailid,
-          password: this.password,
+          emailid: this.emailId,
+          password: this.Password,
           userType: this.userIsAdmin?"admin":"user"
         });
 
@@ -176,7 +185,7 @@ export class LoginComponent implements OnInit {
 
 
         this.Server.GetJobSheet().subscribe((response: any) => {
-                  this.isLoading = false;
+                  this.adminLoginLoading = false;
 
                   if (response.job_sheet_status) {
                     this.Router.navigate(["app/jobsheetMoniter"]);
@@ -190,19 +199,26 @@ export class LoginComponent implements OnInit {
 
                 this.SendAdminLoginDetails()
       }
+
       else{
-        this.isLoading=false
+        const jwtoken = Response.jwtoken; 
+        localStorage.setItem('jwtoken', jwtoken);
+        this.jwtoken = localStorage.getItem('jwtoken')
+        this.adminLoginLoading=false
         this.loginNotification = Response.message
-        console.log(this.loginNotification,'this is loginNotification varibale from the admin login function')
+        // console.log(this.loginNotification,'this is loginNotification varibale from the admin login function')
         this.service.notification(Response.message)
 
         if(this.loginNotification.includes('already logged in')){
-          this.alreadyLoggedIn= true
+          this.adminAlreadyLoggedIn= true
+            this.myFunction()
+
         }
         else{
-          this.alreadyLoggedIn = false
+          this.adminAlreadyLoggedIn = false
         }
       }
+
     })
 
     let userDetails: any = sessionStorage.getItem("session");
@@ -210,9 +226,11 @@ export class LoginComponent implements OnInit {
     userDetails = JSON.parse(decodedString.toString(crypto.enc.Utf8));
     this.userType = userDetails.userType;
 
-    this.emailid = this.AdminLoginForm.value["emailid"],
-    this.password = this.AdminLoginForm.value["password"],
-    this.token = this.AdminLoginForm.value["token"]
+    this.emailId = this.AdminLoginForm.value["emailid"],
+    this.Password = this.service.encodePassword(this.AdminLoginForm.value["password"]),
+    this.Token = this.AdminLoginForm.value["token"]
+
+    // console.log(this.password)
 
   }
 
@@ -239,9 +257,9 @@ export class LoginComponent implements OnInit {
 
   ChangePasswordSubmit(){
     var data:any = {
-      current_password:this.ChangePasswordForm.value["currentPassword"],
-      new_password:this.ChangePasswordForm.value["newPassword"],
-      confirm_password:this.ChangePasswordForm.value["confirmPassword"]
+      current_password:this.service.encodePassword(this.ChangePasswordForm.value["currentPassword"]),
+      new_password:this.service.encodePassword(this.ChangePasswordForm.value["newPassword"]),
+      confirm_password:this.service.encodePassword(this.ChangePasswordForm.value["confirmPassword"])
     }
     const httpOptions = {
       headers: new HttpHeaders({
@@ -288,7 +306,7 @@ if (this.ForgottenPasswordForm.value['userInput'] == this.OTP+this.captcha){
   this.OTPVerified = true
 }
 else{
-  this.Server.notification(" Please Check the OTP You have entered Wrong OTP ")
+  this.Server.notification(" Please Check Once You have entered Wrong OTP ")
   this.OTPVerified = false
 }
  }
@@ -297,8 +315,8 @@ else{
 
   var data :any ={
     otp:this.ForgottenPasswordForm.value["userInput"],
-    password:this.ForgottenPasswordForm.value["forgottenNewPassword"],
-    confirm_password:this.ForgottenPasswordForm.value["forgottenConfirmPassword"],
+    password:this.service.encodePassword(this.ForgottenPasswordForm.value["forgottenNewPassword"]),
+    confirm_password:this.service.encodePassword(this.ForgottenPasswordForm.value["forgottenConfirmPassword"]),
     email:this.ForgottenPasswordForm.value["emailid"]
 
   }
@@ -307,6 +325,9 @@ else{
       if(Response.success){
         this.Server.notification(Response.message)
         this.modalService.dismissAll()
+        this.ForgottenPasswordForm.reset()
+        this.OTPVerified = false
+        this.gotOTP = false
       }
       else{
         this.Server.notification(Response.message)
@@ -333,6 +354,9 @@ else{
     if(response.success){
       this.Server.notification(response.message)
     }
+    else{
+      this.Server.notification(response.message)
+    }
     
   })
 
@@ -341,10 +365,10 @@ else{
 
 
  UserLoginSubmit() {
-  this.isLoading = true;
+  this.userLoginLoading = true;
   var data:any = {
     email:this.UserLoginForm.value["emailid"],
-    password:this.UserLoginForm.value["password"],
+    password:this.service.encodePassword(this.UserLoginForm.value["password"]),
     token:this.UserLoginForm.value["token"]
   }
 
@@ -360,12 +384,12 @@ else{
       this.userIsUser = true
 
   var userData = JSON.stringify({
-    emailid: this.emailid,
-    password: this.password,
+    emailid: this.emailId,
+    password: this.Password,
     userType: this.userIsUser?"user":"admin"
   });
 
-  console.log(this.userIsUser)
+  // console.log(this.userIsUser)
   var encodedUserData = crypto.AES.encrypt(
     userData,
     this.Server.secretKey
@@ -377,7 +401,7 @@ else{
       this.Server.GetJobSheet().subscribe((response: any) => {
 
 
-                this.isLoading = false;
+                this.userLoginLoading = false;
                 if (response.job_sheet_status) {
                   this.Router.navigate(["app/jobsheetMoniter"]);
                 } else {
@@ -392,16 +416,20 @@ else{
     }
     else{
 
-      this.isLoading=false
+      const jwtoken = Response.jwtoken; 
+      localStorage.setItem('jwtoken', jwtoken);
+      this.jwtoken = localStorage.getItem('jwtoken')
+
+      this.userLoginLoading=false
         this.loginNotification = Response.message
-        console.log(this.loginNotification,'this is loginNotification varibale from the admin login function')
+        // console.log(this.loginNotification,'this is loginNotification varibale from the admin login function')
         this.service.notification(Response.message)
 
         if(this.loginNotification.includes('already logged in')){
-          this.alreadyLoggedIn= true
+          this.userAlreadyLoggedIn= true
         }
         else{
-          this.alreadyLoggedIn = false
+          this.userAlreadyLoggedIn = false
         }
       
       this.service.notification(Response.message)
@@ -413,9 +441,9 @@ else{
       userDetails = JSON.parse(decodedString.toString(crypto.enc.Utf8));
       this.userType = userDetails.userType;
 
-      this.emailid = this.UserLoginForm.value["emailid"],
-      this.password = this.UserLoginForm.value["password"],
-      this.token = this.UserLoginForm.value["token"]
+      this.emailId = this.UserLoginForm.value["emailid"],
+      this.Password = this.service.encodePassword(this.UserLoginForm.value["password"]),
+      this.Token = this.UserLoginForm.value["token"]
   
 
 }
@@ -446,6 +474,7 @@ SendUserLoginDetails(){
 
  userLogout(){
 
+  this.userLogoutLoginLoading = true
   const httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -453,26 +482,33 @@ SendUserLoginDetails(){
     })
   };
 
-   sessionStorage.removeItem('session')
+   
 
   this.service.UserLogout(httpOptions).subscribe((Response:any)=>
   {
     if(Response.success){
       this.modalService.dismissAll()
+
       this.service.notification(Response.message)
+      // sessionStorage.removeItem('session')
+      this.service.notification(Response.message)
+      localStorage.setItem('logout',Response.message)
+      this.userLogoutLoginLoading = false
       this.UserLoginSubmit()
     }
     else{
+
       this.modalService.dismissAll()
+      this.UserLoginSubmit()
     }
     
   })
-
+  //  localStorage.removeItem('jwtoken')
    this.Router.navigate(['/login']) 
 }
 
 adminLogout(){
-
+   this.adminLogoutLoginLoading= true
   const httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -480,7 +516,7 @@ adminLogout(){
     })
   };
 
-   sessionStorage.removeItem('session')
+   
 
   this.service.AdminLogout(httpOptions).subscribe((Response:any)=>
   {
@@ -488,26 +524,68 @@ adminLogout(){
       
       this.modalService.dismissAll()
       this.service.notification(Response.message)
+      // sessionStorage.removeItem('session')
+      localStorage.setItem('logout',Response.message)
+      // console.log(localStorage.getItem('logout'),'this is localstorage of the logout from the login page')
+      this.adminLogoutLoginLoading = false
       this.AdminLoginSubmit()
     }
     else{
       this.modalService.dismissAll()
+      this.AdminLoginSubmit()
     }
     
   })
-
+  //  localStorage.removeItem('jwtoken')
    this.Router.navigate(['/login']) 
 }
  
- ngOnDestory(){
+ ngOnDestroy():void{
   this.modalService.dismissAll()
-  this.reloadPage()
+  // this.reloadPage()
+   this.firstTabSelected = false
+   localStorage.removeItem('admin')
+   this.adminAccountCreated = ''
+  //  this.jwtoken = ''
 
  }
 
  reloadPage(){
   window.location.reload()
  }
+
+  onTabChange(event: any) {
+    // Reset the appropriate form group when switching away from the tab
+    if (event.index === 0) {
+      this.UserLoginForm.reset();
+  } else if (event.index === 1) {
+      this.AdminLoginForm.reset();
+  }
+}
+
+focusNext(nextInput: HTMLInputElement) {
+  if (nextInput) {
+    nextInput.focus();
+  }
+}
+
+
+ myFunction() {
+  let text = confirm("Do you want to logout in other device OR Browser and login here") == true 
+  if (text) {
+    // text = "You pressed OK!";
+    this.userLoggedType==='admin'?this.adminLogout():this.userLogout()
+    this.wantToLogin = true
+
+  } else {
+    // text = "You canceled!";
+    this.wantToLogin = false
+  }
+  // document.getElementById("demo").innerHTML = text;
+}
+
+
+
 
 
 }
