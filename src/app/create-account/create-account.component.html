@@ -83,8 +83,7 @@
                         id="token"
                         class="form-control"
                         placeholder="Token"
-                        formControlName="token"
-                        (keyup.enter)="OnSubmit()"
+                        formControlName="token"  
                         required
                     />
                     <label for="token" class="center-label">Token</label>
@@ -94,7 +93,7 @@
                     <small>Email Id OR password is incorrect</small>
                 </p> -->
 
-                <button type="submit" [disabled]="CreateAccountForm.invalid" (click)="OnSubmit()" class="fadeIn second">
+                <button type="submit" [disabled]="!CreateAccountForm.valid" (click)="CreateAccountSubmit()" class="fadeIn second">
 
                     <div *ngIf="isLoading">
                         <span

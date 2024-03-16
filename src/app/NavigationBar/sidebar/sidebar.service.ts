@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class SidebarService {
 
   IP:string
+  autoLogoutInterval:any
 
   constructor(
     public http:HttpClient,
@@ -18,7 +19,7 @@ export class SidebarService {
     var res=this.loadConfigFile('assets/config.json')
     res=JSON.parse(res)
     this.IP=res.IP
-    
+    this.autoLogoutInterval = res.autoLogoutInterval
    }
 
    loadConfigFile(filepath:any){

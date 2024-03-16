@@ -1,6 +1,6 @@
 {
-  "IP": "http://192.168.1.35:5000",
-  "IP_ESI": "http://192.168.1.35:5000",
+  "IP": "http://192.168.1.68:5000",
+  "IP_ESI": "http://192.168.1.68:5000",
 
   "dashboardInterval": 30000,
   "jobSheetStatusInterval": 5000,
@@ -9,6 +9,8 @@
   "steamSuitInterval": 5000,
   "logInterval": 5000,
   "unallocatedInterval": 5000,
+  "autoLogoutInterval":9000000,
+  "checkApplicationStatusInterval":90000000,
 
   "StartESIAppApi": "create_esi_multiconfig"
 }

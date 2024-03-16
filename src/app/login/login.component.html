@@ -4,174 +4,186 @@
             <img src="assets/images/customer_logo.png" id="icon" />
         </div>
     
+       
+        <p-tabView (onChange)="onTabChange($event)"  [activeIndex]="selectedTabIndex" > 
 
-        <p-tabView (onChange)="onTabChange($event)" > 
-            <p-tabPanel header="Admin" >
-                <form #authForm="ngForm">
-                    <div  [formGroup]="AdminLoginForm">
+            <p-tabPanel header="Admin" [selected]="firstTabSelected">
 
-                        <div class="d-flex align-items-center float-end" 
-                            style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;" >
+                <form [formGroup]="AdminLoginForm" >
 
+                    <div class="d-flex align-items-center float-end" 
+                        style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;" >
                             <p (click)="CreateAccount()"><b>Create New Account ?</b></p>
 
-                        </div><br><br>
+                    </div><br><br>
 
-                        <div class="form-floating">
-                            <input
-                                type="text"
-                                id="emailid"
-                                class="form-control"
-                                placeholder="Email ID"
-                                formControlName="emailid"
-                                (keyup.enter)="ToNextField('password')"
-                                required
-                            />
-                            <label for="emailid" class="center-label">Email Id </label>
-                        </div>
+                    <div class="form-floating">
+                        <input
+                            type="text"
+                            id="emailid"
+                            class="form-control"
+                            placeholder="Email ID"
+                            formControlName="emailid"
+                            (keyup.enter)="ToNextField('password')"
+                            required
+                        />
+                        <label for="emailid" class="center-label">Email Id </label>
+                    </div>
     
-                        <div class="form-floating">
-                            <input
-                                type="password"
-                                id="password"
-                                class="form-control"
-                                placeholder="Password"
-                                formControlName="password"
-                                (keyup.enter)="ToNextField('token')"
-                                required
-                            />
-                            <label for="password" class="center-label">password</label>
-                        </div>
+                    <div class="form-floating">
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-control"
+                            placeholder="Password"
+                            formControlName="password"
+                            (keyup.enter)="ToNextField('token')"
+                            required
+                        />
+                        <label for="password" class="center-label">password</label>
+                    </div>
 
-                        <div class="form-floating">
-                            <input
-                                type="password"
-                                id="token"
-                                class="form-control"
-                                placeholder="Token"
-                                formControlName="token"
-                                (keyup.enter)="AdminLoginSubmit()"
-                                required
-                            />
-                            <label for="token" class="center-label">Token</label>
-                        </div>
+                    <div class="form-floating">
+                        <input
+                            type="password"
+                            id="token"
+                            class="form-control"
+                            placeholder="Token"
+                            formControlName="token"
+                            (keyup.enter)="AdminLoginSubmit()"
+                            required
+                        />
+                        <label for="token" class="center-label">Token</label>
+                    </div>
 
-                        <div class="d-flex justify-content-between align-items-center" 
-                            style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;" >
+                    <div class="d-flex justify-content-between align-items-center" 
+                        style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;" >
 
-                            <p  (click)="ForgotPassword(ForgottenPasswordModal)"><b>Forgot password ?</b></p>
+                        <p (click)="ForgotPassword(ForgottenPasswordModal)"><b>Forgot password ?</b></p>
 
-                        </div>
+                    </div>
         
 
                             <!-- <p *ngIf="fail" style="color: rgb(208, 30, 30)">
                                 <small>Email Id OR password is incorrect</small>
                             </p> -->
 
-                        <button  *ngIf="!alreadyLoggedIn" type="submit" [disabled]="AdminLoginForm.invalid" 
-                            class="fadeIn fifth"   (click)="AdminLoginSubmit()">
-                            <div *ngIf="isLoading">
-                                <span
-                                    class="spinner-border spinner-border-sm me-1"
-                                    role="status"
-                                    aria-hidden="true">
-                                </span>LOGGING IN...
-                            </div>
+                    <button *ngIf="!adminAlreadyLoggedIn" type="submit" [disabled]="!AdminLoginForm.valid" 
+                        class="fadeIn second"   (click)="AdminLoginSubmit()">
 
-                            <div *ngIf="!isLoading">LOG IN</div>
+                        <div *ngIf="adminLoginLoading">
+                            <span
+                                class="spinner-border spinner-border-sm me-1"
+                                role="status"
+                                aria-hidden="true">
+                            </span>LOGGING IN...
+                        </div>
 
-                        </button>
+                        <div *ngIf="!adminLoginLoading">LOG IN</div>
 
-                        <button *ngIf="alreadyLoggedIn" type="submit" [disabled]="AdminLoginForm.invalid" 
-                            class="fadeIn second" (click)="userLoggedType ==='admin'?adminLogout():userLogout()">
-                            <div *ngIf="isLoading">
-                                <span
-                                    class="spinner-border spinner-border-sm me-1"
-                                    role="status"
-                                    aria-hidden="true">
-                                </span>LOGGING IN...
-                            </div>
-                            <div *ngIf="!isLoading">LOG OUT & LOGIN</div>
-                        </button>
+                    </button>
 
-                    </div>
+                    <button *ngIf="adminAlreadyLoggedIn" type="submit" [disabled]="!AdminLoginForm.valid" 
+                        class="fadeIn second" (click)="userLoggedType ==='admin'?adminLogout():userLogout()">
+
+                        <div *ngIf="adminLogoutLoginLoading">
+                            <span
+                                class="spinner-border spinner-border-sm me-1"
+                                role="status"
+                                aria-hidden="true">
+                            </span>LOGGING IN...
+                        </div>
+                        <div *ngIf="!adminLogoutLoginLoading">LOG OUT & LOGIN</div>
+
+                    </button>
+  
                 </form>
     
             </p-tabPanel>
 
             <p-tabPanel header="User">
-                <form #authForm="ngForm">
-                    <div [formGroup]="UserLoginForm">
-                        <div class="form-floating">  
-                            <input
-                                type="text"
-                                id="emailid"
-                                class="form-control"
-                                placeholder="Email ID"
-                                formControlName="emailid"
-                                required
-                                (keydown.enter)="focusNext(password)"
-                                #emailid
-                            />
-                            <label for="emailid" class="center-label">Email Id</label>
-                        </div>
+
+                <form [formGroup]="UserLoginForm" >
+
+                    <div class="form-floating">  
+                        <input
+                            type="text"
+                            id="emailid"
+                            class="form-control"
+                            placeholder="Email ID"
+                            formControlName="emailid"
+                            required
+                            (keydown.enter)="focusNext(password)"
+                            #emailid
+                        />
+                        <label for="emailid" class="center-label">Email Id</label>
+                    </div>
                         
+                    <div class="form-floating">
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-control"
+                            placeholder="Password"
+                            formControlName="password"
+                            (keydown.enter)="focusNext(token)"
+                            required
+                            #password
+                        />
+                        <label for="password" class="center-label">password</label>
+                    </div>
 
-                        <div class="form-floating">
-                            <input
-                                type="password"
-                                id="password"
-                                class="form-control"
-                                placeholder="Password"
-                                formControlName="password"
-                                (keydown.enter)="focusNext(token)"
-                                required
-                                #password
-                            />
-                            <label for="password" class="center-label">password</label>
-                        </div>
+                    <div class="form-floating">
+                        <input
+                            type="password"
+                            id="token"
+                            class="form-control"
+                            placeholder="Token"
+                            formControlName="token"
+                            (keydown.enter)="UserLoginSubmit()"
+                            required
+                            #token
+                        />
+                        <label for="token" class="center-label">Token</label>
+                    </div>
 
-                        <div class="form-floating">
-                            <input
-                                type="password"
-                                id="token"
-                                class="form-control"
-                                placeholder="Token"
-                                formControlName="token"
-                                (keydown.enter)="UserLoginSubmit()"
-                                required
-                                #token
-                            />
-                            <label for="token" class="center-label">Token</label>
-                        </div>
-       
-
-                        <!-- <div class="d-flex justify-content-between align-items-center" style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;" > -->
-                            <!-- <p><b>Forgot password ?</b></p> -->
-                            <!-- <p (click)="ChangePassword(ChangePasswordModal)"><b>Reset password ?</b></p> -->
-                        <!-- </div> -->
-  
                         <!-- <p *ngIf="fail" style="color: rgb(208, 30, 30)">
                             <small>Email Id OR password is incorrect</small>
                         </p> -->
-                        <button  type="submit" [disabled]="UserLoginForm.invalid" class="fadeIn second" (click)="UserLoginSubmit()">
 
-                            <div *ngIf="isLoading">
-                                <span
-                                    class="spinner-border spinner-border-sm me-1"
-                                    role="status"
-                                    aria-hidden="true">
-                                </span>LOGGING IN...
-                            </div>
-                            <div *ngIf="!isLoading">LOG IN</div>
+                    <button *ngIf="!userAlreadyLoggedIn" type="submit" [disabled]="!UserLoginForm.valid" class="fadeIn second" (click)="UserLoginSubmit()">
 
-                        </button>
+                        <div *ngIf="userLoginLoading">
+                            <span
+                                class="spinner-border spinner-border-sm me-1"
+                                role="status"
+                                aria-hidden="true">
+                            </span>LOGGING IN...
+                        </div>
 
+                        <div *ngIf="!userLoginLoading">LOG IN</div>
 
-                    </div>
+                    </button>
+
+                    <button *ngIf="userAlreadyLoggedIn" type="submit" [disabled]="!UserLoginForm.valid" class="fadeIn second" (click)="userLoggedType ==='user'?userLogout():adminLogout()">
+
+                        <div *ngIf="userLogoutLoginLoading">
+                            <span
+                                class="spinner-border spinner-border-sm me-1"
+                                role="status"
+                                aria-hidden="true">
+                            </span>LOGGING IN...
+                        </div>
+                        <div *ngIf="!userLogoutLoginLoading"> LOG OUT And LOG IN</div>
+
+                    </button>
+ 
                 </form>
+
             </p-tabPanel>
+
         </p-tabView>
+    
     </div>
 </div>
 
@@ -195,12 +207,12 @@
                         </div>
 
                         <div class="form-floating">
-                            <input type="text" placeholder="Email Id" class="form-control"  formControlName="emailid" id="emailid"/>
+                            <input type="text" placeholder="Email Id" class="form-control"  formControlName="emailid" id="emailid" required/>
                             <label for="emailid"> Email Id</label>
                         </div>
 
                         <div class="form-floating">
-                            <button type="submit" (click)="SendOTP()">
+                            <button type="submit"  (click)="SendOTP()">
                                 GET OTP
                             </button>
                         </div>
@@ -217,10 +229,11 @@
                         <br>
 
                         <div class="form-floating" >
-                            <div  class="align-items-center">
-                                <span style="background-color: #4c4949; color:white; padding:13px; justify-content: center;font-size: larger;">{{OTP?OTP+captcha:'CAPTCHA'}}</span></div>
-                            </div> 
-                            <br>
+                            <div  class="justify-content-center">
+                                <span style="background-color: #4c4949; color:white; padding:13px; justify-content: center;font-size: larger;">{{OTP?OTP+captcha:'CAPTCHA'}}</span>
+                            </div>
+                        </div> 
+                        <br>
 
                             <div class="form-floating">
                                 <input type="password" placeholder="Enter OTP" class="form-control" formControlName="userInput"  id="userInput"  />
@@ -228,7 +241,7 @@
                             </div>
 
                             <div  *ngIf="gotOTP && !OTPVerified" class="wrapper">
-                                <button type="submit" (click)="verify()"> Verify</button>
+                                <button type="submit"  (click)="verify()"> Verify</button>
                             </div>
 
                         </div>
@@ -247,13 +260,15 @@
                     <div class="wrapper">
 
                     <div class="form-floating">
-                        <input type="password" placeholder="Password" class="form-control" formControlName="forgottenNewPassword" id="forgottenNewPassword"/>
-                        <label for="forgottenNewPassword"> Password</label>
+                        <input type="password" placeholder="New Password" class="form-control" formControlName="forgottenNewPassword" id="forgottenNewPassword" (keydown.enter)="focusNext(forgottenConfirmPassword)"
+                        #forgottenNewPassword />
+                        <label for="forgottenNewPassword">New Password</label>
                     </div>
 
                     <div class="form-floating">
-                        <input type="password" placeholder="Confirm password" class="form-control" formControlName="forgottenConfirmPassword"   id="forgottenConfirmPassword"/>
-                        <label  for="forgottenConfirmPassword"> Confirm password</label>
+                        <input type="password" placeholder="Confirm password" class="form-control" formControlName="forgottenConfirmPassword"   id="forgottenConfirmPassword" 
+                        #forgottenConfirmPassword/>
+                        <label  for="forgottenConfirmPassword">Confirm password</label>
                     </div>
 
                 </div>
@@ -261,7 +276,7 @@
 
           
                 <div class="wrapper">
-                    <button type="submit" (click)="ForgottenPasswordSubmit()"><span>Submit</span></button>
+                    <button type="submit" [disabled]="!ForgottenPasswordForm.valid" (click)="ForgottenPasswordSubmit()"><span>Submit</span></button>
                 </div>   
             </div>
         </form>
@@ -271,7 +286,7 @@
 </ng-template>
 
 
-<ng-template let-modal #ChangePasswordModal>
+<ng-template let-modal #ChangePasswordModal *ngIf="adminAlreadyLoggedIn">
     <div class="border" style="background-color: white">
      
         <div class="modal-header" >
@@ -299,7 +314,7 @@
                 </div> 
 
                 <div class="wrapper">
-                    <button type="submit" (click)="ChangePasswordSubmit()"  >
+                    <button type="submit" [disabled]="!ChangePasswordForm.valid" (click)="ChangePasswordSubmit()"  >
                         <span>Submit</span>
                     </button>
                 </div>   

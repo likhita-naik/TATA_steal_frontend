@@ -19,6 +19,8 @@ export class SidebarComponent implements OnInit ,AfterViewInit{
    userProfileDetails:any
    jwtoken :string
    userType:string
+   autoLogout:any
+   isLogout:any
 
    ChangePasswordForm: FormGroup = new FormGroup({
     currentPassword: new FormControl("", Validators.required),
@@ -53,12 +55,22 @@ export class SidebarComponent implements OnInit ,AfterViewInit{
       userData = JSON.parse(decodedString.toString(crypto.enc.Utf8));
       this.userType = userData.userType;
 
-      this.userType == 'admin'?this.ViewAdminProfileDetails():this.ViewUserProfileDetails()
-      console.log(this.userType,'this is user type from the constructor')
+
+      this.userType === 'admin'?this.ViewAdminProfileDetails():this.ViewUserProfileDetails()
+
+      this.autoLogout =  setInterval(()=>{
+      this.userType === 'admin'?this.ViewAdminProfileDetails():this.ViewUserProfileDetails()
+      // console.log(this.userType,'this is user type from the constructor')
+    },this.service.autoLogoutInterval)
+
+    this.isLogout=localStorage.getItem('logout')
+    // console.log(this.isLogout,'this is  logout localstorage from the sidebar')
     }
 
   ngOnInit(): void {
 
+    this.userType === 'admin'?this.ViewAdminProfileDetails():this.ViewUserProfileDetails()
+    
   }
 
   ngAfterViewInit(): void {
@@ -91,20 +103,23 @@ export class SidebarComponent implements OnInit ,AfterViewInit{
       })
     };
 
-    sessionStorage.removeItem('session')
+    
 
     this.service.AdminLogout(httpOptions).subscribe((Response:any)=>
     {
       if(Response.success){
         this.ModalService.dismissAll()
         this.service.notification(Response.message)
+        sessionStorage.removeItem('session')
+        // localStorage.removeItem('jwtoken')
       }
       else{
         this.ModalService.dismissAll()
       }
       
     })
-
+    // localStorage.removeItem('jwtoken')
+    sessionStorage.removeItem("session")
     this.router.navigate(['/login']) 
 }
 
@@ -214,7 +229,7 @@ this.service.UpdateAdminProfile(data,httpOptions).subscribe((response:any)=>
     this.ViewAdminProfileDetails()
   }
   else{
-
+     this.service.notification(response.message)
   }
  
 })
@@ -235,10 +250,37 @@ ViewAdminProfileDetails(){
   {
     if(Response.success){
       this.adminProfileDetails = Response.message
+      // sessionStorage.removeItem("session")
+      // this.router.navigate(['/login'])   Response.message.includes('Invalid authorization token')||
+
+
+      // if(this.isLogout.includes('Logged out successfully')){
+      //   console.log('this is from the side bar inside the if condition')
+
+      //   sessionStorage.removeItem("session")
+      //   // this.reloadPage()
+      //   localStorage.removeItem('jwtoken')
+
+      //   this.router.navigate(['/login'])
+      // }
+
     }
     else{
-      this.ModalService.dismissAll()
       this.service.notification(Response.message)
+      // if(Response.message.includes('expired')||Response.message.includes('Invalid authorization token')||Response.message.includes('logged out')){
+      //   sessionStorage.removeItem("session")
+      //   // this.reloadPage()
+      //   //localStorage.removeItem('jwtoken')
+      //   this.adminLogout();
+      //   this.router.navigate(['/login']) 
+      //   // console.log('this is from the if function')
+      // }
+      // else{
+      //   // console.log('this is from the else function ')
+      // }
+      this.ModalService.dismissAll()
+      // this.service.notification(Response.message)
+      
     }
   })
 }
@@ -259,8 +301,26 @@ ViewUserProfileDetails(){
       this.userProfileDetails = Response.message
     }
     else{
+      // this.ModalService.dismissAll()
+      // this.service.notification(Response.message)
+      // if(Response.message.includes('session expired, please login once again')){
+      //   sessionStorage.removeItem("session")
+      //   this.router.navigate(['/login']) 
+      //   console.log('this is from the login ')
+      // }
+      this.server.notification(Response.message)
+      if(Response.message.includes('expired')||Response.message.includes('Invalid authorization token')||Response.message.includes('logged out')){
+        //  localStorage.removeItem("jwtoken")
+        sessionStorage.removeItem("session")
+        // this.reloadPage()
+        this.userLogout();
+        this.router.navigate(['/login']) 
+        // console.log('this is from the if function')
+      }
+      else{
+        // console.log('this is from the else function ')
+      }
       this.ModalService.dismissAll()
-      this.service.notification(Response.message)
     }
   })
 
@@ -283,13 +343,16 @@ userLogout(){
     if(Response.success){
       this.ModalService.dismissAll()
       this.service.notification(Response.message)
+      // localStorage.removeItem('jwtoken')
+
     }
     else{
       this.ModalService.dismissAll()
     }
     
   })
-
+  // localStorage.removeItem('jwtoken')
+ sessionStorage.removeItem("session")
   this.router.navigate(['/login']) 
 }
 
@@ -315,7 +378,7 @@ ChangeUserPasswordSubmit(){
       this.server.notification(Response.message)
     }
     else{
-
+     this.server.notification(Response.message)
     }
     
   })
@@ -347,6 +410,29 @@ this.service.UpdateUserProfile(data,httpOptions).subscribe((response:any)=>
  
 })
 
+}
+
+reloadPage(){
+  window.location.reload()
+ }
+
+// AutoLogout(){
+//   sessionStorage.removeItem("session")
+//   this.router.navigate(['/login'])
+// }
+
+focusNext(nextInput: HTMLInputElement) {
+  if (nextInput) {
+    nextInput.focus();
+  }
+}
+
+ngOnDestroy(): void {
+  this.ModalService.dismissAll()
+  clearInterval(this.autoLogout)
+  this.adminProfileDetails = ''
+  this.userProfileDetails = ''
+  
 }
 
 }

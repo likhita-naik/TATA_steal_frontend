@@ -71,17 +71,17 @@ export class CrowdCountViolationsService {
   
   }
 
-  DatewiseCCViolations(from: any, to: any, page?: number|null, size?: number|null,department?:string|null, cameraName?: string | null) {
+  DatewiseCCViolations(from: any, to: any, page?: number|null, size?: number|null,department_name?:string|null, cameraName?: string | null) {
     var fromD = this.dateTransform(from)
     var toD = this.dateTransform(to)
   
     // cameraName=cameraName? cameraName.replace(/ /g,'_'):null
   
     cameraName==="all_cameras"?cameraName=null:''
-    department==="all_departments"?department='none':''
+    department_name==="all_departments"?department_name='none':''
     var body;
     // violType!==null?body={from_date:fromD,to_date:toD,violation_type:violType}:
-    body={from_date:fromD,to_date:toD,cameraName,department}
+    body={from_date:fromD,to_date:toD,cameraName,department_name}
     // page && size && cameraName && violType? this.http.post(this.IP + '/datewise_violationCC/' + cameraName + '/' + page + '/' + size, body): 
     // !page && !size && cameraName && violType? this.http.post(this.IP + '/datewise_violationCC/' + cameraName , body):
     return   page && size && cameraName ? this.http.post(this.IP + '/datewiseCC/' + cameraName + '/' + page + '/' + size, body) :
@@ -89,10 +89,10 @@ export class CrowdCountViolationsService {
     // page && size && department ? this.http.post(this.IP + '/datewiseCC/' + department + '/' + page + '/' + size, body) : 
     // !page && !size && !cameraName && violType ? this.http.post(this.IP + '/datewise_violationCC' , body)
     // : page && size && !cameraName && violType? this.http.post(this.IP + '/datewise_violationCC/' + page + '/' + size, body) :
-    page && size && (!cameraName) && (!department) ? this.http.post(this.IP + '/datewiseCC/'+ page + '/' + size , body):
-     !page && !size &&cameraName &&!department? this.http.post(this.IP + '/datewiseCC/'  + cameraName, body):
+    page && size && (!cameraName) && (!department_name) ? this.http.post(this.IP + '/datewiseCC/'+ page + '/' + size , body):
+     !page && !size &&cameraName &&!department_name? this.http.post(this.IP + '/datewiseCC/'  + cameraName, body):
     //  !page && !size &&!cameraName &&department? this.http.post(this.IP + '/datewiseCC/'  + department, body) :
-     !page && !size &&!cameraName &&department? this.http.post(this.IP + '/datewiseCC', body):
+     !page && !size &&!cameraName &&department_name? this.http.post(this.IP + '/datewiseCC', body):
      this.http.post(this.IP + '/datewiseCC', body)
   
   }

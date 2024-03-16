@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ServerService } from '../Services/server.service';
 import { CreateAccountService } from './create-account.service';
@@ -11,9 +11,10 @@ import crypto from "crypto-js";
   styleUrls: ['./create-account.component.css']
 })
 
-export class CreateAccountComponent {
+export class CreateAccountComponent implements OnInit{
 
    isLoading: boolean = false;
+   adminAccountCreated:string =''
 
   CreateAccountForm: FormGroup = new FormGroup({
     fullName: new FormControl("", Validators.required),
@@ -28,14 +29,17 @@ export class CreateAccountComponent {
     private Router: Router, 
     private Server: ServerService,
     private service:CreateAccountService) 
-    { }
+    {
+
+     }
 
 
   ngOnInit(): void {
 
   }
  
-  OnSubmit() {
+  CreateAccountSubmit() {
+    this.isLoading = true
 
     var data:any = {
       fullname:this.CreateAccountForm.value["fullName"],
@@ -49,18 +53,13 @@ export class CreateAccountComponent {
     this.service.CreateAccount(data).subscribe((Response:any)=>{
       
         if(Response.success){
+          this.isLoading = false
           this.Server.notification(Response.message)
-            this.Server.GetJobSheet().subscribe((response: any) => {
-                  this.isLoading = false;
-                  if (response.job_sheet_status) {
-                    this.Router.navigate(["app/jobsheetMoniter"]);
-                  } else {
-                    this.Router.navigate(["app/jobsheetUpload"]);
-                  }
-                },Err=>{
-                  this.Router.navigate(["app/jobsheetUpload"]);
-      
-                });
+
+            this.adminAccountCreated = 'admin Account is created successfully'
+            localStorage.setItem('admin', this.adminAccountCreated);
+            // console.log(this.adminAccountCreated,'this is from the create account page')
+            this.Router.navigate(['/login'])
 
         }
         else{

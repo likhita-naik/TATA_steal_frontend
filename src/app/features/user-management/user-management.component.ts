@@ -1,4 +1,4 @@
-import { Component , OnInit } from '@angular/core';
+import { Component , ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -29,7 +29,7 @@ export class UserManagementComponent implements OnInit {
     department:new FormControl("",Validators.required)
   })
   
-
+  
   constructor(
     public modalService: NgbModal,
     public router: Router,
@@ -37,27 +37,11 @@ export class UserManagementComponent implements OnInit {
   )
   {
     this.jwtoken = localStorage.getItem('jwtoken')
+    
   }
 
   ngOnInit(){
-
     this.ExistingUserDetails();
-
-    const userAgent = navigator.userAgent;
-    console.log('User-Agent:', userAgent);
-
-    if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) {
-      console.log('Running in Chrome');
-    } else if (userAgent.includes('Firefox')) {
-      console.log('Running in Firefox');
-    } else if (userAgent.includes('Edg')) {
-      console.log('Running in Edge');
-    } else if (userAgent.includes('Safari')) {
-      console.log('Running in Safari');
-    } else {
-      console.log('Running in another browser');
-    }
-
   }
 
 
@@ -120,6 +104,7 @@ export class UserManagementComponent implements OnInit {
       })
     }
 
+
   EditUser(modal:any,){
     this.modalService.open(modal,{size:'M'})
   }
@@ -134,7 +119,7 @@ export class UserManagementComponent implements OnInit {
     var data:any = {
       email:this.deleteUserEmailId
     }
-    console.log(data,'data of the email')
+    // console.log(data,'data of the email')
     
     const httpOptions = {
       headers: new HttpHeaders({
@@ -152,6 +137,12 @@ export class UserManagementComponent implements OnInit {
       }
     })
 
+  }
+
+  focusNext(nextInput: HTMLInputElement) {
+    if (nextInput) {
+      nextInput.focus();
+    }
   }
 
 }

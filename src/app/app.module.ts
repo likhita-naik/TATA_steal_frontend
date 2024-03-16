@@ -5,7 +5,7 @@ import {
   FontAwesomeModule,
 } from "@fortawesome/angular-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
-import { HttpClient, HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from "@angular/common/http";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { NgMultiSelectDropDownModule } from "ng-multiselect-dropdown";
@@ -33,6 +33,8 @@ import { NgScrollbarModule } from "ngx-scrollbar";
 import { TcRoiComponent } from "./settings/tc-roi/tc-roi.component";
 import { IconComponent } from "./common/icon/icon.component";
 import { MechJobCamerasComponent } from "./settings/mech-job-cameras/mech-job-cameras.component";
+import { AuthInterceptor } from "./Services/auth.interceptor";
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -67,7 +69,8 @@ import { MechJobCamerasComponent } from "./settings/mech-job-cameras/mech-job-ca
     NgMultiSelectDropDownModule.forRoot(),
   ],
   entryComponents: [alertComponent],
-  providers: [ServerService, DatePipe, AuthGuard],
+  providers: [ServerService, DatePipe, AuthGuard,{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true } ],
+ 
   bootstrap: [AppComponent],
 })
 export class AppModule {

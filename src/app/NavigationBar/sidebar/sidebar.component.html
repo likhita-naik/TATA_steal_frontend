@@ -88,7 +88,7 @@
 
             <li class="mt-4" >
                 <a routerLinkActive="active" 
-                [ngbPopover]="isCollapse?userType ==='admin'?adminProfileDetails.email:userProfileDetails.email:''"  [ngClass]="isCollapse?'':''"   popoverTitle=""
+                [ngbPopover]="isCollapse?userType ==='admin'?adminProfileDetails?.email:userProfileDetails?.email:''"  [ngClass]="isCollapse?'':''"   popoverTitle=""
                     popoverClass="custom-popover" triggers="mouseenter:mouseleave" 
                     (click)="userType === 'admin'? OpenViewAdminProfileModal(viewAdminProfileModal):OpenViewUserProfileModal(viewUserProfileModal)"  >
                     <fa-icon icon="user-circle" class="me-2" size="1x" ></fa-icon>
@@ -223,21 +223,24 @@
 
                 <div class="wrapper" id="input">
                     <div class="form-floating">
-                        <input type="password" placeholder="Current password" class="form-control"  formControlName="currentPassword" id="currentPassword"/>
+                        <input type="password" placeholder="Current password" class="form-control"  formControlName="currentPassword" id="currentPassword"  (keydown.enter)="focusNext(newPassword)"
+                        #currentPassword/>
                         <label for="currentPassword"> Current password</label>
                     </div>
                     <div class="form-floating">
-                        <input type="password" placeholder="New password" class="form-control" formControlName="newPassword" id="newPassword"/>
+                        <input type="password" placeholder="New password" class="form-control" formControlName="newPassword" id="newPassword" (keydown.enter)="focusNext(confirmPassword)"
+                        #newPassword/>
                         <label for="newPassword"> New password</label>
                     </div>
                     <div class="form-floating">
-                        <input type="password" placeholder="Confirm password" class="form-control" formControlName="confirmPassword" id="confirmPassword"/>
+                        <input type="password" placeholder="Confirm password" class="form-control" formControlName="confirmPassword" id="confirmPassword" 
+                        #confirmPassword/>
                         <label  for="confirmPassword"> Confirm password</label>
                     </div>
                 </div> 
   
                 <div class="d-flex justify-content-center align-items-center">
-                    <button type="submit" (click)="userType ==='admin'?ChangeAdminPasswordSubmit():ChangeUserPasswordSubmit()" class="btn default"  >
+                    <button type="submit"  [disabled]="!ChangePasswordForm.valid "(click)="userType ==='admin'?ChangeAdminPasswordSubmit():ChangeUserPasswordSubmit()" class="btn default"  >
                         <span>Submit</span>
                     </button>
                 </div>   
@@ -262,21 +265,24 @@
                 <div class="wrapper" id="input">
   
                     <div class="form-floating">
-                        <input type="text" placeholder="Full Name" class="form-control"  formControlName="fullName" id="fullName"/>
+                        <input type="text" placeholder="Full Name" class="form-control"  formControlName="fullName" id="fullName"  (keydown.enter)="focusNext(department)"
+                        #fullname/>
                         <label for="fullName"> Full Name</label>
                     </div>
                     <div class="form-floating">
-                        <input type="text" placeholder="Department" class="form-control" formControlName="department" id="department"/>
+                        <input type="text" placeholder="Department" class="form-control" formControlName="department" id="department" (keydown.enter)="focusNext(contactnumber)"
+                        #department/>
                         <label for="department"> Department</label>
                     </div>
                     <div class="form-floating">
-                        <input type="text" placeholder="Contact Number" class="form-control" formControlName="contactNumber" id="contactNumber"/>
+                        <input type="text" placeholder="Contact Number" class="form-control" formControlName="contactNumber" id="contactNumber" 
+                        #contactnumber/>
                         <label  for="contactNumber"> Contact Number</label>
                     </div>
                 </div> 
   
                 <div class=" d-flex justify-content-center align-items-center">
-                    <button type="submit" (click)="userType ==='admin'?UpdateAdminProfileSubmit():UpdateUserProfileSubmit()"  class="btn default" >
+                    <button type="submit" [disabled]="!EditProfileForm.valid" (click)="userType ==='admin'?UpdateAdminProfileSubmit():UpdateUserProfileSubmit()"  class="btn default" >
                         <span>Update</span>
                     </button>
                 </div>   

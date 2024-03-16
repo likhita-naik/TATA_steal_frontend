@@ -10,8 +10,8 @@
                 <h4 class="sub-header">Registered Users-Details</h4>
                 <div class="float-end">
                     <button class="btn default me-2 float-end" (click)="AddUser(AddUserModal)"> 
-                        <fa-icon icon="plus" class="me-1"></fa-icon>
-                        User</button>
+                        <fa-icon icon="plus" class="me-1"></fa-icon>User
+                    </button>
                 </div>
             </div>
         </div>
@@ -81,10 +81,11 @@
     <div class="border" style="background-color: white">
 
         <div class="modal-header" id="formContent">
-          <h3>
-            <b>User Registration Form</b>
-          </h3>
-          <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')"></button>
+            <h3>
+                <b>User Registration Form</b>
+            </h3>
+            <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')">
+            </button>
         </div>
 
         <div class="modal-body">
@@ -93,32 +94,33 @@
                 <div class="wrapper" id="input">
 
                     <div class="form-floating">
-                        <input type="text" placeholder="username" class="form-control"  formControlName="username" id="username"/>
+                        <input type="text" placeholder="username" class="form-control"  formControlName="username" id="username"  (keydown.enter)="focusNext(department)" #username/>
                         <label for="username"> User Name</label>
                     </div>
 
                     <div class="form-floating">
-                        <input type="text" placeholder="department"class="form-control" formControlName="department" id="depatment"/>
+                        <input type="text" placeholder="department"class="form-control" formControlName="department" id="depatment" (keydown.enter)="focusNext(contactnumber)" #department/>
                         <label for="department"> Department</label>
                     </div>
 
                     <div class="form-floating">
-                        <input type="text" placeholder="contactnumber" class="form-control" formControlName="contactnumber" id="contactnumber"/>
+                        <input type="text" placeholder="contactnumber" class="form-control" formControlName="contactnumber" id="contactnumber" (keydown.enter)="focusNext(emailid)"
+                        #contactnumber/>
                         <label> Contact Number</label>
                     </div>
 
                     <div class="form-floating">
-                        <input type="text" placeholder="email-id" class="form-control" formControlName="emailid" id="emailid"/>
+                        <input type="text" placeholder="email-id" class="form-control" formControlName="emailid" id="emailid"  (keydown.enter)="focusNext(password)" #emailid/>
                         <label> Email Id</label>
                     </div>
 
                     <div class="form-floating">
-                        <input type="password" placeholder="password"class="form-control" formControlName="password" id="password"/>
+                        <input type="password" placeholder="password"class="form-control" formControlName="password" id="password" (keydown.enter)="focusNext(token)" #password/>
                         <label> Password</label>
                     </div>
                    
                     <div class="form-floating">
-                        <input type="text" placeholder="token"class="form-control" formControlName="token" id="token"/>
+                        <input type="password" placeholder="token"class="form-control" formControlName="token" id="token" #token/>
                         <label> Token</label>
                     </div>
                     
@@ -161,7 +163,7 @@
                 </div>  -->
 
                 <div class="wrapper">
-                    <button type="submit" (click)="AddUserSubmit()" >
+                    <button type="submit" [disabled]="!AddUserForm.valid" (click)="AddUserSubmit()" >
                         <span>Submit</span>
                     </button>
                 </div>   

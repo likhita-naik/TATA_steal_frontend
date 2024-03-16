@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { ServerService } from "../Services/server.service";
@@ -17,7 +17,7 @@ import { HttpHeaders } from "@angular/common/http";
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.css"],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit{
   userType:string
   userIsAdmin:boolean = false
   userIsUser:boolean = false
@@ -27,7 +27,11 @@ export class LoginComponent implements OnInit {
   Token:any
   
   fail: boolean = false;
-  isLoading: boolean = false;
+  // isLoading: boolean = false;
+  adminLoginLoading:boolean = false
+  userLoginLoading:boolean = false
+  adminLogoutLoginLoading:boolean = false
+  userLogoutLoginLoading:boolean = false
 
   OTP:any
   captcha: string;
@@ -40,9 +44,14 @@ export class LoginComponent implements OnInit {
   emailId:string;
 
   loginNotification:string
-  alreadyLoggedIn:boolean =false
+  adminAlreadyLoggedIn:boolean =false
+  userAlreadyLoggedIn:boolean = false
 
  userLoggedType:string =''
+ adminAccountCreated:string=''
+ selectedTabIndex: number 
+ firstTabSelected: boolean = false;
+ wantToLogin:boolean = false
   
 
   AdminLoginForm: FormGroup = new FormGroup({
@@ -74,6 +83,8 @@ export class LoginComponent implements OnInit {
   @ViewChild('emailid')emailid: ElementRef;
   @ViewChild('password')password: ElementRef;
   @ViewChild('token')token: ElementRef;
+  @ViewChild('forgottenNewPassword')forgottenNewPassword: ElementRef;
+  @ViewChild('forgottenConfirmPassword')forgottenConfirmPassword: ElementRef;
 
   constructor(
     private Router: Router, 
@@ -82,12 +93,32 @@ export class LoginComponent implements OnInit {
     public modalService: NgbModal,
     ) {
       this.uniqueId = uuidv4();
-      this.captcha = this.generateRandomString(6);
-      this.jwtoken = localStorage.getItem('jwtoken')
+      this.captcha = this.generateRandomString(10);
+      
+
+      this.adminAccountCreated = localStorage.getItem('admin')
+      // console.log(this.adminAccountCreated,'this is from the login page ')
+      if(this.adminAccountCreated ==='admin Account is created successfully')
+      {
+        this.firstTabSelected = true
+        // console.log(this.firstTabSelected,'this is form the login page and first tab selected')
+
+      }
+      else{
+        this.selectedTabIndex = 1
+        this.firstTabSelected = false
+      }
+
+      
+
   }
+  // ngOnDestroy(): void {
+  //   throw new Error("Method not implemented.");
+  // }
 
   CreateAccount(){
     this.Router.navigate(['/create-account'])
+    //  this.firstTabSelected = true
   }
 
 
@@ -116,7 +147,7 @@ export class LoginComponent implements OnInit {
   
   AdminLoginSubmit() {
 
-    this.isLoading = true;
+    this.adminLoginLoading = true;
 
     var data:any = {
       email:this.AdminLoginForm.value["emailid"],
@@ -154,7 +185,7 @@ export class LoginComponent implements OnInit {
 
 
         this.Server.GetJobSheet().subscribe((response: any) => {
-                  this.isLoading = false;
+                  this.adminLoginLoading = false;
 
                   if (response.job_sheet_status) {
                     this.Router.navigate(["app/jobsheetMoniter"]);
@@ -170,16 +201,21 @@ export class LoginComponent implements OnInit {
       }
 
       else{
-        this.isLoading=false
+        const jwtoken = Response.jwtoken; 
+        localStorage.setItem('jwtoken', jwtoken);
+        this.jwtoken = localStorage.getItem('jwtoken')
+        this.adminLoginLoading=false
         this.loginNotification = Response.message
-        console.log(this.loginNotification,'this is loginNotification varibale from the admin login function')
+        // console.log(this.loginNotification,'this is loginNotification varibale from the admin login function')
         this.service.notification(Response.message)
 
         if(this.loginNotification.includes('already logged in')){
-          this.alreadyLoggedIn= true
+          this.adminAlreadyLoggedIn= true
+            this.myFunction()
+
         }
         else{
-          this.alreadyLoggedIn = false
+          this.adminAlreadyLoggedIn = false
         }
       }
 
@@ -270,7 +306,7 @@ if (this.ForgottenPasswordForm.value['userInput'] == this.OTP+this.captcha){
   this.OTPVerified = true
 }
 else{
-  this.Server.notification(" Please Check the OTP You have entered Wrong OTP ")
+  this.Server.notification(" Please Check Once You have entered Wrong OTP ")
   this.OTPVerified = false
 }
  }
@@ -289,6 +325,9 @@ else{
       if(Response.success){
         this.Server.notification(Response.message)
         this.modalService.dismissAll()
+        this.ForgottenPasswordForm.reset()
+        this.OTPVerified = false
+        this.gotOTP = false
       }
       else{
         this.Server.notification(Response.message)
@@ -315,6 +354,9 @@ else{
     if(response.success){
       this.Server.notification(response.message)
     }
+    else{
+      this.Server.notification(response.message)
+    }
     
   })
 
@@ -323,7 +365,7 @@ else{
 
 
  UserLoginSubmit() {
-  this.isLoading = true;
+  this.userLoginLoading = true;
   var data:any = {
     email:this.UserLoginForm.value["emailid"],
     password:this.service.encodePassword(this.UserLoginForm.value["password"]),
@@ -347,7 +389,7 @@ else{
     userType: this.userIsUser?"user":"admin"
   });
 
-  console.log(this.userIsUser)
+  // console.log(this.userIsUser)
   var encodedUserData = crypto.AES.encrypt(
     userData,
     this.Server.secretKey
@@ -359,7 +401,7 @@ else{
       this.Server.GetJobSheet().subscribe((response: any) => {
 
 
-                this.isLoading = false;
+                this.userLoginLoading = false;
                 if (response.job_sheet_status) {
                   this.Router.navigate(["app/jobsheetMoniter"]);
                 } else {
@@ -374,16 +416,20 @@ else{
     }
     else{
 
-      this.isLoading=false
+      const jwtoken = Response.jwtoken; 
+      localStorage.setItem('jwtoken', jwtoken);
+      this.jwtoken = localStorage.getItem('jwtoken')
+
+      this.userLoginLoading=false
         this.loginNotification = Response.message
-        console.log(this.loginNotification,'this is loginNotification varibale from the admin login function')
+        // console.log(this.loginNotification,'this is loginNotification varibale from the admin login function')
         this.service.notification(Response.message)
 
         if(this.loginNotification.includes('already logged in')){
-          this.alreadyLoggedIn= true
+          this.userAlreadyLoggedIn= true
         }
         else{
-          this.alreadyLoggedIn = false
+          this.userAlreadyLoggedIn = false
         }
       
       this.service.notification(Response.message)
@@ -428,6 +474,7 @@ SendUserLoginDetails(){
 
  userLogout(){
 
+  this.userLogoutLoginLoading = true
   const httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -435,26 +482,33 @@ SendUserLoginDetails(){
     })
   };
 
-   sessionStorage.removeItem('session')
+   
 
   this.service.UserLogout(httpOptions).subscribe((Response:any)=>
   {
     if(Response.success){
       this.modalService.dismissAll()
+
       this.service.notification(Response.message)
+      // sessionStorage.removeItem('session')
+      this.service.notification(Response.message)
+      localStorage.setItem('logout',Response.message)
+      this.userLogoutLoginLoading = false
       this.UserLoginSubmit()
     }
     else{
+
       this.modalService.dismissAll()
+      this.UserLoginSubmit()
     }
     
   })
-
+  //  localStorage.removeItem('jwtoken')
    this.Router.navigate(['/login']) 
 }
 
 adminLogout(){
-
+   this.adminLogoutLoginLoading= true
   const httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -462,7 +516,7 @@ adminLogout(){
     })
   };
 
-   sessionStorage.removeItem('session')
+   
 
   this.service.AdminLogout(httpOptions).subscribe((Response:any)=>
   {
@@ -470,20 +524,29 @@ adminLogout(){
       
       this.modalService.dismissAll()
       this.service.notification(Response.message)
+      // sessionStorage.removeItem('session')
+      localStorage.setItem('logout',Response.message)
+      // console.log(localStorage.getItem('logout'),'this is localstorage of the logout from the login page')
+      this.adminLogoutLoginLoading = false
       this.AdminLoginSubmit()
     }
     else{
       this.modalService.dismissAll()
+      this.AdminLoginSubmit()
     }
     
   })
-
+  //  localStorage.removeItem('jwtoken')
    this.Router.navigate(['/login']) 
 }
  
- ngOnDestory(){
+ ngOnDestroy():void{
   this.modalService.dismissAll()
-  this.reloadPage()
+  // this.reloadPage()
+   this.firstTabSelected = false
+   localStorage.removeItem('admin')
+   this.adminAccountCreated = ''
+  //  this.jwtoken = ''
 
  }
 
@@ -505,6 +568,25 @@ focusNext(nextInput: HTMLInputElement) {
     nextInput.focus();
   }
 }
+
+
+ myFunction() {
+  let text = confirm("Do you want to logout in other device OR Browser and login here") == true 
+  if (text) {
+    // text = "You pressed OK!";
+    this.userLoggedType==='admin'?this.adminLogout():this.userLogout()
+    this.wantToLogin = true
+
+  } else {
+    // text = "You canceled!";
+    this.wantToLogin = false
+  }
+  // document.getElementById("demo").innerHTML = text;
+}
+
+
+
+
 
 }
 

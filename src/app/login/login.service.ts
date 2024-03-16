@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { HttpClient, HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+
 // import * as FingerprintJS from 'fingerprintjs2';
 import { Observable } from 'rxjs';
 // import { LocalStorage } from '@ngx-pwa/local-storage';
