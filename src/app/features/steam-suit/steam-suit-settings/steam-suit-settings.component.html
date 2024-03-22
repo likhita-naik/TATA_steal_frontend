@@ -30,7 +30,7 @@
       </button>
       <button
         class="float-end btn me-2 default-outline"
-        (click)="OpenModal(addSetValueForm, 'md')"
+        (click)="OpenSetValueForm(addSetValueForm)"
       >
         <fa-icon icon="plus"></fa-icon>
         {{ l1Data.length > 0 ? "Edit" : "Add" }} Set Values
@@ -164,25 +164,25 @@
                 <td>{{ camera.alarm_details.alarm_ip_address }}</td>
                 <td>
                   <div class="d-flex justify-content-center align-items-center">
-                  <div
-                    class="float-center"
-                    *ngIf="
-                      camera?.alarm_details
-                        ? keys(camera.alarm_details).length > 0
-                        : false
-                    "
-                  >
-                    <div class="form-check form-switch">
-                      <input
-                        class="form-check-input"
-                        [checked]="camera.alarm_details.alarm_enable"
-                        style="color: var(--label-color)"
-                        type="checkbox"
-                        role="switch"
-                        id="flexSwitchCheckDefault"
-                      />
-                      <!-- <label class="form-check-label" for="flexSwitchCheckDefault">Unallocated Job</label> -->
-                    </div>
+                    <div
+                      class="float-center"
+                      *ngIf="
+                        camera?.alarm_details
+                          ? keys(camera.alarm_details).length > 0
+                          : false
+                      "
+                    >
+                      <div class="form-check form-switch">
+                        <input
+                          class="form-check-input"
+                          [checked]="camera.alarm_details.alarm_enable"
+                          style="color: var(--label-color)"
+                          type="checkbox"
+                          role="switch"
+                          id="flexSwitchCheckDefault"
+                        />
+                        <!-- <label class="form-check-label" for="flexSwitchCheckDefault">Unallocated Job</label> -->
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -222,7 +222,6 @@
               </tbody>
             </ng-template>
           </table>
-          
         </div>
       </div>
     </div>
@@ -788,7 +787,7 @@
       <form action="" class="" [formGroup]="setValueForm" id="addCameraForm">
         <div class="w-100 p-3" id="input">
           <div class="mb-3" formGroupName="set1">
-            <span class="mb-2">Set-1 (On/Off) : </span>
+            <span class="mb-2">Set-1 (Plant On/Off) : </span>
 
             <div class="form-group">
               <input
@@ -824,7 +823,7 @@
             </div>
           </div>
           <div class="mb-3" formGroupName="set2">
-            <span class="mb-2">Set-2 (Operating/Not Operating): </span>
+            <span class="mb-2">Set-2 (Wall Operating/Not Operating): </span>
 
             <div class="form-group">
               <input
@@ -860,7 +859,7 @@
             </div>
           </div>
           <div class="mb-3" formGroupName="set3">
-            <span class="mb-2">Set-3 (Remotely/Not Remotely) : </span>
+            <span class="mb-2">Set-3 (Remotely/Manually) : </span>
 
             <div class="form-group">
               <input
@@ -896,7 +895,7 @@
             </div>
           </div>
           <div class="mb-3" formGroupName="set4">
-            <span class="mb-2">Set-4 (Healthy/Not Healthy): </span>
+            <span class="mb-2">Set-4 (Plant Healthy/Not Healthy): </span>
 
             <div class="form-group">
               <input
@@ -932,7 +931,7 @@
             </div>
           </div>
           <div class="mb-3">
-            <span class="mb-2">Person Count for Manual : </span>
+            <span class="mb-2">Person Count for Manual: </span>
 
             <div class="form-group">
               <input
@@ -1165,6 +1164,34 @@
           </button>
           <button type="button" class="btn danger" (click)="StopApplication()">
             Stop
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template let-modal #errorMessage>
+  <div class="modal-body">
+    <div class="modal-confirm">
+      <div class="modal-content">
+        <div class="modal-header flex-column">
+          <div class="icon-box">
+            <i class="material-icons">&#33;</i>
+          </div>
+          <h4 class="modal-title w-100">Limit has reached!</h4>
+          <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+        </div>
+        <div class="modal-body">
+          <p>{{ licenseMessage }}</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="modal.close('Cross click')"
+            data-dismiss="modal"
+          >
+            Okay
           </button>
         </div>
       </div>

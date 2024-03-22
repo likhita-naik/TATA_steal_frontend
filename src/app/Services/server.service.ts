@@ -2,7 +2,13 @@ import { DatePipe } from "@angular/common";
 import { HttpClient, HttpHeaders, HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { BehaviorSubject, Observable, retry, Subject } from "rxjs";
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  Observable,
+  retry,
+  Subject,
+} from "rxjs";
 import { configService } from "./config.service";
 import { SocketService } from "./socket-server.service";
 @Injectable({
@@ -15,12 +21,15 @@ export class ServerService {
   steamDataDelay: number;
   delay: number;
   relayDelay: number;
-  notificationSetting:Subject<boolean>=new BehaviorSubject(true)
-  alertVoiceSettings:Subject<boolean>=new BehaviorSubject(true)
-  dashboardInterval: number=3000;
-  jobsheetInterval: number=3000;
-  jobsheetDataInterval2: number=3000;
-  jobsheetDataInterval: number=3000;
+  private notificationSetting = new BehaviorSubject<boolean>(true);
+  alertVoiceSettings: Subject<boolean> = new BehaviorSubject(true);
+  mechAppStatus: Subject<boolean> = new BehaviorSubject(true);
+  ESIAppStatus: Subject<boolean> = new BehaviorSubject(true);
+  public unPlannedJobsAlertConfig = new BehaviorSubject<boolean>(true);
+  dashboardInterval: number = 3000;
+  jobsheetInterval: number = 3000;
+  jobsheetDataInterval2: number = 3000;
+  jobsheetDataInterval: number = 3000;
   userName: string = "";
   password: string = "";
   startEsiApi: any;
@@ -34,33 +43,37 @@ export class ServerService {
   ppeLiveInterval: any;
   public userType: string = "admin";
   CameraSettingsChanges: Subject<boolean> = new Subject();
-  checkApplicationStatusInterval:number
+  checkApplicationStatusInterval: number;
 
   isCollapse: Subject<boolean> = new Subject();
   constructor(
     public http: HttpClient,
     public snackbar: MatSnackBar,
     public datePipe: DatePipe,
-    private configService:configService,
+    private configService: configService
   ) {
-   this.notificationSetting.next(localStorage.getItem('alert')=='true'?true:false)
-   this.alertVoiceSettings.next(localStorage.getItem('audioOff')=='true'?true:false)
-    var res = this.configService.config
-    console.log(res,'response of config')
-    this.IP=res.IP
-    this.IP_ESI=res.IP_ESI
-    
-    this.dashboardInterval=res.dashboardInterval
-    this.jobsheetDataInterval=res.jobSheetDataInterval
-    this.jobsheetInterval=res.jobSheetStatusInterval
-    this.jobsheetDataInterval2=res.jobSheetDataInterval2
-    this.startEsiApi=res.StartESIAppApi
-    this.steamDataDelay=res.steamSuitInterval
-    this.logInterval=res.logInterval
-    this.unplannedInterval=res.unallocatedInterval
-    this.delay=res.hooterDelay
-    this.relayDelay=res.relayDelay
-    this.checkApplicationStatusInterval = res.checkApplicationStatusInterval
+    this.notificationSetting.next(
+      localStorage.getItem("alert") == "true" ? true : false
+    );
+    this.alertVoiceSettings.next(
+      localStorage.getItem("audioOff") == "true" ? true : false
+    );
+    var res = this.configService.config;
+    console.log(res, "response of config");
+    this.IP = res.IP;
+    this.IP_ESI = res.IP_ESI;
+
+    this.dashboardInterval = res.dashboardInterval;
+    this.jobsheetDataInterval = res.jobSheetDataInterval;
+    this.jobsheetInterval = res.jobSheetStatusInterval;
+    this.jobsheetDataInterval2 = res.jobSheetDataInterval2;
+    this.startEsiApi = res.StartESIAppApi;
+    this.steamDataDelay = res.steamSuitInterval;
+    this.logInterval = res.logInterval;
+    this.unplannedInterval = res.unallocatedInterval;
+    this.delay = res.hooterDelay;
+    this.relayDelay = res.relayDelay;
+    this.checkApplicationStatusInterval = res.checkApplicationStatusInterval;
   }
 
   JobSheetUpload(file: any): Observable<HttpResponse<any>> {
@@ -83,17 +96,17 @@ export class ServerService {
       withCredentials: true,
     });
   }
-  UpdateNotificationSettings(value:boolean){
-    this.notificationSetting.next(value)
+  UpdateNotificationSettings(value: boolean) {
+    this.notificationSetting.next(value);
   }
-  UpdateVoiceAlert(value:boolean){
-    this.alertVoiceSettings.next(value)
+  UpdateVoiceAlert(value: boolean) {
+    this.alertVoiceSettings.next(value);
   }
-  GetNotificationSettings(){
-    return this.notificationSetting.asObservable()
+  GetNotificationSettings() {
+    return this.notificationSetting.asObservable().pipe(distinctUntilChanged());
   }
-  GetVoiceAlertSettings(){
-    return this.alertVoiceSettings.asObservable()
+  GetVoiceAlertSettings() {
+    return this.alertVoiceSettings.asObservable().pipe(distinctUntilChanged());
   }
   DownloadCameraSheet() {
     const headers = new HttpHeaders({
@@ -360,7 +373,14 @@ export class ServerService {
   EditCamera(details: any) {
     return this.http.post(this.IP + "/edit_camera", details);
   }
+  AddMechJobByExcel(data: FormData) {
+    // const headers = new HttpHeaders({ "Content-Type": "multipart/form-data" });
+    // const options = { headers };
+    // var formData = new FormData();
+    // formData.append("file", data.get("file"));
 
+    return this.http.post(this.IP + "/addcamerausingexcel", data);
+  }
   CheckLicense() {
     return this.http.get(this.IP + "/check_license");
   }
@@ -399,8 +419,6 @@ export class ServerService {
   }
 
   AddCrowdCount(data: any) {
-    //192.168.1.80:5000/add_tc_data
-
     http: return this.http.post(this.IP + "/add_cr_data", data);
   }
 

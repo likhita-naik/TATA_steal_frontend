@@ -12,9 +12,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { Observable, of, Subscription } from "rxjs";
 import { ToastrService } from "ngx-toastr";
 
-
-
-
 export interface violation {
   si_no?: string;
 }
@@ -32,7 +29,7 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
     PPE: "PPE",
   };
   data: any[] = [];
-  delay:number=3000
+  delay: number = 3000;
   isalert: boolean = false;
 
   tempdata: any[] = [];
@@ -48,7 +45,7 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
   updatedLen: number = 0;
   violdata: any[] = [];
   currentViol: any = null;
-  activeIndex:any=0
+  activeIndex: any = 0;
   API: any;
   interval: any;
 
@@ -57,22 +54,18 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
 
   Images: any[] = [];
   @ViewChild("dangerAlert") Violation: ElementRef<any>;
- 
 
   isActive: boolean = false;
   isActive2: boolean = false;
   violationsList: any[] = [];
 
-
-
   constructor(
     private webServer: ServerService,
     private toasterService: ToastrService,
     private router: Router,
-    public activatedRoute: ActivatedRoute,
-    public Router: Router
+    public activatedRoute: ActivatedRoute
   ) {
-    this.Router.navigate(["app/violations/DangerZone"]);
+    this.router.navigate(["app/violations/DangerZone"]);
 
     localStorage.getItem("audioOff") == "true"
       ? (this.audioOff = true)
@@ -80,14 +73,12 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
     localStorage.getItem("alert") == "true"
       ? (this.alert = true)
       : (this.alert = false);
-      
+
     console.log(
       localStorage.getItem("audioOff"),
       localStorage.getItem("alert")
     );
     this.delay = this.webServer.logInterval;
-
-
 
     this.API = webServer.IP;
 
@@ -99,14 +90,12 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
         var process = response.message.find((el: any) => {
           return el.process_name == "docketrun-app" ? el : "";
         });
-        this.isActive =process?  process.process_status:'';
+        this.isActive = process ? process.process_status : "";
       }
     });
 
     this.GetMockdrillStatus();
     //..................for search..................
-
- 
 
     //..............................................
   }
@@ -114,72 +103,58 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
   ngOnInit(): void {
     //...........Reading previous violation data's length from local storage....
     this.violLength = Number(localStorage.getItem("updatedLen"));
-    
   }
 
   ngAfterViewInit() {
-
-      this.webServer.LiveViolationData().subscribe(
-        (Rdata: any) => {
-          if (Rdata.success) {
-
-            // var data = Rdata.message;
-            this.prevLiveCount = Rdata.now_live_count;
-
-            
-          } else {
-          }
-        },
-        (err) => {
-
+    this.webServer.LiveViolationData().subscribe(
+      (Rdata: any) => {
+        if (Rdata.success) {
+          // var data = Rdata.message;
+          this.prevLiveCount = Rdata.now_live_count;
+        } else {
         }
-      );
-    
+      },
+      (err) => {}
+    );
+
     this.dataread();
   }
 
-
   public dataread() {
     this.webServer.liveViolInterval = setInterval(() => {
-        
-        this.Subsciption = this.webServer
-          .LiveViolationData()
-          .subscribe((Rdata: any) => {
-            const tempResponse={...Rdata}
-            if (tempResponse.success) {
-              var cviol = [...tempResponse.message];
+      this.Subsciption = this.webServer
+        .LiveViolationData()
+        .subscribe((Rdata: any) => {
+          const tempResponse = { ...Rdata };
+          if (tempResponse.success) {
+            var cviol = [...tempResponse.message];
 
-              if (tempResponse.now_live_count - this.prevLiveCount > 0) {
-                if (this.alert) {
-                  for (
-                    let i =( tempResponse.now_live_count - this.prevLiveCount);
-                    i >=0;
-                    i--
-                  ) {
-                    var todayi = new Date();
-                    var tempi = new Date(cviol[i].timestamp);
+            if ((tempResponse.now_live_count - this.prevLiveCount) > 0) {
+              if (this.alert) {
+                for (
+                  let i =(( tempResponse.now_live_count - this.prevLiveCount)-1);
+                  i >= 0;
+                  i--
+                ) {
+                  if (this.alert) {
+                    setTimeout(() => {
+                      this.currentViol = tempResponse.message[i];
 
-                    if (this.alert) {
-                      setTimeout(() => {
-                        this.currentViol = cviol[i];
-
-                        this.alert ? this.showViol() : "";
-                      }, 100);
-                      !this.audioOff ? this.alertSound() : "";
-                    }
+                      this.alert ? this.showViol() : "";
+                    }, 100);
+                    !this.audioOff ? this.alertSound() : "";
                   }
                 }
-                this.prevLiveCount = Rdata.now_live_count;
               }
+              this.prevLiveCount = Rdata.now_live_count;
             }
-          });
-        
-      
+          }
+        });
     }, this.delay);
   }
 
   showViol() {
-    if (false) {
+    if (true) {
       this.toasterService.error(
         <any>this.Violation.nativeElement.innerHTML,
         " ",
@@ -189,7 +164,7 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
         }
       );
     }
-  }
+   }
 
   //-----METHOD FOR ALERT SOUND------------
   alertSound() {
@@ -206,9 +181,9 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
       localStorage.setItem("audioOff", "true");
     } else {
       this.audioOff = !this.audioOff;
-      this.webServer.UpdateNotificationSettings(this.audioOff)
       localStorage.setItem("audioOff", this.audioOff ? "true" : "false");
     }
+    this.webServer.UpdateVoiceAlert(this.audioOff);
   }
 
   //----------METHOD TO TOGGLE THE NOTIFICATION --------
@@ -218,10 +193,10 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
     if (!this.alert) {
       this.audioOff = true;
       localStorage.setItem("alert", "false");
-      this.webServer.UpdateVoiceAlert(this.alert)
       localStorage.setItem("audioOff", "true");
       this.toasterService.clear();
     }
+    this.webServer.UpdateNotificationSettings(this.alert);
   }
 
   OnTabChange(event: any) {
@@ -269,6 +244,7 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   ngOnDestroy() {
+    this.webServer.GetNotificationSettings();
     clearInterval(this.webServer.liveViolInterval);
     this.isalert = false;
     this.toasterService.clear();

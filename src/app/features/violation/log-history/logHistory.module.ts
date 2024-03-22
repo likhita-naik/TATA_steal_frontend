@@ -78,7 +78,6 @@ const routes: Routes = [
     NgxDaterangepickerMd.forRoot({}),
     NgbModule,
   ],
-  providers: [ServerService],
   entryComponents: [alertComponent],
   exports: [RouterModule],
 })

@@ -339,7 +339,7 @@ export class ESIMoniterComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.startAppConfig.setValue(0);
-    this.isShowUnplanned.valueChanges.subscribe((value: any) => {});
+    this.isShowUnplanned.valueChanges.subscribe((value: any) => {console.log(value), this.server.unPlannedJobsAlertConfig.next(this.isShowUnplanned.value)});
     var table = document.getElementById("dataTable");
     // table.classList.add("loading");
     this.dataFetchStatus = "init";

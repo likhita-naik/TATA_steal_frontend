@@ -209,6 +209,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     this.helmetFilterValue.valueChanges.subscribe((value: any) => {
       console.log(this.helmetFilterValue);
     });
+    
     var fromDate = this.webServer.dateTransform(new Date()) + " " + "00:00:00";
     var toDate = this.webServer.dateTransform(new Date()) + " " + "23:59:59";
     this.fromDateControl.setValue(fromDate);
@@ -218,13 +219,10 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
       singleSelection: true,
       idField: "item_id",
       textField: "item_text",
-      // selectAllText: 'Select All',
-      // unSelectAllText: 'UnSelect All',
+     
       itemsShowLimit: 1,
       allowSearchFilter: true,
-      // closeDropDownOnSelection: true,
-      // noDataAvailablePlaceholderText: 'No cameras detected',
-      // maxHeight: 197
+    
     };
 
     this.dropdownSettings2 = {
@@ -316,11 +314,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
           .LivePPEViolationData(this.selectedDepartment,this.selectedCameraId)
           .subscribe(
             (Rdata: any) => {
-              // console.log(Rdata)
-              //    var table = document.getElementById('dataTable')
-              // table?.classList.add('loading')
-              // this.dataFetchStatus = "success";
-              // console.log('hiiiiereriieijrerejewfkj')
+             
               if (Rdata.success) {
                 var response = { ...Rdata };
                 var cviol = [...Rdata.message];
@@ -340,23 +334,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
                     response.now_live_count - response.previous_live_count;
                     this.violData=of(response.message);
 
-                  if (this.alert) {
-                    for (let i = diff - 1; i >= 0; i--) {
-                      var todayi = new Date();
-                      var tempi = new Date(cviol[i].timestamp);
-
-                      //hooter configaration
-
-                      if (this.alert) {
-                        this.currentViol = cviol[i];
-
-                        setTimeout(() => {
-                          this.showViol();
-                        }, 30000);
-                        !this.audioOff ? this.alertSound() : "";
-                      }
-                    }
-                  }
+                 
                 }
               }
              if(false) {
@@ -1338,6 +1316,5 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.isalert = false;
 
-    this.toasterService.clear();
   }
 }

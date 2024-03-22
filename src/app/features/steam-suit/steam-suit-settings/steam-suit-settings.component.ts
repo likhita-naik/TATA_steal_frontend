@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -45,10 +45,13 @@ export class SteamSuitSettingsComponent implements OnInit {
   appIsOn: boolean = false;
   AppConfig: number;
   l1Data: any[] = [];
+  licenseMessage: string =
+    "As All the license are used, there is no more license to use";
   startAppConfig: FormControl = new FormControl();
   cameraRoiData: any;
   isAlerts: boolean = false;
   selectedCamera: any;
+  @ViewChild("errorMessage", { static: false }) ErrorModal: TemplateRef<any>;
 
   setValueForm: FormGroup = new FormGroup({
     set1: new FormGroup({
@@ -96,7 +99,7 @@ export class SteamSuitSettingsComponent implements OnInit {
   isSuccess: boolean = false;
   isFail: boolean = false;
   mainCameraId: string = "";
-  dataFetchStatus:string=''
+  dataFetchStatus: string = "";
   responseMessage: any = "";
   isLoading: boolean = false;
   isFormValid: boolean = false;
@@ -133,7 +136,7 @@ export class SteamSuitSettingsComponent implements OnInit {
     },
   ];
 
-  cameraDetails:Observable< any[]> =of( []);
+  cameraDetails: Observable<any[]> = of([]);
 
   cameraBrandList: Observable<any[]> = of([{ id: 1, text: "cp_plus" }]);
 
@@ -199,44 +202,69 @@ export class SteamSuitSettingsComponent implements OnInit {
       this.cameraRoiData = { _id: details._id.$oid, type: type };
     }
     this.selectedCamera = details ? details : null;
-    this.modalService.open(modal, { size: size ,centered:true}).result.then((result) => {
-      this.AddCameraForm.reset();
-      this.activeStepIndex = 0;
-      this.isSuccess = false;
-      this.isFail = false;
-      this.responseMessage = "";
-      var step2Container = document.getElementById("step2");
-      step2Container.classList.remove("active");
-      var step2Container = document.getElementById("step3");
-      step2Container.classList.remove("active");
-      var step2Container = document.getElementById("step1");
-      step2Container.classList.add("active");
-      this.AddCameraForm.get("cameraip").enable();
-      this.AddCameraForm.get("username").enable();
-      this.AddCameraForm.get("password").enable();
-      this.AddCameraForm.get("port").enable();
-      this.AddCameraForm.get("rtsp_url").enable();
-
-    },(reason)=>{
-      this.AddCameraForm.reset();
-      this.activeStepIndex = 0;
-      this.isSuccess = false;
-      this.isFail = false;
-      this.responseMessage = "";
-      var step2Container = document.getElementById("step2");
-      step2Container.classList.remove("active");
-      var step2Container = document.getElementById("step3");
-      step2Container.classList.remove("active");
-      var step2Container = document.getElementById("step1");
-      step2Container.classList.add("active");
-      this.AddCameraForm.get("cameraip").enable();
-      this.AddCameraForm.get("username").enable();
-      this.AddCameraForm.get("password").enable();
-      this.AddCameraForm.get('port').enable()
-      this.AddCameraForm.get("rtsp_url").enable();
-    });
-
-    // this.test()
+    this.Server.CheckLicense().subscribe(
+      (response: any) => {
+        if (response.success) {
+          this.modalService
+            .open(modal, { size: size, centered: true })
+            .result.then(
+              (result) => {
+                this.AddCameraForm.reset();
+                this.activeStepIndex = 0;
+                this.isSuccess = false;
+                this.isFail = false;
+                this.responseMessage = "";
+                var step2Container = document.getElementById("step2");
+                step2Container.classList.remove("active");
+                var step2Container = document.getElementById("step3");
+                step2Container.classList.remove("active");
+                var step2Container = document.getElementById("step1");
+                step2Container.classList.add("active");
+                this.AddCameraForm.get("cameraip").enable();
+                this.AddCameraForm.get("username").enable();
+                this.AddCameraForm.get("password").enable();
+                this.AddCameraForm.get("port").enable();
+                this.AddCameraForm.get("rtsp_url").enable();
+              },
+              (reason) => {
+                this.AddCameraForm.reset();
+                this.activeStepIndex = 0;
+                this.isSuccess = false;
+                this.isFail = false;
+                this.responseMessage = "";
+                var step2Container = document.getElementById("step2");
+                step2Container.classList.remove("active");
+                var step2Container = document.getElementById("step3");
+                step2Container.classList.remove("active");
+                var step2Container = document.getElementById("step1");
+                step2Container.classList.add("active");
+                this.AddCameraForm.get("cameraip").enable();
+                this.AddCameraForm.get("username").enable();
+                this.AddCameraForm.get("password").enable();
+                this.AddCameraForm.get("port").enable();
+                this.AddCameraForm.get("rtsp_url").enable();
+              }
+            );
+        } else {
+          this.modalService.open(this.ErrorModal);
+        }
+      },
+      (Err) => {}
+    );
+  }
+  OpenSetValueForm(modal: any) {
+    this.modalService.open(modal, { size: "lg", centered: true }).result.then(
+      (result) => {
+        this.isSuccess = false;
+        this.isFail = false;
+        this.responseMessage = "";
+      },
+      (reason) => {
+        this.isSuccess = false;
+        this.isFail = false;
+        this.responseMessage = "";
+      }
+    );
   }
   OnAddFirstCamera() {
     this.AddCameraForm.updateValueAndValidity();
@@ -547,23 +575,25 @@ export class SteamSuitSettingsComponent implements OnInit {
     }, 500);
   }
   GetCameraDetails() {
-    this.dataFetchStatus='init'
+    this.dataFetchStatus = "init";
 
-    this.Server.GetSteamSuitCameraInfo().subscribe((response: any) => {
-      if (response.success) {
-        this.dataFetchStatus='success'
-        this.cameraDetails = of( response.message);
-      } else {
-        this.dataFetchStatus='fail'
-        this.responseMessage=response.message
-        this.cameraDetails = of([]);
-        this.Server.notification(response.message);
+    this.Server.GetSteamSuitCameraInfo().subscribe(
+      (response: any) => {
+        if (response.success) {
+          this.dataFetchStatus = "success";
+          this.cameraDetails = of(response.message);
+        } else {
+          this.dataFetchStatus = "fail";
+          this.responseMessage = response.message;
+          this.cameraDetails = of([]);
+          this.Server.notification(response.message);
+        }
+      },
+      (Err) => {
+        this.dataFetchStatus = "error";
+        this.responseMessage = "Error while fetching the camera details.";
       }
-    },Err=>{
-      this.dataFetchStatus='error'
-      this.responseMessage='Error while fetching the camera details.'
-
-    });
+    );
   }
 
   IsDeleteCamera(modal: any, camera: any) {
@@ -697,9 +727,9 @@ export class SteamSuitSettingsComponent implements OnInit {
         if (response.success) {
           this.Server.notification(response.message);
           this.modalService.dismissAll();
-          this.GetL1data()
+          this.GetL1data();
         } else {
-          this.GetL1data()
+          this.GetL1data();
 
           this.Server.notification(response.message, "Retry");
         }

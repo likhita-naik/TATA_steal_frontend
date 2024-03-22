@@ -70,7 +70,11 @@ export class SidebarComponent implements OnInit ,AfterViewInit{
   ngOnInit(): void {
 
     this.userType === 'admin'?this.ViewAdminProfileDetails():this.ViewUserProfileDetails()
-    
+    this.server.GetNotificationSettings().subscribe((value: boolean) => {
+      // this.alert = value;
+      console.log("updatin the notification value in sidebar component");
+    });
+
   }
 
   ngAfterViewInit(): void {
@@ -125,6 +129,7 @@ export class SidebarComponent implements OnInit ,AfterViewInit{
 
 
 openAdminLogoutModal(modal:any){
+
   this.ModalService.open(modal,{centered:true,backdrop:'static'})
 }
 

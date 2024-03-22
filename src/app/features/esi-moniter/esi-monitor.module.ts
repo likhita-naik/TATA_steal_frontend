@@ -45,7 +45,7 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
   providers: [
-    ServerService,
+    
     DatePipe,
     AuthGuard,
     NgbCarouselConfig,

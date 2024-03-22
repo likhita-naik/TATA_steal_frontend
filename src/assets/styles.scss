@@ -845,3 +845,8 @@ fieldset:disabled .btn {
 .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link{
   border-color: black !important;
 }
+.p-tabview-nav{
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}

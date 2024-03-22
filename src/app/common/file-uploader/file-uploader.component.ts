@@ -77,7 +77,6 @@ export class FileUploaderComponent implements OnInit,AfterViewInit {
 
     var parseFile = (file: any) => {
       var fileName = file.name.replace(/ /g, '_')
-      console.log(file.name);
       output(
         '<strong>' + encodeURI(fileName) + '</strong>'
       );
@@ -91,6 +90,8 @@ export class FileUploaderComponent implements OnInit,AfterViewInit {
       document.getElementById('start').classList.add("hidden");
       document.getElementById('response').classList.remove("hidden");
       // document.getElementById('submit').classList.remove("hidden");
+      console.log(file,'in parse file');
+
       this.OnFileUploaded.emit(this.excelFile)
 
       loaderOverlayer.classList.remove('loading')
@@ -123,6 +124,7 @@ export class FileUploaderComponent implements OnInit,AfterViewInit {
 
     var uploadFile = (file: any) => {
       console.log(file)
+      this.excelFile=file
       var xhr = new XMLHttpRequest(),
         fileInput = document.getElementById('class-roster-file'),
         pBar = document.getElementById('file-progress'),

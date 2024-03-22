@@ -55,16 +55,17 @@ export class CameraSettingsComponent
     { data: "old", label: "Old", key: 0 },
     { data: "new", label: "New", key: 1 },
   ];
-  analyticsEnabledCamCount:number=0
+  analyticsEnabledCamCount: number = 0;
   showUploadOption: boolean = true;
   isFail: boolean = false;
   isSuccess: boolean = false;
   isLoading: boolean = false;
   isDownloading: boolean = false;
+  jobFileStatus: boolean = false;
   Object: any = Object;
   cameraData: any[] = [];
   roiPoints: any[] = [];
-   hoooterShutdownTime:FormControl=new FormControl()
+  hoooterShutdownTime: FormControl = new FormControl();
   selectedColumn: any;
   showAiSolutions: boolean = true;
   isFormValid: boolean = false;
@@ -74,8 +75,10 @@ export class CameraSettingsComponent
   total: Observable<number> = of(0);
   page: number = 1;
   pageSize: number = 10;
+  formdata: FormData = new FormData();
   tempData: any[] = [];
   isVoiceAlert: boolean = false;
+  isLoading2: boolean = false;
   isActive: boolean = false;
   isActive2: boolean = false;
   isSpillageActive: boolean = false;
@@ -162,12 +165,12 @@ export class CameraSettingsComponent
     defaultOpen: false,
     allowRemoteDataSearch: false,
   });
-
+  mechJobsheet: File;
   cameraBrandList: Observable<any[]> = of([{ id: 1, text: "cp_plus" }]);
   selectedBrand: FormControl = new FormControl();
   cameraImages: any[] = [];
-  checkApplicationStatusInterval:any
-
+  checkApplicationStatusInterval: any;
+  cameraAddMethod: FormControl = new FormControl("excel");
   headers: any[] = [
     { item_text: "SI No", item_id: 0 },
     { item_text: "Camera Name", item_id: 1 },
@@ -285,34 +288,32 @@ export class CameraSettingsComponent
         presetId: new FormControl("", Validators.required),
       })
     );
-    this.checkApplicationStatusInterval = setInterval(()=>{
-    this.server.CheckApplicationStatus().subscribe((response: any) => {
-      console.log(response);
-      if (response.success) {
-        //this.isActive=true
-        localStorage.setItem("appStatus", response.message[0].process_status);
-        var process = response.message.find((el: any) => {
-          return el.process_name == "docketrun-app" ? el : "";
-        });
-        this.isActive = process.process_status;
+    this.checkApplicationStatusInterval = setInterval(() => {
+      this.server.CheckApplicationStatus().subscribe((response: any) => {
+        console.log(response);
+        if (response.success) {
+          //this.isActive=true
+          localStorage.setItem("appStatus", response.message[0].process_status);
+          var process = response.message.find((el: any) => {
+            return el.process_name == "docketrun-app" ? el : "";
+          });
+          this.isActive = process.process_status;
 
-        var process2 = response.message.find((el: any) => {
-          return el.process_name == "smrec" ? el : "";
-        });
-        var process3 = response.message.find((el: any) => {
-          return el.process_name == "fire_smoke_app" ? el : "";
-        });
-        this.isActive3 = process3.process_status;
+          var process2 = response.message.find((el: any) => {
+            return el.process_name == "smrec" ? el : "";
+          });
+          var process3 = response.message.find((el: any) => {
+            return el.process_name == "fire_smoke_app" ? el : "";
+          });
+          this.isActive3 = process3.process_status;
 
-        var process4 = response.message.find((el: any) => {
-          return el.process_name == "spillage_app" ? el : "";
-        });
-        this.isSpillageActive = process4 ? process4.process_status : "";
-      }
-    }
-    );
-  },this.server.checkApplicationStatusInterval
-  )
+          var process4 = response.message.find((el: any) => {
+            return el.process_name == "spillage_app" ? el : "";
+          });
+          this.isSpillageActive = process4 ? process4.process_status : "";
+        }
+      });
+    }, this.server.checkApplicationStatusInterval);
 
     this.server.GetMockDrillStatus().subscribe(
       (response: any) => {
@@ -960,6 +961,7 @@ export class CameraSettingsComponent
               (response: any) => {
                 if (response.success) {
                   this.isActive = true;
+                  this.server.mechAppStatus.next(true);
                   this.server.notification(response.message);
                   this.modalService.dismissAll();
                 } else {
@@ -988,7 +990,7 @@ export class CameraSettingsComponent
     return true;
   }
   GetCameraList() {
-    this.analyticsEnabledCamCount=0
+    this.analyticsEnabledCamCount = 0;
     this.AddCameraForm.reset();
     this.CameraList = [];
     this.dataFetchStatus = "init";
@@ -1002,11 +1004,10 @@ export class CameraSettingsComponent
           this.dataFetchStatus = "success";
           this.cameraImages = [];
           this.CameraList = response.message;
-          response.message.forEach((camera:any) => {
-            camera.analytics_status?(++this.analyticsEnabledCamCount):''
-            
+          response.message.forEach((camera: any) => {
+            camera.analytics_status ? ++this.analyticsEnabledCamCount : "";
           });
-          console.log('analytics camera count',this.analyticsEnabledCamCount)
+          console.log("analytics camera count", this.analyticsEnabledCamCount);
           this.total = of(response.message.length);
           this.tempData = response.message;
           this.slice();
@@ -1111,6 +1112,7 @@ export class CameraSettingsComponent
         if (response.success) {
           this.StopMockdrill();
           this.isActive = false;
+          this.server.mechAppStatus.next(false);
           this.server.notification(response.message);
           this.modalService.dismissAll();
         } else {
@@ -1183,6 +1185,7 @@ export class CameraSettingsComponent
     var file = $event.target.files[0];
     var formData = new FormData();
     formData.append("excel_file", file);
+    console.log(formData);
     this.server.UploadCameraIPsFile(formData).subscribe(
       (response: any) => {
         this.server.notification(response.message);
@@ -1218,7 +1221,6 @@ export class CameraSettingsComponent
         this.server.notification("Error while uploading the file");
       }
     );
-    console.log(file);
   }
   AddSensgizData() {
     this.sensgiz.push(
@@ -1656,8 +1658,7 @@ export class CameraSettingsComponent
     );
   }
 
-  CheckApplicationStatus(){
-
+  CheckApplicationStatus() {
     this.server.CheckApplicationStatus().subscribe((response: any) => {
       console.log(response);
       if (response.success) {
@@ -1681,13 +1682,48 @@ export class CameraSettingsComponent
         });
         this.isSpillageActive = process4 ? process4.process_status : "";
       }
-    }
-    );
+    });
+  }
+  OnJobsheetUploaded(file: File) {
+    this.formdata.append("file", file);
+    this.isSuccess = false;
+    this.isFail = false;
+    this.responseMessage = "";
+    this.jobFileStatus = true;
+    console.log(this.formdata.get('file'), "in component");
+  }
+  OnAddMechJobsBySheet() {
+    this.isLoading2 = true;
+  var formdata={'file':this.formdata.get('file')}
+    this.server.AddMechJobByExcel(this.formdata).subscribe(
+      (response: any) => {
+        if (response.success) {
+          this.isLoading2 = false;
+          this.GetCameraList()
+          this.isSuccess = false;
+          this.isFail = false;
+          this.responseMessage = "";
+          this.mechJobsheet=null
+          this.formdata.delete('file')
+          setTimeout(() => {
+            this.modalService.dismissAll();
+         
+          }, 1000);
 
+        } else {
+          this.isFail=true
+          this.responseMessage = response.message;
+          this.isLoading2 = false;
+        }
+      },
+      (Err) => {
+        this.isLoading2 = false;
+      }
+    );
   }
 
   ngOnDestroy(): void {
     this.modalService.dismissAll();
-    clearInterval(this.checkApplicationStatusInterval)
+    clearInterval(this.checkApplicationStatusInterval);
   }
 }

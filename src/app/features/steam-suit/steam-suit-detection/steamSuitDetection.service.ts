@@ -64,7 +64,9 @@ notification(message: string, action?: string) {
   DeleteSteamSuitRoi(data:any){
     return this.http.post(this.IP+'/delete_steam_roi',data)
   }
-  
+  CheckLicense() {
+    return this.http.get(this.IP + "/check_license");
+  }
   AddSteamTC(data:any)
 {
 return this.http.post(this.IP+'/add_steamtc_data',data)

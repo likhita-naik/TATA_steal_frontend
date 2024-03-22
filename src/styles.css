@@ -215,7 +215,7 @@ h3 > b {
 .dashboard-wrapper {
   position: absolute;
   top: 0;
-  padding: 10px 5px 10px 10px !important;
+  padding: 10px 0px 10px 10px !important;
   display: inline-block !important;
   box-sizing: border-box;
   width: calc(100% - 200px) !important;
@@ -1316,7 +1316,8 @@ form .payment-plan input:checked + label:after,
   height: 100%;
   margin: 0.3rem;
   padding: 0.3rem;
-  justify-content: space-between;
+  gap :1em !important;
+  justify-content: center;
   align-items: center;
 }
 
@@ -1325,7 +1326,7 @@ form .payment-plan input:checked + label:after,
   flex-grow: 1;
   height: 100%;
   /* width: 33%; */
-
+        column-gap: 0.6% !important ;
   margin: 0.3rem 0;
   cursor: pointer;
   border-radius: 7px;
