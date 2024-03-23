@@ -169,16 +169,17 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-sm-12">
           <div class="card analytics card-body" id="with-shadow">
             <div class="d-flex align-items-center justify-content-around">
-              <div class="font-primary">
-                <h4>Total Jobs</h4>
-              </div>
-              <h2>
+              <span class="font-primary">
+                <span class="h4">Total Jobs</span>
+              </span>
+              <span>
+              <span class="h4">
                 {{
                   jobsStatus.total_panel_count
                     ? jobsStatus.total_panel_count
                     : 0
                 }}
-              </h2>
+              </span></span>
             </div>
           </div>
         </div>
@@ -187,15 +188,17 @@
           <div class="card analytics card-body" id="with-shadow">
             <div class="d-flex align-items-center justify-content-around">
               <span class="font-primary">
-                <h4 class="h4">Completed Jobs</h4>
+                <span class="h4">Completed Jobs</span>
               </span>
               <span>
-                <h2 class="centered">
+              <span>
+                <span class="h4">
                   {{
                     jobsStatus.processed_count ? jobsStatus.processed_count : 0
                   }}
-                </h2>
+                </span>
               </span>
+            </span>
             </div>
           </div>
         </div>

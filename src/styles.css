@@ -17,8 +17,8 @@
   --danger-light: hsl(4, 100%, 95%);
   --bg-white: #f2f7f8;
   --bg-success: #4eb078;
-  --user-edited:#FBA834;
-  --user-edited-light:hsl(36, 100%, 90%);
+  --user-edited: #fba834;
+  --user-edited-light: hsl(36, 100%, 90%);
   --border: 2px solid rgb(218, 220, 224);
   --base-blue: hsl(207, 85%, 33%);
   /* label light  color  it is */
@@ -1316,7 +1316,7 @@ form .payment-plan input:checked + label:after,
   height: 100%;
   margin: 0.3rem;
   padding: 0.3rem;
-  gap :1em !important;
+  gap: 1em !important;
   justify-content: center;
   align-items: center;
 }
@@ -1326,7 +1326,7 @@ form .payment-plan input:checked + label:after,
   flex-grow: 1;
   height: 100%;
   /* width: 33%; */
-        column-gap: 0.6% !important ;
+  column-gap: 0.6% !important ;
   margin: 0.3rem 0;
   cursor: pointer;
   border-radius: 7px;
@@ -1555,6 +1555,11 @@ form .payment-plan input:checked + label:after,
   align-items: center !important;
 }
 td {
+  text-align: center !important;
+  vertical-align: middle !important;
+  align-content: center !important;
+}
+th {
   text-align: center !important;
   vertical-align: middle !important;
   align-content: center !important;

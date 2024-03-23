@@ -1,6 +1,6 @@
 {
-  "IP": "http://192.168.1.68:7500",
-  "IP_ESI": "http://192.168.1.68:7500",
+  "IP": "http://192.168.1.103:7500",
+  "IP_ESI": "http://192.168.1.103:7500",
 
   "dashboardInterval": 30000,
   "jobSheetStatusInterval": 5000,
