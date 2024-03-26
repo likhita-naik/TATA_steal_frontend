@@ -97,7 +97,7 @@ export class MechanicalJobsComponent {
   AppConfig: number = 0;
   IP: any;
   shutdownName: FormControl = new FormControl("jobsheet", Validators.required);
-  currentShutdown: string = "ESI Monitor";
+  currentShutdown: string = "Mechanical Jobs";
   jobsheetID: string;
   isNewJob: boolean = false;
   tempField: FormControl = new FormControl("", Validators.required);
@@ -315,7 +315,7 @@ export class MechanicalJobsComponent {
       ? this.OnJobsheetSelect(this.queryParams.jobsheetId)
       : this.server.GetJobSheet().subscribe(
           (response: any) => {
-            table.classList.remove("loading");
+            // table.classList.remove("loading");
 
             if (response.job_sheet_status) {
               if (response.success) {
@@ -340,7 +340,7 @@ export class MechanicalJobsComponent {
                 this.sliceData();
               }
             } else {
-              this.router.navigate(["app/jobsheetUpload"]);
+              //this.router.navigate(["app/jobsheetUpload"]);
             }
           },
           (err) => {
@@ -1083,7 +1083,7 @@ export class MechanicalJobsComponent {
               this.server.notification("Data not found");
             }
           } else {
-            this.router.navigate(["app/jobsheetUpload"]);
+            // this.router.navigate(["app/jobsheetUpload"]);
           }
         },
         (err) => {
@@ -1113,17 +1113,22 @@ export class MechanicalJobsComponent {
       scrollable: true,
     });
   }
-  ResetJobSheet() {
+  ResetJobSheet() {        this.jobFileStatus=false
+
     this.server.ResetJobsheet().subscribe(
       (response: any) => {
         if (response.success) {
+          this.jobFileStatus=false
+
           this.router.navigate(["app/jobsheetUpload"]);
         } else {
           this.server.notification(response.message);
-          this.router.navigate(["app/jobsheetUpload"]);
+          this.jobFileStatus=false
+        //  this.router.navigate(["app/jobsheetUpload"]);
         }
       },
       (err) => {
+
         this.server.notification("Something went wrong", "Retry");
       }
     );
@@ -1263,7 +1268,9 @@ export class MechanicalJobsComponent {
               }
             }
           } else {
-            this.router.navigate(["app/jobsheetUpload"]);
+          
+          
+          //  this.router.navigate(["app/jobsheetUpload"]);
           }
         },
         (Err: any) => {

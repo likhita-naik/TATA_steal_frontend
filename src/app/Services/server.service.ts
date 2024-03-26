@@ -11,6 +11,7 @@ import {
 } from "rxjs";
 import { configService } from "./config.service";
 import { SocketService } from "./socket-server.service";
+import { DomSanitizer } from "@angular/platform-browser";
 @Injectable({
   providedIn: "root",
 })
@@ -50,7 +51,8 @@ export class ServerService {
     public http: HttpClient,
     public snackbar: MatSnackBar,
     public datePipe: DatePipe,
-    private configService: configService
+    private configService: configService,
+    public DOMSanitizer:DomSanitizer,
   ) {
     this.notificationSetting.next(
       localStorage.getItem("alert") == "true" ? true : false

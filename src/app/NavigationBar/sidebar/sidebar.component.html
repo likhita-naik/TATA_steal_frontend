@@ -41,6 +41,14 @@
             </li>
 
             <li class="mt-4">
+              <a [ngbPopover]="isCollapse?'Mechanical Jobs':''" popoverTitle="" popoverClass="custom-popover"
+                  triggers="mouseenter:mouseleave" routerLink="/app/mechanical-jobs" routerLinkActive="active">
+                  <fa-icon icon="table-cells-large" class="me-2"></fa-icon>
+                  <span> Mechanical Jobs </span> 
+              </a>
+          </li>
+
+            <li class="mt-4">
                 <a [ngbPopover]="isCollapse?'ESI History':''" popoverTitle="" popoverClass="custom-popover"
                     triggers="mouseenter:mouseleave" routerLink="/app/ESIHistory" routerLinkActive="active">
                     <fa-icon icon="file-lines" class="me-2"></fa-icon>
