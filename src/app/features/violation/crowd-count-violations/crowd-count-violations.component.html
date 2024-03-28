@@ -226,13 +226,14 @@
                                 <td>
                                     <!-- <single-canvas [canvas]="d"></single-canvas> -->
 
-                                    <img [src]="API+'/image/'+d.imagename[0]" loading="lazy" class="image" (click)="imageCarousal(d)">
+                                    <img [src]="API+'/image/'+analyticsType+'/'
+                                    +d.imagename[0]" loading="lazy" class="image" (click)="imageCarousal(d)">
                                     <br />
 
                                     <button *ngIf = "(d.imagename).length<1"class="btn btn-sm  mt-2" (click)="imageCarousal(d)">&nbsp;&nbsp; <fa-icon
                                             icon="images" class="mr-1"></fa-icon> More Images &nbsp;&nbsp;</button>
                                     &nbsp;<button class="btn btn-sm default text-white mt-2"
-                                        (click)="downloadImage(API+'/image/'+d.imagename)"> Download Image
+                                        (click)="downloadImage(API+'/image/'+analyticsType+'/'+d.imagename)"> Download Image
                                         <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
                                     </button>
                                 </td>

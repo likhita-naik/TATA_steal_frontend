@@ -5,14 +5,14 @@
         </div>
     
        
-        <p-tabView (onChange)="onTabChange($event)"  [activeIndex]="selectedTabIndex" > 
+        <p-tabView (onChange)="OnTabChange($event)"  [activeIndex]="selectedTabIndex" > 
 
             <p-tabPanel header="Admin" [selected]="firstTabSelected">
 
-                <form [formGroup]="AdminLoginForm" >
+                <form [formGroup]="AdminLoginForm">
 
                     <div class="d-flex align-items-center float-end" 
-                        style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;" >
+                        style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;">
                             <p (click)="CreateAccount()"><b>Create New Account ?</b></p>
 
                     </div><br><br>
@@ -25,6 +25,12 @@
                             placeholder="Email ID"
                             formControlName="emailid"
                             (keyup.enter)="ToNextField('password')"
+                            [ngClass]="
+                            AdminLoginForm.get('emailid').invalid &&
+                            AdminLoginForm.get('emailid').touched
+                              ? 'is-invalid'
+                              : ''
+                          "
                             required
                         />
                         <label for="emailid" class="center-label">Email Id </label>
@@ -38,6 +44,11 @@
                             placeholder="Password"
                             formControlName="password"
                             (keyup.enter)="ToNextField('token')"
+                            [ngClass]="
+                            AdminLoginForm.get('password').invalid &&
+                            AdminLoginForm.get('password').touched
+                              ? 'is-invalid'
+                              : '' "
                             required
                         />
                         <label for="password" class="center-label">password</label>
@@ -50,7 +61,12 @@
                             class="form-control"
                             placeholder="Token"
                             formControlName="token"
-                            (keyup.enter)="AdminLoginSubmit()"
+                            [ngClass]="
+                            AdminLoginForm.get('token').invalid &&
+                            AdminLoginForm.get('token').touched
+                              ? 'is-invalid'
+                              : ''
+                          "
                             required
                         />
                         <label for="token" class="center-label">Token</label>
@@ -59,7 +75,7 @@
                     <div class="d-flex justify-content-between align-items-center" 
                         style="color:hsl(212, 49%, 49%) ; cursor: pointer !important;" >
 
-                        <p (click)="ForgotPassword(ForgottenPasswordModal)"><b>Forgot password ?</b></p>
+                        <p (click)="OpenForgotPasswordModal(ForgottenPasswordModal)"><b>Forgot password ?</b></p>
 
                     </div>
         
@@ -69,7 +85,7 @@
                             </p> -->
 
                     <button *ngIf="!adminAlreadyLoggedIn" type="submit" [disabled]="!AdminLoginForm.valid" 
-                        class="fadeIn second"   (click)="AdminLoginSubmit()">
+                        class="fadeIn second"   (click)="AdminLoginSubmit()" >
 
                         <div *ngIf="adminLoginLoading">
                             <span
@@ -83,8 +99,8 @@
 
                     </button>
 
-                    <button *ngIf="adminAlreadyLoggedIn" type="submit" [disabled]="!AdminLoginForm.valid" 
-                        class="fadeIn second" (click)="userLoggedType ==='admin'?adminLogout():userLogout()">
+                    <button *ngIf="adminAlreadyLoggedIn" type="submit" [disabled]="!AdminLoginForm.valid " 
+                        class="fadeIn second" (click)="userLoggedType==='admin'?adminLogout():userLogout()">
 
                         <div *ngIf="adminLogoutLoginLoading">
                             <span
@@ -113,7 +129,13 @@
                             placeholder="Email ID"
                             formControlName="emailid"
                             required
-                            (keydown.enter)="focusNext(password)"
+                            (keydown.enter)="FocusNext(password)"
+                            [ngClass]="
+                            UserLoginForm.get('emailid').invalid &&
+                            UserLoginForm.get('emailid').touched
+                              ? 'is-invalid'
+                              : ''
+                          "
                             #emailid
                         />
                         <label for="emailid" class="center-label">Email Id</label>
@@ -126,7 +148,13 @@
                             class="form-control"
                             placeholder="Password"
                             formControlName="password"
-                            (keydown.enter)="focusNext(token)"
+                            (keydown.enter)="FocusNext(token)"
+                            [ngClass]="
+                            UserLoginForm.get('password').invalid &&
+                            UserLoginForm.get('password').touched
+                              ? 'is-invalid'
+                              : ''
+                          "
                             required
                             #password
                         />
@@ -140,8 +168,13 @@
                             class="form-control"
                             placeholder="Token"
                             formControlName="token"
-                            (keydown.enter)="UserLoginSubmit()"
                             required
+                            [ngClass]="
+                            UserLoginForm.get('token').invalid &&
+                            UserLoginForm.get('token').touched
+                              ? 'is-invalid'
+                              : ''
+                          "
                             #token
                         />
                         <label for="token" class="center-label">Token</label>
@@ -151,7 +184,7 @@
                             <small>Email Id OR password is incorrect</small>
                         </p> -->
 
-                    <button *ngIf="!userAlreadyLoggedIn" type="submit" [disabled]="!UserLoginForm.valid" class="fadeIn second" (click)="UserLoginSubmit()">
+                    <button *ngIf="!userAlreadyLoggedIn" type="submit" [disabled]="!UserLoginForm.valid " class="fadeIn second" (click)="UserLoginSubmit()">
 
                         <div *ngIf="userLoginLoading">
                             <span
@@ -212,7 +245,7 @@
                         </div>
 
                         <div class="form-floating">
-                            <button type="submit"  (click)="SendOTP()">
+                            <button type="submit"  (click)="GetOTP()">
                                 GET OTP
                             </button>
                         </div>
@@ -220,7 +253,7 @@
                     </div>
 
         
-                    <div class="col-12 card"  *ngIf="!OTPVerified && gotOTP">
+                    <div class="col-12 card"  *ngIf="!isOTPVerified && gotOTP">
 
 
                         <div class="form-floating">
@@ -235,32 +268,33 @@
                         </div> 
                         <br>
 
-                            <div class="form-floating">
-                                <input type="password" placeholder="Enter OTP" class="form-control" formControlName="userInput"  id="userInput"  />
-                                <label for="userInput"> Enter OTP</label>
-                            </div>
-
-                            <div  *ngIf="gotOTP && !OTPVerified" class="wrapper">
-                                <button type="submit"  (click)="verify()"> Verify</button>
-                            </div>
-
+                        <div class="form-floating">
+                            <input type="password" placeholder="Enter OTP" class="form-control" formControlName="userInput"  id="userInput"  />
+                            <label for="userInput"> Enter OTP</label>
                         </div>
+
+                        <div *ngIf="gotOTP && !isOTPVerified" class="wrapper">
+                                <button type="submit"  (click)="VerifyCaptcha()"> Verify</button>
+                        </div>
+
+                    </div>
 
             
 
 
-                    </div>
                 </div>
-      <!-- </div> -->
-                <div *ngIf="OTPVerified">
-                    <div class="form-floating">
-                        <h6 class="sub-header">Enter New Password</h6>
-                    </div>
+            </div>
+                
+      
+            <div *ngIf="isOTPVerified">
+                <div class="form-floating">
+                    <h6 class="sub-header">Enter New Password</h6>
+                </div>
 
-                    <div class="wrapper">
+                <div class="wrapper">
 
                     <div class="form-floating">
-                        <input type="password" placeholder="New Password" class="form-control" formControlName="forgottenNewPassword" id="forgottenNewPassword" (keydown.enter)="focusNext(forgottenConfirmPassword)"
+                        <input type="password" placeholder="New Password" class="form-control" formControlName="forgottenNewPassword" id="forgottenNewPassword" (keydown.enter)="FocusNext(forgottenConfirmPassword)"
                         #forgottenNewPassword />
                         <label for="forgottenNewPassword">New Password</label>
                     </div>
@@ -277,7 +311,8 @@
           
                 <div class="wrapper">
                     <button type="submit" [disabled]="!ForgottenPasswordForm.valid" (click)="ForgottenPasswordSubmit()"><span>Submit</span></button>
-                </div>   
+                </div>
+
             </div>
         </form>
           
@@ -286,40 +321,3 @@
 </ng-template>
 
 
-<ng-template let-modal #ChangePasswordModal *ngIf="adminAlreadyLoggedIn">
-    <div class="border" style="background-color: white">
-     
-        <div class="modal-header" >
-            <h3>Reset password</h3>
-            <button type="button" class="btn btn-close" aria-label="Close" (click)="modal.close('Cross click')"></button>
-        </div>
-   
-        <div class="modal-body">
-
-            <form action="" class=""   [formGroup]="ChangePasswordForm">
-                <div class="wrapper" id="input">
-
-                    <div class="form-floating">
-                        <input type="password" placeholder="Current password" class="form-control"      formControlName="currentPassword" id="currentPassword"/>
-                        <label for="currentPassword"> Current password</label>
-                    </div>
-                    <div class="form-floating">
-                        <input type="password" placeholder="New password" class="form-control" formControlName="newPassword" id="newPassword"/>
-                        <label for="newPassword"> New password</label>
-                    </div>
-                    <div class="form-floating">
-                        <input type="password" placeholder="Confirm password" class="form-control" formControlName="confirmPassword" id="confirmPassword"/>
-                        <label  for="confirmPassword"> Confirm password</label>
-                    </div>
-                </div> 
-
-                <div class="wrapper">
-                    <button type="submit" [disabled]="!ChangePasswordForm.valid" (click)="ChangePasswordSubmit()"  >
-                        <span>Submit</span>
-                    </button>
-                </div>   
-              
-            </form>
-        </div>
-    </div>
-</ng-template>

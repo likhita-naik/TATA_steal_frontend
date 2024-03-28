@@ -9,8 +9,6 @@
 }
 
 .violation_data_container {
-  justify-content: center !important;
-  align-items: center !important;
   max-height: 8rem !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -94,9 +92,6 @@ label::before {
   /* top: 15px; */
   margin-right: 10px;
   margin-left: 10px;
-
-  /* right: 5px; */
-  /* font: 1.1em 'FontAwesome'; */
 }
 
 input:checked + label {
@@ -215,8 +210,6 @@ input[type="radio"] {
   width: auto;
   display: grid;
   box-sizing: border-box;
-  /* margin: 1rem !important; */
-  /* box-sizing: content-box; */
   margin-left: 3%;
   margin-right: 3%;
   padding-right: 1% !important;
@@ -224,7 +217,6 @@ input[type="radio"] {
   padding-top: 1rem !important;
   padding-bottom: 1rem !important;
   grid-template-columns: 3% 30% 12% 12% 15% 15% 10% 3%;
-  /* grid-template-columns: 5% 30% 20% 15% 15% 10% 5%; */
   border: var(--border);
   border-radius: 7px;
 
@@ -238,20 +230,16 @@ input[type="radio"] {
   display: grid;
   padding-top: 0.5rem !important;
   padding-bottom: 0.5rem !important;
-  /* margin-right: 1%;
-   margin-left: 1%; */
   margin-bottom: 1rem !important;
   overflow-wrap: break-word;
   border: var(--border);
   border-radius: 10px;
   grid-template-columns: 3% 30% 12% 12% 15% 15% 10% 3%;
-  /* grid-template-columns: 5% 30% 20% 15% 15% 10% 5%; */
 }
 
 ngb-pagination ::ng-deep ul > li:not(.active) > a {
   background-color: #f8f8f8 !important;
   border-radius: 5px !important;
-  /* border: 1px solid var(--label-color) !important; */
   color: var(--label-color) !important;
   box-shadow: none;
 }
@@ -265,23 +253,18 @@ ngb-pagination ::ng-deep ul > li.active > a {
 }
 
 #verify #wrong input:checked + label::before {
-  /* margin-left: 3px;
-      margin-right:2rem !important; */
+
   font-size: larger;
   font-family: 500;
   color: #cc1d1d;
-  /* color: rgba(83, 128, 16, 0.788); */
-  /* content: '\2716';  */
   content: "\2713";
 }
 
 #verify #right input:checked + label::before {
-  /* margin-left: 3px;
-      margin-right:2rem !important; */
+
   font-size: larger;
   font-family: 500;
   color: rgb(29, 196, 29);
-  /* color: rgba(83, 128, 16, 0.788); */
   content: "\2713";
 }
 
@@ -343,9 +326,4 @@ input[type="radio"] {
 
 #custome input[type="radio"] {
   visibility: visible;
-}
-td {
-  text-align:  center !important;
-  vertical-align: middle !important;
-  align-content: center !important;
 }

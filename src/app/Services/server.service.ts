@@ -16,7 +16,6 @@ import { DomSanitizer } from "@angular/platform-browser";
   providedIn: "root",
 })
 export class ServerService {
-  // private secretKey = 'docketrun-944';
   IP: string;
   IP_ESI: string;
   steamDataDelay: number;
@@ -27,6 +26,7 @@ export class ServerService {
   mechAppStatus: Subject<boolean> = new BehaviorSubject(true);
   ESIAppStatus: Subject<boolean> = new BehaviorSubject(true);
   public unPlannedJobsAlertConfig = new BehaviorSubject<boolean>(true);
+  public loginStatus: Subject<boolean> = new BehaviorSubject<boolean>(false);
   dashboardInterval: number = 3000;
   jobsheetInterval: number = 3000;
   jobsheetDataInterval2: number = 3000;
@@ -51,8 +51,7 @@ export class ServerService {
     public http: HttpClient,
     public snackbar: MatSnackBar,
     public datePipe: DatePipe,
-    private configService: configService,
-    public DOMSanitizer:DomSanitizer,
+    private configService: configService
   ) {
     this.notificationSetting.next(
       localStorage.getItem("alert") == "true" ? true : false
@@ -83,7 +82,12 @@ export class ServerService {
       withCredentials: true,
     });
   }
-
+  setLoginStatus(value: boolean) {
+    this.loginStatus.next(value);
+  }
+  getLoginStatus() {
+    return this.loginStatus.asObservable();
+  }
   set ConfigValues(value: any) {
     this.configInfo = value;
     console.log(this.configInfo);
@@ -200,10 +204,7 @@ export class ServerService {
       responseType: "arraybuffer",
     });
   }
-  // loadConfigFile(filepath:any){
-  //   const JSON=this.readConfigFile(filepath,'application/json')
-  //   return JSON
-  // }
+
   readConfigFile(filepath: any, mimeType: any) {
     var xmlRequest = new XMLHttpRequest();
     xmlRequest.open("GET", filepath, false);

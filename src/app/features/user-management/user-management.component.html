@@ -272,6 +272,8 @@
 <ng-template #nodata>
     <div class="row card card-body" id="data-card">
         <div class="d-flex justify-content-center align-items-center"*ngIf="dataFetchStatus=='init'">
+            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true">
+            </span>
             <h4> Loading...</h4>
         </div>
         <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">

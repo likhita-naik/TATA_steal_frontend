@@ -74,10 +74,16 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
       ? (this.alert = true)
       : (this.alert = false);
 
-    console.log(
-      localStorage.getItem("audioOff"),
-      localStorage.getItem("alert")
-    );
+      this.webServer.LiveViolationData().subscribe(
+        (Rdata: any) => {
+          if (Rdata.success) {
+            // var data = Rdata.message;
+            this.prevLiveCount = Rdata.now_live_count;
+          } else {
+          }
+        },
+        (err) => {}
+      );
     this.delay = this.webServer.logInterval;
 
     this.API = webServer.IP;
@@ -106,16 +112,7 @@ export class LogHistoryComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.webServer.LiveViolationData().subscribe(
-      (Rdata: any) => {
-        if (Rdata.success) {
-          // var data = Rdata.message;
-          this.prevLiveCount = Rdata.now_live_count;
-        } else {
-        }
-      },
-      (err) => {}
-    );
+    
 
     this.dataread();
   }

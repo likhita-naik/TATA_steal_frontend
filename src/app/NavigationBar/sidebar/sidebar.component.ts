@@ -15,12 +15,9 @@ import crypto from "crypto-js";
 
 export class SidebarComponent implements OnInit ,AfterViewInit{
    isCollapse:boolean=false
+   userType:string
    adminProfileDetails:any
    userProfileDetails:any
-   jwtoken :string
-   userType:string
-   autoLogout:any
-   isLogout:any
 
    ChangePasswordForm: FormGroup = new FormGroup({
     currentPassword: new FormControl("", Validators.required),
@@ -34,6 +31,11 @@ export class SidebarComponent implements OnInit ,AfterViewInit{
     department:new FormControl("",Validators.required),
   })
 
+   jwtoken :string
+  
+   autoLogout:any
+
+
   constructor(
     private router:Router,
     public server:ServerService,
@@ -42,38 +44,40 @@ export class SidebarComponent implements OnInit ,AfterViewInit{
     { 
       this.server.isCollapse.subscribe((value:any)=>{
         this.isCollapse=value
-        console.log('iscollapse',this.isCollapse)
       })
-   
-      console.log(this.isCollapse,'collapse')
-
-        this.jwtoken = localStorage.getItem('jwtoken')
         
-
-        let userData: any = sessionStorage.getItem("session");
+      let userData: any = sessionStorage.getItem("session");
       var decodedString = crypto.AES.decrypt(userData, this.server.secretKey);
       userData = JSON.parse(decodedString.toString(crypto.enc.Utf8));
       this.userType = userData.userType;
 
 
-      this.userType === 'admin'?this.ViewAdminProfileDetails():this.ViewUserProfileDetails()
-
       this.autoLogout =  setInterval(()=>{
       this.userType === 'admin'?this.ViewAdminProfileDetails():this.ViewUserProfileDetails()
-      // console.log(this.userType,'this is user type from the constructor')
     },this.service.autoLogoutInterval)
 
-    this.isLogout=localStorage.getItem('logout')
-    // console.log(this.isLogout,'this is  logout localstorage from the sidebar')
+    
     }
+
 
   ngOnInit(): void {
 
+    this.jwtoken = localStorage.getItem('jwtoken')
     this.userType === 'admin'?this.ViewAdminProfileDetails():this.ViewUserProfileDetails()
-    this.server.GetNotificationSettings().subscribe((value: boolean) => {
-      // this.alert = value;
-      console.log("updatin the notification value in sidebar component");
-    });
+
+    this.server.getLoginStatus().subscribe((response:any)=>{
+      if(response){
+        
+        let userData: any = sessionStorage.getItem("session");
+        var decodedString = crypto.AES.decrypt(userData, this.server.secretKey);
+        userData = JSON.parse(decodedString.toString(crypto.enc.Utf8));
+        this.userType = userData.userType;
+        
+        this.jwtoken = localStorage.getItem('jwtoken')
+        this.userType === 'admin'?this.ViewAdminProfileDetails():this.ViewUserProfileDetails()
+      }
+
+    })
 
   }
 
@@ -97,59 +101,52 @@ export class SidebarComponent implements OnInit ,AfterViewInit{
 
   }
 
+  toggleSidebar(){
+    this.isCollapse=!this.isCollapse
+    localStorage.setItem('isCollapse','true')
+    var sidebarWrapper=document.getElementById('sidebarWrapper')
+    var sidebar=document.getElementById('sidebar')
+    var footer=document.getElementById('footer')
+    var wrapper=document.getElementsByClassName('dashboard-wrapper')[0]
+    console.log(wrapper)
+    sidebar.classList.toggle('active')
+    footer.classList.toggle('active')
+    wrapper.classList.toggle('active')
+    this.server.isCollapse.next(this.isCollapse)
+  }
 
-  adminLogout(){
+  OpenViewAdminProfileModal(modal:any){
+    this.ModalService.open(modal)
+  }
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer '+ this.jwtoken
-      })
-    };
+  OpenViewUserProfileModal(modal:any){
+    this.ModalService.open(modal)
+  }
 
-    
+  openAdminLogoutModal(modal:any){
+    this.ModalService.open(modal,{centered:true,backdrop:'static'})
+  }
 
-    this.service.AdminLogout(httpOptions).subscribe((Response:any)=>
-    {
-      if(Response.success){
-        this.ModalService.dismissAll()
-        this.service.notification(Response.message)
-        sessionStorage.removeItem('session')
-        // localStorage.removeItem('jwtoken')
-      }
-      else{
-        this.ModalService.dismissAll()
-      }
-      
-    })
-    // localStorage.removeItem('jwtoken')
-    sessionStorage.removeItem("session")
-    this.router.navigate(['/login']) 
-}
-
-
-openAdminLogoutModal(modal:any){
-
-  this.ModalService.open(modal,{centered:true,backdrop:'static'})
-}
-
-openUserLogoutModal(modal:any){
-  this.ModalService.open(modal,{centered:true,backdrop:'static'})
-}
+  openUserLogoutModal(modal:any){
+    this.ModalService.open(modal,{centered:true,backdrop:'static'})
+  }
 
 
-toggleSidebar(){
-  this.isCollapse=!this.isCollapse
-  localStorage.setItem('isCollapse','true')
-  var sidebarWrapper=document.getElementById('sidebarWrapper')
-  var sidebar=document.getElementById('sidebar')
-  var footer=document.getElementById('footer')
-  var wrapper=document.getElementsByClassName('dashboard-wrapper')[0]
-  console.log(wrapper)
-  sidebar.classList.toggle('active')
-  footer.classList.toggle('active')
-  wrapper.classList.toggle('active')
-  this.server.isCollapse.next(this.isCollapse)
+OpenUpdateProfileModal(modal:any){
+  this.userType ==='admin'?
+  this.EditProfileForm.patchValue({
+    fullName: this.adminProfileDetails.fullname,
+    department: this.adminProfileDetails.department,
+    contactNumber: this.adminProfileDetails.contact
+  }):
+  this.EditProfileForm.patchValue({
+    fullName: this.userProfileDetails.fullname,
+    department: this.userProfileDetails.department,
+    contactNumber: this.userProfileDetails.contact
+  });
+  
+  this.ModalService.dismissAll()
+  this.ModalService.open(modal)
 }
 
 
@@ -158,7 +155,147 @@ OpenChangePassword(modal:any){
   this.ModalService.open(modal)
 }
 
+focusNext(nextInput: HTMLInputElement) {
+  if (nextInput) {
+    nextInput.focus();
+  }
+}
+
+
+ViewAdminProfileDetails(){
+
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+ this.jwtoken
+    })
+  };
+
+  this.service.AdminProfileDetails(httpOptions).subscribe((Response:any)=>
+  {
+    if(Response.success){
+      this.adminProfileDetails = Response.message
+    }
+
+    else{
+      this.service.notification(Response.message)
+
+      if(Response.message.includes('admin details not found')|| 
+      Response.message.includes('Invalid authorization token')||
+      Response.message.includes('logged out')||
+      Response.message.includes('expired'))
+      {
+        this.adminLogout()
+      }
+      else{
+
+      }
+
+      this.ModalService.dismissAll()
+
+    }
+  })
+}
+
+
+ViewUserProfileDetails(){
+
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+ this.jwtoken
+    })
+  };
+
+  this.service.UserProfileDetails(httpOptions).subscribe((Response:any)=>
+  {
+    if(Response.success){
+      this.userProfileDetails = Response.message
+    }
+    else{
+      this.server.notification(Response.message)
+
+      if(Response.message.includes('expired')||
+      Response.message.includes('Invalid authorization token')||
+      Response.message.includes('logged out')||
+      Response.message.includes('admin details not found'))
+      {
+        this.userLogout()
+      }
+      
+      else{
+
+      }
+
+      this.ModalService.dismissAll()
+
+    }
+  })
+
+}
+
+UpdateAdminProfileSubmit(){
+
+  var data:any = {
+    fullname:this.EditProfileForm.value["fullName"],
+    department:this.EditProfileForm.value["department"],
+    contact:this.EditProfileForm.value["contactNumber"]
+  }
+
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+ this.jwtoken
+    })
+  };
+
+this.service.UpdateAdminProfile(data,httpOptions).subscribe((response:any)=>
+{
+  if(response.success){
+    this.ModalService.dismissAll()
+    this.service.notification(response.message)
+    this.ViewAdminProfileDetails()
+  }
+  else{
+     this.service.notification(response.message)
+  }
+ 
+})
+
+}
+
+UpdateUserProfileSubmit(){
+
+  var data:any = {
+    fullname:this.EditProfileForm.value["fullName"],
+    department:this.EditProfileForm.value["department"],
+    contact:this.EditProfileForm.value["contactNumber"]
+  }
+
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+ this.jwtoken
+    })
+  };
+
+this.service.UpdateUserProfile(data,httpOptions).subscribe((response:any)=>
+{
+  if(response.success){
+    this.ModalService.dismissAll()
+    this.service.notification(response.message)
+    this.ViewUserProfileDetails()
+  }
+  else{
+
+  }
+ 
+})
+
+}
+
 ChangeAdminPasswordSubmit(){
+
   var data:any = {
     current_password:this.service.encodePassword(this.ChangePasswordForm.value["currentPassword"]),
     new_password:this.service.encodePassword(this.ChangePasswordForm.value["newPassword"]),
@@ -183,182 +320,6 @@ ChangeAdminPasswordSubmit(){
     }
     
   })
-}
-
-
-OpenUpdateProfileModal(modal:any){
-
-
-  this.userType ==='admin'?this.EditProfileForm.patchValue({
-    fullName: this.adminProfileDetails.fullname,
-    department: this.adminProfileDetails.department,
-    contactNumber: this.adminProfileDetails.contact
-  }):this.EditProfileForm.patchValue({
-    fullName: this.userProfileDetails.fullname,
-    department: this.userProfileDetails.department,
-    contactNumber: this.userProfileDetails.contact
-  });
-  
-
-  this.ModalService.dismissAll()
-  this.ModalService.open(modal)
-}
-
-OpenViewAdminProfileModal(modal:any){
-  this.ModalService.open(modal)
-}
-
-OpenViewUserProfileModal(modal:any){
-  this.ModalService.open(modal)
-}
-
-
-UpdateAdminProfileSubmit(){
-  var data:any = {
-    fullname:this.EditProfileForm.value["fullName"],
-    department:this.EditProfileForm.value["department"],
-    contact:this.EditProfileForm.value["contactNumber"]
-  }
-
-  const httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer '+ this.jwtoken
-    })
-  };
-this.service.UpdateAdminProfile(data,httpOptions).subscribe((response:any)=>
-{
-  if(response.success){
-    this.ModalService.dismissAll()
-    this.service.notification(response.message)
-    this.ViewAdminProfileDetails()
-  }
-  else{
-     this.service.notification(response.message)
-  }
- 
-})
-
-}
-
-
-ViewAdminProfileDetails(){
-
-  const httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer '+ this.jwtoken
-    })
-  };
-
-  this.service.AdminProfileDetails(httpOptions).subscribe((Response:any)=>
-  {
-    if(Response.success){
-      this.adminProfileDetails = Response.message
-      // sessionStorage.removeItem("session")
-      // this.router.navigate(['/login'])   Response.message.includes('Invalid authorization token')||
-
-
-      // if(this.isLogout.includes('Logged out successfully')){
-      //   console.log('this is from the side bar inside the if condition')
-
-      //   sessionStorage.removeItem("session")
-      //   // this.reloadPage()
-      //   localStorage.removeItem('jwtoken')
-
-      //   this.router.navigate(['/login'])
-      // }
-
-    }
-    else{
-      this.service.notification(Response.message)
-      // if(Response.message.includes('expired')||Response.message.includes('Invalid authorization token')||Response.message.includes('logged out')){
-      //   sessionStorage.removeItem("session")
-      //   // this.reloadPage()
-      //   //localStorage.removeItem('jwtoken')
-      //   this.adminLogout();
-      //   this.router.navigate(['/login']) 
-      //   // console.log('this is from the if function')
-      // }
-      // else{
-      //   // console.log('this is from the else function ')
-      // }
-      this.ModalService.dismissAll()
-      // this.service.notification(Response.message)
-      
-    }
-  })
-}
-
-
-ViewUserProfileDetails(){
-
-  const httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer '+ this.jwtoken
-    })
-  };
-
-  this.service.UserProfileDetails(httpOptions).subscribe((Response:any)=>
-  {
-    if(Response.success){
-      this.userProfileDetails = Response.message
-    }
-    else{
-      // this.ModalService.dismissAll()
-      // this.service.notification(Response.message)
-      // if(Response.message.includes('session expired, please login once again')){
-      //   sessionStorage.removeItem("session")
-      //   this.router.navigate(['/login']) 
-      //   console.log('this is from the login ')
-      // }
-      this.server.notification(Response.message)
-      if(Response.message.includes('expired')||Response.message.includes('Invalid authorization token')||Response.message.includes('logged out')){
-        //  localStorage.removeItem("jwtoken")
-        sessionStorage.removeItem("session")
-        // this.reloadPage()
-        this.userLogout();
-        this.router.navigate(['/login']) 
-        // console.log('this is from the if function')
-      }
-      else{
-        // console.log('this is from the else function ')
-      }
-      this.ModalService.dismissAll()
-    }
-  })
-
-
-}
-
-userLogout(){
-
-  const httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer '+ this.jwtoken
-    })
-  };
-
-  sessionStorage.removeItem('session')
-
-  this.service.UserLogout(httpOptions).subscribe((Response:any)=>
-  {
-    if(Response.success){
-      this.ModalService.dismissAll()
-      this.service.notification(Response.message)
-      // localStorage.removeItem('jwtoken')
-
-    }
-    else{
-      this.ModalService.dismissAll()
-    }
-    
-  })
-  // localStorage.removeItem('jwtoken')
- sessionStorage.removeItem("session")
-  this.router.navigate(['/login']) 
 }
 
 
@@ -389,12 +350,8 @@ ChangeUserPasswordSubmit(){
   })
 }
 
-UpdateUserProfileSubmit(){
-  var data:any = {
-    fullname:this.EditProfileForm.value["fullName"],
-    department:this.EditProfileForm.value["department"],
-    contact:this.EditProfileForm.value["contactNumber"]
-  }
+
+adminLogout(){
 
   const httpOptions = {
     headers: new HttpHeaders({
@@ -402,42 +359,65 @@ UpdateUserProfileSubmit(){
       'Authorization': 'Bearer '+ this.jwtoken
     })
   };
-this.service.UpdateUserProfile(data,httpOptions).subscribe((response:any)=>
-{
-  if(response.success){
-    this.ModalService.dismissAll()
-    this.service.notification(response.message)
-    this.ViewUserProfileDetails()
-  }
-  else{
 
-  }
- 
-})
+  this.service.AdminLogout(httpOptions).subscribe((Response:any)=>
+  {
+    if(Response.success){
+      this.ModalService.dismissAll()
+      this.service.notification(Response.message)
+      localStorage.removeItem('jwtoken')
+      sessionStorage.removeItem('session')
+      this.router.navigate(['/login']) 
+
+    }
+    else{
+      this.ModalService.dismissAll()
+      localStorage.removeItem('jwtoken')
+      sessionStorage.removeItem('session')
+      this.router.navigate(['/login'])
+    }
+    
+  })
+  
+}
+
+userLogout(){
+
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+ this.jwtoken
+    })
+  };
+
+  this.service.UserLogout(httpOptions).subscribe((Response:any)=>
+  {
+    if(Response.success){
+      this.ModalService.dismissAll()
+      this.service.notification(Response.message)
+      localStorage.removeItem('jwtoken')
+      sessionStorage.removeItem("session")
+      this.router.navigate(['/login']) 
+
+    }
+    else{
+      this.ModalService.dismissAll()
+      localStorage.removeItem('jwtoken')
+      sessionStorage.removeItem("session")
+      this.router.navigate(['/login']) 
+    }
+    
+  })
 
 }
 
-reloadPage(){
-  window.location.reload()
- }
-
-// AutoLogout(){
-//   sessionStorage.removeItem("session")
-//   this.router.navigate(['/login'])
-// }
-
-focusNext(nextInput: HTMLInputElement) {
-  if (nextInput) {
-    nextInput.focus();
-  }
-}
 
 ngOnDestroy(): void {
   this.ModalService.dismissAll()
   clearInterval(this.autoLogout)
   this.adminProfileDetails = ''
   this.userProfileDetails = ''
-  
+  this.jwtoken = ''
 }
 
 }

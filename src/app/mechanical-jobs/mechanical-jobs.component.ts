@@ -28,9 +28,9 @@ import { Title } from "@angular/platform-browser";
 import { ToastrService } from "ngx-toastr";
 
 @Component({
-  selector: 'app-mechanical-jobs',
-  templateUrl: './mechanical-jobs.component.html',
-  styleUrls: ['./mechanical-jobs.component.css']
+  selector: "app-mechanical-jobs",
+  templateUrl: "./mechanical-jobs.component.html",
+  styleUrls: ["./mechanical-jobs.component.css"],
 })
 export class MechanicalJobsComponent {
   dropdownSettings: IDropdownSettings;
@@ -162,8 +162,6 @@ export class MechanicalJobsComponent {
     relayIp: new FormControl(""),
   });
 
-
-
   isHistory: Boolean = false;
   isFormValid: boolean = false;
   dataHeaders: any[] = [
@@ -288,7 +286,7 @@ export class MechanicalJobsComponent {
       idField: "id",
       textField: "text",
       disabledField: "isDisabled",
-       closeDropDownOnSelection: true,
+      closeDropDownOnSelection: true,
       clearSearchFilter: true,
       searchPlaceholderText: "Search",
       noDataAvailablePlaceholderText: "No data available",
@@ -1113,22 +1111,22 @@ export class MechanicalJobsComponent {
       scrollable: true,
     });
   }
-  ResetJobSheet() {        this.jobFileStatus=false
+  ResetJobSheet() {
+    this.jobFileStatus = false;
 
     this.server.ResetJobsheet().subscribe(
       (response: any) => {
         if (response.success) {
-          this.jobFileStatus=false
+          this.jobFileStatus = false;
 
           this.router.navigate(["app/jobsheetUpload"]);
         } else {
           this.server.notification(response.message);
-          this.jobFileStatus=false
-        //  this.router.navigate(["app/jobsheetUpload"]);
+          this.jobFileStatus = false;
+          //  this.router.navigate(["app/jobsheetUpload"]);
         }
       },
       (err) => {
-
         this.server.notification("Something went wrong", "Retry");
       }
     );
@@ -1268,9 +1266,7 @@ export class MechanicalJobsComponent {
               }
             }
           } else {
-          
-          
-          //  this.router.navigate(["app/jobsheetUpload"]);
+            //  this.router.navigate(["app/jobsheetUpload"]);
           }
         },
         (Err: any) => {
@@ -1521,35 +1517,32 @@ export class MechanicalJobsComponent {
     this.selectedJob = job;
     rtsp ? (this.rtspLiveIp = rtsp) : "";
     this.isImgLoading = true;
-    this.modalService.open(modal, { size: "xl" ,fullscreen:false
-  }).result.then(
-      (result) => {
-        this.AddCameraForm.reset();
-        this.tempAddedJob = null;
-        this.addedJob = null;
-        this.isFail = false;
-        this.isSuccess = false;
-        this.isLoading = false;
-      },
-      (reason: any) => {
-        this.isLoading = false;
-        this.addedJob = null;
-        this.tempAddedJob = null;
-        this.AddCameraForm.reset();
-        this.isFail = false;
-        this.isSuccess = false;
-      }
-    );
+    this.modalService
+      .open(modal, { size: "xl", fullscreen: false })
+      .result.then(
+        (result) => {
+          this.AddCameraForm.reset();
+          this.tempAddedJob = null;
+          this.addedJob = null;
+          this.isFail = false;
+          this.isSuccess = false;
+          this.isLoading = false;
+        },
+        (reason: any) => {
+          this.isLoading = false;
+          this.addedJob = null;
+          this.tempAddedJob = null;
+          this.AddCameraForm.reset();
+          this.isFail = false;
+          this.isSuccess = false;
+        }
+      );
   }
 
   OpenTitleEditModal(modal: any) {
     this.shutdownName.setValue(this.currentShutdown);
     this.modalService.open(modal, { size: "md", centered: true });
   }
-
-
-
-  
 
   SaveRemark() {
     var data1: any = {
@@ -2044,13 +2037,6 @@ export class MechanicalJobsComponent {
     this._lightbox.open(this.Images, index);
   }
 
-
-
-
-  
-
- 
-
   ModifyData(data: any) {
     data.forEach((panel: any) => {
       let temp: any = {};
@@ -2359,7 +2345,6 @@ export class MechanicalJobsComponent {
   // to get the l1 data
   //api integration
 
-
   getConveyorImg() {
     var img = document.getElementById("jobImg");
     img.classList.add("loading");
@@ -2543,8 +2528,6 @@ export class MechanicalJobsComponent {
     });
   }
 
-  
-
   //-----METHOD FOR ALERT SOUND------------
   alertSound() {
     let audio = new Audio();
@@ -2575,8 +2558,6 @@ export class MechanicalJobsComponent {
       }
     });
   }
-
-
 
   ngOnDestroy(): void {
     clearInterval(this.Interval);
@@ -2611,12 +2592,14 @@ export class MechanicalJobsComponent {
   OnJobsheetUploaded(file: File) {
     this.isSuccess = false;
     this.isFail = false;
-    console.log('mechanical jobsheet has uploaded')
+    console.log("mechanical jobsheet has uploaded");
     this.responseMessage = "";
-    document.getElementById('file-upload-container').classList.add('loading')
+    document.getElementById("file-upload-container").classList.add("loading");
     setTimeout(() => {
-      document.getElementById('file-upload-container').classList.remove('loading')
-      this.jobFileStatus=true
+      document
+        .getElementById("file-upload-container")
+        .classList.remove("loading");
+      this.jobFileStatus = true;
     }, 3000);
     console.log("jobfile status", this.jobFileStatus);
     this.Jobsheet = file;
@@ -3337,17 +3320,18 @@ export class MechanicalJobsComponent {
   }
 
   manualDataAddForm: FormGroup = new FormGroup({
-    newValues:new  FormArray([
-    new FormGroup({
-      tag: new FormControl("", Validators.required),
-      lock: new FormControl("", Validators.required),
-      rackMethod: new FormControl("", Validators.required),
-      fiveMeter: new FormControl("", Validators.required),
-      IRRDInTime:new FormControl(""),
-      IRRDOutTime:new FormControl(""),
-      ppeViolations: new FormControl("", Validators.required),
-    })]),
-    addedValues:new FormArray([
+    newValues: new FormArray([
+      new FormGroup({
+        tag: new FormControl("", Validators.required),
+        lock: new FormControl("", Validators.required),
+        rackMethod: new FormControl("", Validators.required),
+        fiveMeter: new FormControl("", Validators.required),
+        IRRDInTime: new FormControl(""),
+        IRRDOutTime: new FormControl(""),
+        ppeViolations: new FormControl("", Validators.required),
+      }),
+    ]),
+    addedValues: new FormArray([
       new FormGroup({
         tag: new FormControl("", Validators.required),
         lock: new FormControl("", Validators.required),
@@ -3355,38 +3339,36 @@ export class MechanicalJobsComponent {
         rackMethod: new FormControl("", Validators.required),
         fiveMeter: new FormControl("", Validators.required),
         ppeViolations: new FormControl("", Validators.required),
-        IRRDInTime:new FormControl(""),
-        IRRDOutTime:new FormControl(""),
+        IRRDInTime: new FormControl(""),
+        IRRDOutTime: new FormControl(""),
+      }),
+    ]),
+  });
+
+  get getNewValueControls() {
+    return this.manualDataAddForm.get("newValues") as FormArray;
+  }
+  addNewValue() {
+    this.getNewValueControls.push(
+      new FormGroup({
+        tag: new FormControl("", Validators.required),
+        lock: new FormControl("", Validators.required),
+        rackProcess: new FormControl("", Validators.required),
+        rackMethod: new FormControl("", Validators.required),
+        fiveMeter: new FormControl("", Validators.required),
+        ppeViolations: new FormControl("", Validators.required),
+        IRRDInTime: new FormControl(""),
+        IRRDOutTime: new FormControl(""),
       })
-    ])
-
-});
-
-get getNewValueControls(){
-  return this.manualDataAddForm.get('newValues') as FormArray
+    );
+  }
+  deleteNewValue(index: number) {
+    this.getNewValueControls.controls.splice(index, 1);
+  }
+  OnSaveNewManualData() {
+    console.log(this.manualDataAddForm.value);
+  }
+  ondate1valueChange(event: any) {
+    console.log(event);
+  }
 }
-addNewValue(){
-   this.getNewValueControls.push( new FormGroup({
-    tag: new FormControl("", Validators.required),
-    lock: new FormControl("", Validators.required),
-    rackProcess: new FormControl("", Validators.required),
-    rackMethod: new FormControl("", Validators.required),
-    fiveMeter: new FormControl("", Validators.required),
-    ppeViolations: new FormControl("", Validators.required),
-    IRRDInTime:new FormControl(""),
-    IRRDOutTime:new FormControl(""),
-  }))
-}
-deleteNewValue(index:number){
-  this.getNewValueControls.controls.splice(index,1)
-
-}
-OnSaveNewManualData(){
-  console.log(this.manualDataAddForm.value)
-}
-ondate1valueChange(event:any){
-console.log(event)
-
-}
-}
-

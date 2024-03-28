@@ -36,6 +36,7 @@ export class CrowdCountViolationsComponent
   isalert: boolean = false;
   dataFetchStatus: string = "";
   tempdata: any[] = [];
+  analyticsType:string='CRDCNT'
   page: number = 1;
   pageSize: number = 30;
   audioOff: boolean = false;
@@ -601,8 +602,9 @@ export class CrowdCountViolationsComponent
     viol.imagename.forEach((imgname: string, index: number) => {
       console.log(imgname);
       this.Images[index] = {
-        src: this.API + "/image/" + imgname,
-        thumb: this.API + "/image/" + imgname,
+        src: this.API + '/image/'+this.analyticsType+'/'
+         + imgname,
+        thumb: this.API + /image/ +this.analyticsType+'/' +imgname,
         caption: imgname,
       };
     });

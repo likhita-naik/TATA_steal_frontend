@@ -579,11 +579,12 @@ export class SteamSuitSettingsComponent implements OnInit {
 
     this.Server.GetSteamSuitCameraInfo().subscribe(
       (response: any) => {
+        this.dataFetchStatus = "success";
+
         if (response.success) {
-          this.dataFetchStatus = "success";
           this.cameraDetails = of(response.message);
         } else {
-          this.dataFetchStatus = "fail";
+          // this.dataFetchStatus = "fail";
           this.responseMessage = response.message;
           this.cameraDetails = of([]);
           this.Server.notification(response.message);

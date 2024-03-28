@@ -120,10 +120,6 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
         ,
      
       plugins: {
-        // title: {
-        //   display: true,
-        //   text: 'Chart.js Bar Chart - Stacked'
-        // },
         legend: {
           display: true,
         },
@@ -139,11 +135,7 @@ export class TrafficCountComponent implements OnInit,AfterViewInit,OnDestroy {
   barChartLegend = true;
   barChartPlugins:any = [];
   barChartData: any[] = [
-    // { data: [49, 30, 89, 90, 15, 33],label:'Occupiency', type:'line', borderColor:'orange',backgroundColor:'white', pointStyle: 'circle',
-    // pointRadius: 4,
-    // pointHoverRadius: 8},
-  
-    { data: [], label: 'Entry', stack: 'Stack 0',backgroundColor:'#ccc',barThickness:12,borderRadius:7},
+     { data: [], label: 'Entry', stack: 'Stack 0',backgroundColor:'#ccc',barThickness:12,borderRadius:7},
     { data: [], label: 'Entry', stack: 'Stack 0',backgroundColor:'#D8D8D9',barThickness:12,borderRadius:7},
 
     { data: [], label: 'Exit', stack: 'Stack 1',backgroundColor:'#134276',barThickness:10,borderRadius:7},

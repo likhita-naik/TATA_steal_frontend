@@ -86,7 +86,7 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
   delay: number;
   objectKeys = Object.keys;
   isdate: boolean = false;
-
+  analyticsType:string="PPE"
   selectedViolType: string | null = null;
   Subsciption!: Subscription;
   selectedCameraId: string | null = null;
@@ -763,8 +763,8 @@ export class PpeviolationComponent implements OnInit, OnDestroy, AfterViewInit {
     viol.imagename.forEach((imgname: string, index: number) => {
       console.log(imgname);
       this.Images[index] = {
-        src: this.API + "/image/" + imgname,
-        thumb: this.API + "/image/" + imgname,
+        src: this.API + '/image/'+this.analyticsType+'/'+ imgname,
+        thumb: this.API + '/image/'+this.analyticsType+'/' + imgname,
         caption: imgname,
       };
     });

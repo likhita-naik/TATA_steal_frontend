@@ -34,7 +34,7 @@
                     [ranges]="ranges"
                     [timePicker]="true"
                     placeholder="Select Date"
-                    (change)="Submit()"
+                    (datesUpdated)="Submit()"
                     [(ngModel)]="selectedMoments"
                     required
                     id="dateInput"
@@ -65,7 +65,7 @@
               <p-treeSelect
                 [containerStyleClass]="'w-100'"
                 class="w-100 d-flex"
-                [(ngModel)]="selectedItems1"
+                [(ngModel)]="selectedDepartment"
                 [ngModelOptions]="{ standalone: true }"
                 [options]="dropdownList1 | async"
                 [style]="{ width: 'inherit' }"
@@ -80,7 +80,7 @@
               <p-treeSelect
                 [containerStyleClass]="'w-100'"
                 class="w-100 d-flex"
-                [(ngModel)]="selectedItems"
+                [(ngModel)]="selectedCameraId"
                 [ngModelOptions]="{ standalone: true }"
                 [options]="dropdownList | async"
                 [style]="{ width: 'inherit' }"
@@ -96,7 +96,9 @@
                 class="btn default-outline ms-3 me-3"
                 (click)="ResetFilters()"
                 *ngIf="
-                  selectedItems !== null || selectedMoments?.startDate !== null
+                  selectedCameraId !== null ||
+                  selectedDepartment !== null ||
+                  selectedMoments?.startDate !== null
                 "
               >
                 &times;Cancel Filters
@@ -337,7 +339,13 @@
                           >
                             <div class="column-flex">
                               <img
-                                [src]="API + '/image/' + d.imagename[0]"
+                                [src]="
+                                  API +
+                                  '/image/' +
+                                  analyticsType +
+                                  '/' +
+                                  d.imagename[0]
+                                "
                                 class="image"
                                 loading="lazy"
                                 (click)="imageCarousal(d)"
@@ -358,7 +366,13 @@
                                 <button
                                   class="btn btn-sm default text-white mt-2"
                                   (click)="
-                                    downloadImage(API + '/image/' + d.imagename)
+                                    downloadImage(
+                                      API +
+                                        '/image/' +
+                                        analyticsType +
+                                        '/' +
+                                        d.imagename
+                                    )
                                   "
                                 >
                                   Download Image
@@ -377,29 +391,43 @@
                           >
                             <div class="violation_data_container">
                               <ng-scrollbar
-                              style="height:8rem !important"
-                              #scrollable
-                              track="vertical"
-                              pointerEventsMethod="scrollbar"
-                              [autoHeightDisabled]="true"
-                              [disabled]="false"
-                            >
-                              <div
-                                *ngFor="
-                                  let object of d.object_data;
-                                  let in = index
-                                "
-                                class="d-flex justify-content-center align-items-center"
-                                [ngClass]="in!= (d.object_data.length-1) ? 'border-bottom':''"
+                                style="height: 10rem !important"
+                                #scrollable
+                                track="vertical"
+                                pointerEventsMethod="scrollbar"
+                                [autoHeightDisabled]="true"
+                                [disabled]="false"
                               >
-                                <div class="d-flex justify-content-center align-items-center">
-                                  <div class="d-flex justify-content-center align-items-center">
-                                    {{ object.violation_count }}
+                                <div class="border-bottom">
+                                  <span class="text-muted">ROI Name :</span>
+                                  <div
+                                    *ngFor="
+                                      let roi of d?.analytics_data?.ROI_details
+                                    "
+                                  >
+                                    <span
+                                      ><b>{{ objectKeys(roi) }}</b></span
+                                    ><br />
                                   </div>
-
-          
                                 </div>
-                              </div>
+                                <!-- <div
+                                  *ngFor="
+                                    let object of d.object_data;
+                                    let in = index
+                                  "
+                                  ngClass="in!= (d.object_data.length-1) ? 'border-bottom':''"
+                                > -->
+                                <div>
+                                  <div class="mb-1 mt-1">
+                                    <span class="text-muted"
+                                      >Person Count
+                                    </span>
+                                    <span>
+                                      <b> {{ d.object_data.length }} </b></span
+                                    >
+                                 
+                                  </div>
+                                </div>
                               </ng-scrollbar>
                             </div>
                           </div>
@@ -572,21 +600,21 @@
             <ng-template #noData>
               <div class="row card card-body" id="data-card">
                 <div
-                  class="d-flex justify-content-center align-items-center"
+                  class="text-muted d-flex justify-content-center align-items-center"
                   *ngIf="dataFetchStatus === 'success'"
                 >
-                  <h4>Violation Details are Not Found.</h4>
+                  <h4>No Violations Detected.</h4>
                 </div>
 
                 <div
-                  class="d-flex justify-content-center align-items-center"
+                  class="text-muted d-flex justify-content-center align-items-center"
                   *ngIf="dataFetchStatus === 'init'"
                 >
                   <span
-                    class="spinner-border spinner-border-sm me-2"
+                    class="spinner-border spinner-border-sm me-2 text-prime"
                     role="status"
                   ></span>
-                  <h4>Loading...</h4>
+                  Loading Violation Details...
                 </div>
 
                 <div
@@ -597,10 +625,10 @@
                 </div>
 
                 <div
-                  class="d-flex justify-content-center align-items-center"
+                  class="text-muted d-flex justify-content-center align-items-center"
                   *ngIf="dataFetchStatus === 'Error'"
                 >
-                  <h4>Error While Fetching the Data.</h4>
+                  Error While Fetching the Data.
                 </div>
               </div>
             </ng-template>
@@ -622,7 +650,120 @@
   </div>
 </div>
 
+<!-- <div style="display: none;">
+        <div class="col-12">
+            <div #dangerAlert>
 
+                <div class="mb-0"
+                    style="border: 2px solid rgba(121, 20, 20, 0.699);background-color:rgba(214, 148, 148, 0.459);">
+                    <div class="modal-header" style="text-align: center;color:rgba(121, 20, 20, 0.699);">
+                        <h3 class="" style="color:rgb(196, 54, 54) !important;">Violation</h3> -->
+<!-- <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+                        <span aria-hidden="true">&times;</span>
+                    </button> -->
+<!-- </div>
+
+                    <div class="modal-body" *ngIf="currentViol">
+                        <div class="row">
+
+                            <div class="col-12">
+                                <img [src]="API+'/image/'+currentViol.imagename" alt="" class="violImage" width="100%"
+                                    style="width:30%;height: 30%;object-fit: fill;border-radius:5px 5px 5px 5px ;">
+                            </div>
+                            <div class="col-xl-12 col-md-12 col-lg-12 col-xs-12 text-white mt-2"> -->
+<!-- <h5><b> <span></span> ID : </b>
+                                    <span class="text-muted">{{currentViol.cameraid ?currentViol.cameraid:0}}</span>
+                                </h5> -->
+<!-- <h5><span class="text-muted"> Camera Name :</span>
+                                    <b><span class="text-white">{{currentViol.camera_name
+                                            ?currentViol.camera_name:'null'}}</span></b>
+                                </h5> -->
+<!-- <h5><b> Device Name : </b>
+                                    <span class="text-dark">{{currentViol.deviceid?currentViol.deviceid:'--'}}</span>
+                                </h5> -->
+
+<!-- <h5><span class="text-muted"> Detected Time : </span>
+                                    <b><span
+                                            class="text-white">{{currentViol.timestamp?currentViol.timestamp:'--'}}</span></b>
+                                </h5>
+
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div> -->
+
+<!-- ============================================================== -->
+<!-- END OF POP UP -->
+<!-- ============================================================== -->
+
+<!-- </div> -->
+
+<!-- <div style="width: 840px; height: 500px; text-align:center;margin:0; padding:0;" *ngIf="imageObject">
+        <ng-image-slider #nav
+          [images]="imageObject"
+          [infinite]="false"
+          [autoSlide]="1"
+          [imageSize]="{width: '25%', height: 200}"
+          slideImage="1"></ng-image-slider>
+      </div> -->
+
+<!-----------------------------------MODAL TEMPLATE FOR EXCEL DOWNLOAD------------------------------------------------------------>
+
+<!-- <ng-template let-modal #editViolation>
+            <div class="card p-2">
+                <div class="row">
+                    <div class="col-6 d-flex align-items-center">
+                        <div class="card-img-top">
+                            <img [src]="API+'/image/'+editViol.imagename[0]"
+                                style="width:100%;height:auto;object-fit:contain" alt=""> -->
+
+<!-- <lib-ngx-image-zoom class="card-img-top" [enableScrollZoom]=true
+                              [thumbImage]="API+'/image/'+editViol.imagename[0]"
+                              [fullImage]="API+'/image/'+editViol.imagename[0]">
+                            </lib-ngx-image-zoom> -->
+<!-- </div>
+                    </div>
+                    <div class="col-6">
+                        <div style="height: 90%;overflow:scroll;">
+                            <div class="" style="width:100%;">
+                                <h5 class="">{{editViol.analyticstype}}</h5><br />
+                                <div style="width:100%;"
+                                    *ngIf="editViol.analyticstype ==='PPE'||editViol.analyticstype ==='RA'">
+                                    <div *ngFor="let object of editViol.object_data;let in=index" class="border-bottom">
+
+                                        <div>
+                                            <div class=""> {{object.violation_count}}</div><br>
+                                            <ul class="list-unstyled p-4">
+                                                <li>
+                                                    <div *ngFor="let key of objectKeys(object);">
+
+                                                        <div style="width:5rem" class="d-inline" id="editViol"
+                                                            *ngIf="(key==='Helmet'?object[key]==='none'?false:object[key]===false?true:false:key==='Vest'?object[key]==='no_vest'?true:false:false)">
+                                                            <input class="me-4" id="item1" type="checkbox"
+                                                                [checked]="key==='Vest'?object[key]=='no_vest'?true:false:object[key]">
+                                                            <label for="item1"
+                                                                class="ms-4">{{key==='Vest'?'Vest':key}}</label>
+                                                        </div>
+
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+<!-- <button style="width:50%" class="btn success"(click)="VerifyTrueViol()" >Correct</button><button  style="width:50%"(click)="VerifyFalseViol()" class="btn danger">Incorrect</button> -->
+<!-- </div>
+                </div>
+            </div>
+        </ng-template> -->
 
 <ng-template let-modal #deleteModal>
   <div class="modal-body">

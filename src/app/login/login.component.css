@@ -382,3 +382,9 @@ input[type="text"]:placeholder {
   flex: 1;
   text-align: center;
 }
+
+.is-invalid {
+  border-color: #dc3545; /* Red border color */
+  background-color: #f8d7da; /* Light red background color */
+  color: #dc3545; /* Red text color */
+}

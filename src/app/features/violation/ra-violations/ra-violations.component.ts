@@ -1,12 +1,25 @@
 import { DatePipe } from "@angular/common";
 import { HttpClient, HttpHeaders, HttpResponse } from "@angular/common/http";
-import {AfterViewInit,Component,ElementRef,NgZone,OnDestroy,OnInit,ViewChild,ViewChildren} from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ViewChildren,
+} from "@angular/core";
 import { Lightbox, LightboxConfig } from "ngx-lightbox";
 import { Router } from "@angular/router";
 import { FormControl, Validators } from "@angular/forms";
 import { Observable, of, Subscription } from "rxjs";
 import { ToastrService } from "ngx-toastr";
-import {ModalDismissReasons,NgbDate,NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {
+  ModalDismissReasons,
+  NgbDate,
+  NgbModal,
+} from "@ng-bootstrap/ng-bootstrap";
 import { saveAs } from "file-saver";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Moment } from "moment";
@@ -20,13 +33,11 @@ declare var $: any;
   templateUrl: "./ra-violations.component.html",
   styleUrls: ["./ra-violations.component.css"],
 })
-
 export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   data: any[] = [];
   String: any = String;
-  activeIndex: number = 0;
   isalert: boolean = false;
-  dataFetchStatus: string = 'init';
+  dataFetchStatus: string = "init";
   tempdata: any[] = [];
   page: number = 1;
   pageSize: number = 30;
@@ -39,8 +50,6 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   loading: boolean = false;
   excelLoader: boolean = false;
   violLength: number = 0;
-  updatedLen: number = 0;
-  violdata: any[] = [];
   currentViol!: any;
   show1: number = 30;
   show2: number = 40;
@@ -53,7 +62,6 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   loader2: boolean = false;
   excelBlob: any;
   Excel: boolean = false;
-  date!: NgbDate;
   isExcel: boolean = false;
   excelLoad: boolean = false;
   alert: boolean = true;
@@ -64,17 +72,17 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   objectKeys = Object.keys;
   isdate: boolean = false;
   Subsciption!: Subscription;
-  selectedCameraId: string | null = null;
-  selectedDepartment: string | null = null;
+  selectedCameraId: any | null = null;
+  selectedDepartment: any | null = null;
   dropdownList: Observable<any[]> = of([]);
   dropdownList1: Observable<any[]> = of([]);
-  fromDateControl: FormControl = new FormControl(new Date().getTime(),Validators.required);
-  toDateControl: FormControl = new FormControl(new Date(), Validators.required);
-  
   Images: any[] = [];
   selectedItems: any = null;
-  selectedItems1:any = null;
-  violationTypeList: Observable<any[]> = of([{ key: "0", label: "All Violations", icon: "pi", data: "all_violations" }]);
+  analyticsType='RA'
+  selectedItems1: any = null;
+  violationTypeList: Observable<any[]> = of([
+    { key: "0", label: "All Violations", icon: "pi", data: "all_violations" },
+  ]);
   dropdownSettings2: any;
   loaderLatest: boolean = false;
   isLatest: boolean = false;
@@ -82,13 +90,28 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedViolation: any;
   isEditTable: boolean = true;
   violationsList: any[] = [];
-  ranges: any = 
-  {Today: [dayjs().hour(0).minute(0).second(0), dayjs()],
-    Yesterday: [dayjs().subtract(1, "days").hour(0).minute(0).second(0),dayjs().subtract(1, "days"),],
-    "Last 7 Days": [dayjs().subtract(6, "days").hour(0).minute(0).second(0),dayjs(),],
-    "Last 30 Days": [dayjs().subtract(29, "days").hour(0).minute(0).second(0),dayjs(),],
-    "This Month": [dayjs().startOf("month").hour(0).minute(0).second(0),dayjs().endOf("month"),],
-    "Last Month": [dayjs().subtract(1, "month").startOf("month").hour(0).minute(0).second(0),dayjs().subtract(1, "month").endOf("month"),]
+  ranges: any = {
+    Today: [dayjs().hour(0).minute(0).second(0), dayjs()],
+    Yesterday: [
+      dayjs().subtract(1, "days").hour(0).minute(0).second(0),
+      dayjs().subtract(1, "days"),
+    ],
+    "Last 7 Days": [
+      dayjs().subtract(6, "days").hour(0).minute(0).second(0),
+      dayjs(),
+    ],
+    "Last 30 Days": [
+      dayjs().subtract(29, "days").hour(0).minute(0).second(0),
+      dayjs(),
+    ],
+    "This Month": [
+      dayjs().startOf("month").hour(0).minute(0).second(0),
+      dayjs().endOf("month"),
+    ],
+    "Last Month": [
+      dayjs().subtract(1, "month").startOf("month").hour(0).minute(0).second(0),
+      dayjs().subtract(1, "month").endOf("month"),
+    ],
   };
 
   selectedMoments: { startDate: Moment; endDate: Moment } = null;
@@ -109,9 +132,8 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.API = webServer.IP;
     this.ExcelRange = 0;
     this.getCameraList();
-     this.getDepartmentList()
-    // this.getViolationTypes();
-   
+    this.getDepartmentList();
+    this.getViolationTypes();
 
     //.............lightbox configaration...........
     this._lightBoxConfig.showDownloadButton = false;
@@ -122,29 +144,10 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     this._lightBoxConfig.centerVertically = false;
     //..............................................
 
-
     //..............................................
   }
 
   ngOnInit(): void {
-    var fromDate = this.webServer.dateTransform(new Date()) + " " + "00:00:00";
-    var toDate = this.webServer.dateTransform(new Date()) + " " + "23:59:59";
-    this.fromDateControl.setValue(fromDate);
-    this.toDateControl.setValue(toDate);
-
-
-    this.dropdownSettings2 = {
-      singleSelection: true,
-      idField: "item_id",
-      textField: "item_text",
-      itemsShowLimit: 1,
-      allowSearchFilter: true,
-      closeDropDownOnSelection: true,
-      noDataAvailablePlaceholderText: "No violation types detected",
-      maxHeight: 197,
-    };
-
-
     //...........Reading previous violation data's length from local storage....
     this.violLength = Number(localStorage.getItem("updatedLen"));
 
@@ -158,21 +161,13 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
             this.sliceVD();
             this.prevLiveCount = Rdata.now_live_count;
             this.imageData = Rdata.message;
-            Number(
-              localStorage.setItem(
-                "updatedLen",
-                Rdata.message.length ? Rdata.message.length : 0
-              )
-            );
-           
-          }
-           else {
+          } else {
             this.dataFetchStatus = "success";
             this.notification(Rdata.message);
           }
         },
         (err) => {
-          this.dataFetchStatus='Error'
+          this.dataFetchStatus = "Error";
           this.notification("Error While fetching the data");
         }
       );
@@ -183,105 +178,44 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.dataread();
   }
 
-  
   openDatePicker(event: any) {
     var dateInput = document.getElementById("dateInput");
     dateInput.click();
   }
 
   public dataread() {
-      this.interval = setInterval(() => {
-        if (!this.isdate) {
-          if(Number(localStorage.getItem("updatedLen"))) {
-            this.violLength = Number(localStorage.getItem("updatedLen"));
-          }
-
-          this.Subsciption = this.webServer.LiveRAViolationData(this.selectedCameraId,this.selectedDepartment).subscribe(
-              (Rdata: any) => {
-                // this.dataFetchStatus = "success";
-                if (Rdata.success && !this.isdate && !this.latest) {
-                  var response = { ...Rdata };
-                  var cviol = [...Rdata.message];
-                  localStorage.setItem(
-                    "updatedLen",
-                    JSON.stringify(cviol.length)
-                  );
-                  var updatedLen = Number(localStorage.getItem("updatedLen"));
-
-                  if (response.now_live_count - response.prevLiveCount > 0) {
-                    this.prevLiveCount = response.now_live_count;
-                    this.imageData = Rdata.message;
-                    this.tempdata = Rdata.message;
-                    this.total = of(this.violdata.length);
-                    this.loader2 = false;
-                    this.isdatewise = false;
-                    this.violData = of(Rdata.message);
-                    this.sliceVD();
-                    this.violdata = Rdata.message;
-                  } 
-                  else{
-
-                  }
+    this.interval = setInterval(() => {
+      if (!this.isdate) {
+        this.Subsciption = this.webServer
+          .LiveRAViolationData(
+            this.selectedCameraId ? this.selectedCameraId.data : null,
+            this.selectedDepartment ? this.selectedDepartment.data : null
+          )
+          .subscribe(
+            (Rdata: any) => {
+              this.dataFetchStatus = "success";
+              if (Rdata.success && !this.isdate && !this.latest) {
+                var response = { ...Rdata };
+                var cviol = [...Rdata.message];
+                if (response.now_live_count - this.prevLiveCount > 0) {
+                  this.prevLiveCount = response.now_live_count;
+                  this.imageData = cviol;
+                  this.tempdata = cviol;
+                  // this.total = of(this.violdata.length);
+                  this.loader2 = false;
+                  this.isdatewise = false;
+                  this.sliceVD();
+                } else {
                 }
-              },
-              (Err) => {
-                this.dataFetchStatus = "Error";
               }
-            );
-          if (false) {
-            this.webServer.LiveRAViolationData().subscribe(
-              (Response: any) => {
-                if (!this.latest) {
-                  if (Response.success === true) {
-                    this.imageData = Response.message;
-                    this.tempdata = Response.message;
-                    //  this.imageCarousal()
-                    this.total = of(this.violdata.length);
-                    this.loader2 = false;
-                    this.isdatewise = false;
-
-                    this.violData = of(Response.message);
-
-                    data = Response.message;
-                    this.sliceVD();
-                    var data = Response.message;
-                    this.violdata = Response.message;
-                    // this.tempdata = this.violdata
-
-                    if (this.tempdata.length > 0) {
-                      this.Excel = true;
-                    } else {
-                      false;
-                    }
-
-                    this.sliceVD();
-                  } else {
-                    this.tempdata = [];
-                    this.violData = of([]);
-                    this.total = of(0);
-                  }
-                }
-              },
-              (err: any) => {}
-            );
-          }
-        }
-      }, this.delay);
+            },
+            (Err) => {
+              this.dataFetchStatus = "Error";
+            }
+          );
+      }
+    }, this.delay);
   }
-
-  //modal to view the image
-
-  //MODAL FOR VIOLATION
-  // showViol() {
-  //   this.toasterService.error(
-  //     <any>this.Violation.nativeElement.innerHTML,
-  //     " ",
-  //     {
-  //       enableHtml: true,
-  //       positionClass: "toast-top-right",
-  //     }
-  //   );
-  // }
 
   //function to show the  notification through snackbars
   notification(message: string, action?: string) {
@@ -292,34 +226,6 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
       verticalPosition: "bottom",
     });
   }
-
-  // private getDismissReason(reason: any): string {
-  //   if (reason === ModalDismissReasons.ESC) {
-  //     return "by pressing ESC";
-  //   } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-  //     return "by clicking on a backdrop";
-  //   } else {
-  //     return `with: ${reason}`;
-  //   }
-  // }
-
-  //function for searching
-
-  // matches(term: string): Observable<any[]> {
-  //   var resultVD = this.tempdata.filter((viol: any) => {
-  //     return (
-  //       (<String>viol.cameraid).includes(term) ||
-  //       viol.roi_violation_name.includes(term) ||
-  //       viol.deviceid.includes(term) ||
-  //       viol.camera_name.includes(term)
-  //     );
-  //   });
-
-  //   this.tempdata = resultVD;
-  //   const length = resultVD.length;
-  //   this.sliceVD();
-  //   return of(resultVD);
-  // }
 
   //function  to manage  the pagination
   sliceVD() {
@@ -348,18 +254,20 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isdate) {
       var table = document.getElementById("dataTable");
       table?.classList.add("loading");
-      this.webServer.DatewiseRAViolations(
+      this.webServer
+        .DatewiseRAViolations(
           this.fromDate,
           this.toDate,
           this.page,
           this.pageSize,
-          this.selectedDepartment?this.selectedDepartment:null,
-          this.selectedCameraId ? this.selectedCameraId : null
-        ).subscribe((Response: any) => {
+          this.selectedDepartment ? this.selectedDepartment.data : null,
+          this.selectedCameraId ? this.selectedCameraId.data : null
+        )
+        .subscribe((Response: any) => {
+          this.dataFetchStatus = "success";
           if (Response.success) {
             table?.classList.remove("loading");
             if (Response.message.length === 0) {
-              
               this.notification("No violations found");
             }
             this.tempdata = Response.message;
@@ -382,131 +290,131 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   //----------METHOD TO FETCH DATE WISE DATA-----------------
 
   Submit() {
+    this.dataFetchStatus = "init";
 
- console.log('submit function')
-    this.dataFetchStatus = 'Loading'
-    
     // this.zone.run(() => {
-      // this.cd.detectChanges()
-      //\\ clearInterval(this.interval);
-      this.isLatest = false;
-      
-      this.selectedCameraId = this.selectedItems? this.selectedItems.data: null;
-      this.selectedDepartment = this.selectedItems1?this.selectedItems1.data:null;
-      this.Images = [];
-      this.fromDate = this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss");
-      this.toDate = this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss");
-      this.getCameraList();
-       this.getDepartmentList()
-      this.Subsciption ? this.Subsciption.unsubscribe() : "";
-      var table = document.getElementById("dataTable");
-      table?.classList.add("loading");
+    // this.cd.detectChanges()
+    // clearInterval(this.interval);
+    this.isLatest = false;
 
-      this.pageSize = 30;
-      this.page = 1;
+    this.Images = [];
+    this.fromDate = this.selectedMoments.startDate.format(
+      "YYYY-MM-DD HH:mm:ss"
+    );
+    this.toDate = this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss");
+    this.getCameraList();
+    this.getDepartmentList();
+    this.Subsciption ? this.Subsciption.unsubscribe() : "";
 
-      this.isdate = true;
-      this.loading = true;
-      this.webServer
-        .DatewiseRAViolations(
-          this.fromDate,
-          this.toDate,
-          null,
-          null,
-          this.selectedDepartment?this.selectedDepartment:null,
-          this.selectedCameraId? this.selectedCameraId : null
-          
-        )
-        .subscribe(
-          (Response: any) => {
-            if (Response.success) {
-              // this.cd.detectChanges()
+    this.pageSize = 30;
+    this.page = 1;
 
-              if (Response.message.length == 0) {
-                this.tempdata = [];
-                this.violData = of([]);
-                this.loading = false;
-                this.loader2 = false;
+    this.isdate = true;
+    this.loading = true;
+    this.webServer
+      .DatewiseRAViolations(
+        this.fromDate,
+        this.toDate,
+        null,
+        null,
+        this.selectedDepartment ? this.selectedDepartment.data : null,
+        this.selectedCameraId ? this.selectedCameraId.data : null
+      )
+      .subscribe(
+        (Response: any) => {
+          if (Response.success) {
+            // this.cd.detectChanges()
 
-                this.isdatewise = true;
-                this.total = of(0);
-                table?.classList.remove("loading");
-                this.notification(
-                  "No violations found for entered date and time"
-                );
-              }
-              if (Response.message.length > 0) {
-                this.imageData = Response.message;
-                this.total = of(Response.message.length);
-                this.webServer
-                  .DatewiseRAViolations(
-                    this.fromDate,
-                    this.toDate,
-                    this.page,
-                    this.pageSize,
-                    this.selectedDepartment?this.selectedDepartment:null,
-                    this.selectedCameraId ? this.selectedCameraId : null
-                    
-                  )
-                  .subscribe(
-                    (Response: any) => {
-                      this.loading = false;
-
-                      if (Response.success) {
-                        this.dataFetchStatus = "success";
-
-                        table?.classList.remove("loading");
-                        if (Response.message.length === 0) {
-                          this.dataFetchStatus = "success";
-                          this.notification("No violations found");
-                          this.violData = of([]);
-                          this.tempdata = [];
-                          this.isdatewise = true;
-                          this.loading = false;
-                        } else {
-                          this.tempdata = Response.message;
-                          this.isdatewise = true;
-                          this.sliceVD();
-
-                          this.loading = false;
-                        }
-                      }
-                    },
-                    (err) => {
-                      this.loading = false;
-                      //  this.cd.detectChanges()
-                      this.dataFetchStatus = "Error";
-                      this.notification("Error while fetching the data");
-                    }
-                  );
-              }
-            } else {
+            if (Response.message.length == 0) {
               this.tempdata = [];
               this.violData = of([]);
               this.loading = false;
+              this.loader2 = false;
+
               this.isdatewise = true;
-              // this.cd.detectChanges()
               this.total = of(0);
-              table?.classList.remove("loading");
-              table?.classList.remove("loading");
-              this.dataFetchStatus='success'
-              this.notification("No violations found");
-              this.loading = false;
+              this.notification(
+                "No violations found for entered date and time"
+              );
             }
-          },
-          (err) => {
+            if (Response.message.length > 0) {
+              this.imageData = Response.message;
+              this.total = of(Response.message.length);
+              this.webServer
+                .DatewiseRAViolations(
+                  this.fromDate,
+                  this.toDate,
+                  this.page,
+                  this.pageSize,
+                  this.selectedDepartment ? this.selectedDepartment.data : null,
+                  this.selectedCameraId ? this.selectedCameraId.data : null
+                )
+                .subscribe(
+                  (Response: any) => {
+                    this.loading = false;
+                    this.dataFetchStatus = "success";
+
+                    if (Response.success) {
+                      if (Response.message.length === 0) {
+                        this.dataFetchStatus = "success";
+                        this.notification("No violations found");
+                        this.violData = of([]);
+                        this.tempdata = [];
+                        this.isdatewise = true;
+                        this.loading = false;
+                      } else {
+                        this.tempdata = Response.message;
+                        this.isdatewise = true;
+                        this.sliceVD();
+
+                        this.loading = false;
+                      }
+                    }
+                    else {
+                      this.loading = false;
+                      this.violData = of([]);
+                      this.total=of(0)
+                      this.dataFetchStatus = "success";
+                      this.notification(Response.message);
+                    }
+                  },
+                  (err) => {
+                    this.loading = false;
+                    //  this.cd.()
+                    this.dataFetchStatus = "Error";
+                    this.notification("Error while fetching the data");
+                  }
+                );
+            }
+          } else {
+            this.tempdata = [];
+            this.violData = of([]);
+            this.loading = false;
+            this.isdatewise = true;
+            // this.cd.detectChanges()
+            this.total = of(0);
+
+            this.dataFetchStatus = "success";
+            this.notification("No violations found");
             this.loading = false;
           }
-        );
+        },
+        (err) => {
+          this.loading = false;
+          this.dataFetchStatus = "Error";
+        }
+      );
     // });
   }
 
   //-----------------METHOD TO GO BACK TO LIVE-------------------------
 
   BackToToday() {
-    this.selectedMoments = null
-    this.selectedItems = null
-    this.selectedItems1 = null
+    this.selectedMoments = null;
+    this.selectedItems = null;
+    this.selectedCameraId = null;
+    this.selectedDepartment = null;
+    this.selectedItems1 = null;
     this.page = 1;
     this.Images = [];
     this.latest = false;
@@ -519,27 +427,35 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isdate = false;
     this.tempdata = [];
     this.total = of(0);
-    this.webServer.LiveRAViolationData().subscribe((Rdata: any) => {
-      if (Rdata) {
-        this.isLatest = false;
-        table?.classList.remove("loading");
-        this.imageData = Rdata.message;
-        this.total = of(Rdata.message.length);
-        if (!Rdata.success) {
-          this.notification(Rdata.message);
-          this.dataFetchStatus='success'
+    this.webServer.LiveRAViolationData().subscribe(
+      (Rdata: any) => {
+        if (Rdata) {
+          this.isLatest = false;
+          table?.classList.remove("loading");
+          this.imageData = Rdata.message;
+          this.total = of(Rdata.message.length);
+          this.tempdata = Rdata.message;
+          this.violData = of(Rdata.message);
+          if (!Rdata.success) {
+            this.notification(Rdata.message);
+            this.dataFetchStatus = "success";
+          } else {
+          }
+          var cviol = Rdata.message;
+          Rdata.success
+            ? (this.tempdata = Rdata.message)
+            : (this.tempdata = []);
+          this.sliceVD();
+          this.loader2 = false;
+          this.isdatewise = false;
+          localStorage.setItem("updatedLen", JSON.stringify(cviol.length));
+          var updatedLen = Number(localStorage.getItem("updatedLen"));
         }
-        var cviol = Rdata.message;
-        Rdata.success ? (this.tempdata = Rdata.message) : (this.tempdata = []);
-        this.sliceVD();
+      },
+      (Err) => {
         this.loader2 = false;
-        this.isdatewise = false;
-        localStorage.setItem("updatedLen", JSON.stringify(cviol.length));
-        var updatedLen = Number(localStorage.getItem("updatedLen"));
       }
-    },Err=>{
-      this.loader2=false
-    });
+    );
 
     this.dataread();
   }
@@ -554,36 +470,125 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ResetFilters() {
     this.selectedMoments = null;
-    this.selectedItems = null;
-    this.selectedItems1 = null
+    this.selectedDepartment = null;
+    this.selectedCameraId = null;
     this.isdatewise = false;
-    this.dataFetchStatus = 'Loading'
+    this.dataFetchStatus = "Loading";
     this.BackToToday();
   }
 
   onCameraIdSelect(event: any) {
+    this.dataFetchStatus='init'
+    this.page=1
+    this.pageSize=30
+    this.total=of(0)
+     this.violData=of([])
     !this.isdatewise ? (this.page = 1) : "";
-    this.selectedCameraId = this.selectedItems.data;
-     this.Submit();
+    // this.selectedCameraId = this.selectedItems.data;
+    if (!this.isdatewise) {
+      this.selectedDepartment = null;
+      this.webServer
+        .LiveRAViolationData(
+          this.selectedCameraId ? this.selectedCameraId.data : null,
+          this.selectedDepartment ? this.selectedDepartment.data : null
+        )
+        .subscribe(
+          (Rdata: any) => {
+            if (Rdata) {
+              this.dataFetchStatus = "success";
+
+              this.isLatest = false;
+              // table?.classList.remove("loading");
+              
+              if (!Rdata.success) {
+                this.notification(Rdata.message);
+                this.dataFetchStatus = "success";
+                this.imageData = Rdata.message;
+              this.total = of(Rdata.message.length);
+              this.tempdata = Rdata.message;
+              this.violData = of(Rdata.message);
+              } else {
+              }
+              var cviol = Rdata.message;
+              Rdata.success
+                ? (this.tempdata = Rdata.message)
+                : (this.tempdata = []);
+              this.sliceVD();
+              this.loader2 = false;
+              this.isdatewise = false;
+              
+            }
+          },
+          (Err) => {
+            this.dataFetchStatus='Error'
+            this.loader2 = false;
+          }
+        );
+    } else {
+      this.Submit();
+    }
     // this.dataread();
   }
 
   onDepartmentIdSelect(event: any) {
+    this.dataFetchStatus='init'
+    this.page=1
+    this.pageSize=30
+    this.total=of(0)
+     this.violData=of([])
     !this.isdatewise ? (this.page = 1) : "";
-    this.selectedDepartment = this.selectedItems1.data;
-     this.Submit();
+    // this.selectedCameraId = this.selectedItems.data;
+    if (!this.isdatewise) {
+      this.selectedCameraId = null;
+      this.webServer
+        .LiveRAViolationData(
+          this.selectedCameraId ? this.selectedCameraId.data : null,
+          this.selectedDepartment ? this.selectedDepartment.data : null
+        )
+        .subscribe(
+          (Rdata: any) => {
+            if (Rdata) {
+              this.dataFetchStatus = "success";
+
+              this.isLatest = false;
+              // table?.classList.remove("loading");
+              
+              if (!Rdata.success) {
+                this.notification(Rdata.message);
+                this.dataFetchStatus = "success";
+                this.imageData = Rdata.message;
+              this.total = of(Rdata.message.length);
+              this.tempdata = Rdata.message;
+              this.violData = of(Rdata.message);
+              } else {
+              }
+              var cviol = Rdata.message;
+              Rdata.success
+                ? (this.tempdata = Rdata.message)
+                : (this.tempdata = []);
+              this.sliceVD();
+              this.loader2 = false;
+              this.isdatewise = false;
+              
+            }
+          },
+          (Err) => {
+            this.dataFetchStatus='Error'
+            this.loader2 = false;
+          }
+        );
+    } else {
+      this.Submit();
+    }
     // this.dataread();
   }
-
-
-
 
   imageCarousal(viol: any) {
     this.Images = [];
     viol.imagename.forEach((imgname: string, index: number) => {
       this.Images[index] = {
-        src: this.API + "/image/" + imgname,
-        thumb: this.API + "/image/" + imgname,
+        src: this.API + '/image/'+this.analyticsType+'/' + imgname,
+        thumb: this.API +'/image/'+this.analyticsType+'/' + imgname,
         caption: imgname,
       };
     });
@@ -597,24 +602,26 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     this._lightbox.close();
   }
 
-  //fucntion to create and download the excel as per the given dates and other inputs
   async submitForm() {
     this.isalert = false;
     this.excelLoad = true;
     this.isExcel = false;
-    this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null;
-    this.selectedDepartment = this.selectedItems1?this.selectedItems1.data:null;
+   
 
     var body = {
       from_date: this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss"),
       to_date: this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss"),
       cameraname: this.selectedItems
-        ? this.selectedItems.data == "all_cameras"
+        ? this.selectedCameraId.data == "all_cameras"
           ? null
-          : this.selectedItems.data
+          : this.selectedCameraId.data
         : null,
-         department:this.selectedItems1?this.selectedItems1.data == "all_departments"?null:this.selectedItems1.data:null   
-       };
+      department: this.selectedDepartment
+        ? this.selectedDepartment.data == "all_departments"
+          ? null
+          : this.selectedDepartment.data
+        : null,
+    };
     this.webServer.CreateRAViolationExcel(body).subscribe(
       (Response: any) => {
         if (Response.success) {
@@ -624,7 +631,6 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
               const blob = new Blob([response.body], { type: ".xlsx" });
-              // var fileName =  response.headers.get('Content-Disposition').split(';')[1];
               var fileName =
                 "violation report" +
                 " " +
@@ -659,7 +665,12 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   //-------METHOD TO DOWNLOAD THE EXCEL--------
-  GetViolationLength(fromDate: any, toDate: any, cameraName: any ,department:any) {
+  GetViolationLength(
+    fromDate: any,
+    toDate: any,
+    cameraName: any,
+    department: any
+  ) {
     this.excelLoader = true;
     var length;
     this.webServer
@@ -668,10 +679,8 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
         toDate,
         null,
         null,
-        department?department:null,
+        department ? department : null,
         cameraName ? cameraName : null
-        
-        
       )
       .subscribe((Response: any) => {
         if (Response.success) {
@@ -724,35 +733,37 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.latest = true;
     var table = document.getElementById("dataTable");
     table?.classList.add("loading");
-    this.webServer.GetLatestRAData(this.selectedCameraId,this.selectedDepartment).subscribe(
-      (Rdata: any) => {
-        if (Rdata.success) {
-          this.isLatest = true;
-          table?.classList.remove("loading");
-          this.loaderLatest = false;
-          this.imageData = Rdata.message;
-          this.tempdata = Rdata.message;
-          this.tempdata = Rdata.message;
+    this.webServer
+      .GetLatestRAData(this.selectedCameraId, this.selectedDepartment)
+      .subscribe(
+        (Rdata: any) => {
+          if (Rdata.success) {
+            this.isLatest = true;
+            table?.classList.remove("loading");
+            this.loaderLatest = false;
+            this.imageData = Rdata.message;
+            this.tempdata = Rdata.message;
+            this.tempdata = Rdata.message;
 
-          this.total = of(Rdata.message.length);
-          this.violData = of(Rdata.message);
-          this.sliceVD();
-        } else {
-          this.violData = of([]);
-          this.total = of(0);
-          this.tempdata = [];
+            this.total = of(Rdata.message.length);
+            this.violData = of(Rdata.message);
+            this.sliceVD();
+          } else {
+            this.violData = of([]);
+            this.total = of(0);
+            this.tempdata = [];
+            this.loaderLatest = false;
+            table?.classList.remove("loading");
+            this.notification(Rdata.message);
+          }
+        },
+        (err) => {
           this.loaderLatest = false;
           table?.classList.remove("loading");
-          this.notification(Rdata.message);
+
+          this.notification("Error While fetching the data", "Retry");
         }
-      },
-      (err) => {
-        this.loaderLatest = false;
-        table?.classList.remove("loading");
-
-        this.notification("Error While fetching the data", "Retry");
-      }
-    );
+      );
   }
 
   //----------------METHOD TO DOWNLOAD THE  IMAGE-------------
@@ -784,105 +795,100 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     // var body = {
     //   from_date: this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss"),
     //   to_date: this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss"),
-      
+
     // };
 
     // this.fromDate = this.selectedMoments.startDate.format(
     //   "YYYY-MM-DD HH:mm:ss"
     // );
-    console.log(this.fromDate,'this date is from the raviolations')
+    console.log(this.fromDate, "this date is from the raviolations");
     // this.toDate = this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss");
-    console.log(this.selectedMoments,'this is from the raviolations')
+    console.log(this.selectedMoments, "this is from the raviolations");
 
     cameralist[0] = { key: "0", label: "All Cameras", data: "all_cameras" };
     // console.log(this.selectedMoments.startDate)
-//     var date;
-// if(this.selectedMoments!==null){
-//   date = this.selectedMoments 
-// }
-// else{
-//   date = null
-// }
-    
-    this.webServer.GetRACameraDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
+    //     var date;
+    // if(this.selectedMoments!==null){
+    //   date = this.selectedMoments
+    // }
+    // else{
+    //   date = null
+    // }
 
-      if (data.success === true) {
-        data.message.forEach((el: any, i: number) => {
-          cameraIdList.push({ cameraid: i, cameraname: el });
-        });
-        cameraIdList = cameraIdList.filter((el, i, a) => i === a.indexOf(el));
-        cameraIdList.forEach((element: any, i: number) => {
-          // cameralist[i + 1] = { item_id: element.cameraid, item_text: element.cameraname }
-          var obj;
-          obj = {
-            key: ((i + 1).toString()),
-            label: element.cameraname,
-            data: element.cameraname,
-          };
+    this.webServer
+      .GetRACameraDetails(
+        this.selectedMoments !== null
+          ? this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")
+          : null,
+        this.selectedMoments !== null
+          ? this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")
+          : null
+      )
+      .subscribe((data: any) => {
+        if (data.success === true) {
+          data.message.forEach((el: any, i: number) => {
+            cameraIdList.push({ cameraid: i, cameraname: el });
+          });
+          cameraIdList = cameraIdList.filter((el, i, a) => i === a.indexOf(el));
+          cameraIdList.forEach((element: any, i: number) => {
+            // cameralist[i + 1] = { item_id: element.cameraid, item_text: element.cameraname }
+            var obj;
+            obj = {
+              key: (i + 1).toString(),
+              label: element.cameraname,
+              data: element.cameraname,
+            };
 
-          cameralist.push(obj);
-        });
+            cameralist.push(obj);
+          });
 
-        this.dropdownList = of(cameralist);
-      }
-    });
+          this.dropdownList = of(cameralist);
+        }
+      });
   }
-
-
-
-
 
   getDepartmentList() {
     var departmentlist: any[] = [];
     var departmentIdList: any[] = [];
 
-    // var body = {
-    //   from_date: this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss"),
-    //   to_date: this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss"),
-      
-    // };
+    departmentlist[0] = {
+      key: "0",
+      label: "All Departments",
+      data: "all_departments",
+    };
 
-    // this.fromDate = this.selectedMoments.startDate.format(
-    //   "YYYY-MM-DD HH:mm:ss"
-    // );
-    console.log(this.fromDate,'this date is from the raviolations')
-    // this.toDate = this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss");
-    console.log(this.selectedMoments,'this is from the raviolations')
+    this.webServer
+      .GetRADepartmentDetails(
+        this.selectedMoments !== null
+          ? this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")
+          : null,
+        this.selectedMoments !== null
+          ? this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")
+          : null
+      )
+      .subscribe((data: any) => {
+        if (data.success === true) {
+          data.message.forEach((el: any, i: number) => {
+            departmentIdList.push({ departmentid: i, department: el });
+          });
+          departmentIdList = departmentIdList.filter(
+            (el, i, a) => i === a.indexOf(el)
+          );
+          departmentIdList.forEach((element: any, i: number) => {
+            var obj;
+            obj = {
+              key: (i + 1).toString(),
+              label: element.department,
+              data: element.department,
+            };
 
-    departmentlist[0] = { key: "0", label: "All Departments", data: "all_departments" };
-    // console.log(this.selectedMoments.startDate)
-//     var date;
-// if(this.selectedMoments!==null){
-//   date = this.selectedMoments 
-// }
-// else{
-//   date = null
-// }
-    
-    this.webServer.GetRADepartmentDetails((this.selectedMoments !== null)?(this.selectedMoments.startDate.format("YYYY-MM-DD HH:mm:ss")):null,(this.selectedMoments !== null)?(this.selectedMoments.endDate.format("YYYY-MM-DD HH:mm:ss")):null).subscribe((data: any) => {
+            departmentlist.push(obj);
+          });
 
-      if (data.success === true) {
-        data.message.forEach((el: any, i: number) => {
-          departmentIdList.push({ departmentid: i, department: el });
-        });
-        departmentIdList = departmentIdList.filter((el, i, a) => i === a.indexOf(el));
-        departmentIdList.forEach((element: any, i: number) => {
-          // cameralist[i + 1] = { item_id: element.cameraid, item_text: element.cameraname }
-          var obj;
-          obj = {
-            key: ((i + 1).toString()),
-            label: element.department,
-            data: element.department,
-          };
-
-          departmentlist.push(obj);
-        });
-
-        this.dropdownList1 = of(departmentlist);
-      }
-    });
+          this.dropdownList1 = of(departmentlist);
+        }
+      });
   }
-
 
   //function to fetch the available violation types
   getViolationTypes() {
@@ -969,39 +975,44 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
     table?.classList.add("loading");
 
     if (!this.latest || !this.isLatest) {
-      this.webServer.LiveRAViolationData().subscribe(
-        (Rdata: any) => {
-          if (Rdata.success) {
+      this.webServer
+        .LiveRAViolationData(
+          this.selectedCameraId ? this.selectedCameraId.data : null,
+          this.selectedDepartment ? this.selectedDepartment.data : null
+        )
+        .subscribe(
+          (Rdata: any) => {
+            if (Rdata.success) {
+              table?.classList.remove("loading");
+
+              var data = Rdata.message;
+
+              this.imageData = Rdata.message;
+              this.tempdata = Rdata.message;
+              Number(
+                localStorage.setItem(
+                  "updatedLen",
+                  Rdata.message.length ? Rdata.message.length : 0
+                )
+              );
+
+              this.tempdata = Rdata.message;
+              // this.imageCarousal()
+
+              this.total = of(this.tempdata.length);
+              this.violData = of(Rdata.message);
+              this.sliceVD();
+            } else {
+              table?.classList.remove("loading");
+              this.notification(Rdata.message);
+            }
+          },
+          (err) => {
             table?.classList.remove("loading");
 
-            var data = Rdata.message;
-
-            this.imageData = Rdata.message;
-            this.tempdata = Rdata.message;
-            Number(
-              localStorage.setItem(
-                "updatedLen",
-                Rdata.message.length ? Rdata.message.length : 0
-              )
-            );
-
-            this.tempdata = Rdata.message;
-            // this.imageCarousal()
-
-            this.total = of(this.tempdata.length);
-            this.violData = of(Rdata.message);
-            this.sliceVD();
-          } else {
-            table?.classList.remove("loading");
-            this.notification(Rdata.message);
+            this.notification("Error While fetching the data");
           }
-        },
-        (err) => {
-          table?.classList.remove("loading");
-
-          this.notification("Error While fetching the data");
-        }
-      );
+        );
     }
   }
 
@@ -1030,43 +1041,50 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
       );
   }
 
+  StopLiveFeed() {
+    clearInterval(this.interval);
+  }
+  StartLiveFeed() {
+    this.dataread();
+  }
   RefreshViolationData() {
     if (!this.isdatewise && !this.isLatest) {
       var table = document.getElementById("dataTable");
       table?.classList.add("loading");
 
-      this.webServer.LiveRAViolationData().subscribe(
-        (Response: any) => {
-          if (!this.latest) {
-            table.classList.remove("loading");
-            if (Response.success === true) {
-              this.imageData = Response.message;
-              this.tempdata = Response.message;
-              //  this.imageCarousal()
-              this.total = of(this.violdata.length);
+      this.webServer
+        .LiveRAViolationData(
+          this.selectedCameraId ? this.selectedCameraId.data : null,
+          this.selectedDepartment ? this.selectedDepartment.data : null
+        )
+        .subscribe(
+          (Response: any) => {
+            if (!this.latest) {
+              table.classList.remove("loading");
+              if (Response.success === true) {
+                this.imageData = Response.message;
+                this.tempdata = Response.message;
+                //  this.imageCarousal()
+                this.total = of(Response.message);
 
-              this.violData = of(Response.message);
+                this.violData = of(Response.message);
 
-              data = Response.message;
-              this.sliceVD();
-              var data = Response.message;
-              this.violdata = Response.message;
-              // this.tempdata = this.violdata
+                this.sliceVD();
 
-              if (this.tempdata.length > 0) {
-                this.Excel = true;
+                if (this.tempdata.length > 0) {
+                  this.Excel = true;
+                } else {
+                }
+
+                this.sliceVD();
               } else {
               }
-
-              this.sliceVD();
-            } else {
             }
+          },
+          (err: any) => {
+            table.classList.remove("loading");
           }
-        },
-        (err: any) => {
-          table.classList.remove("loading");
-        }
-      );
+        );
     } else if (this.isdatewise && !this.isLatest) {
       var table = document.getElementById("dataTable");
       table?.classList.add("loading");
@@ -1079,16 +1097,15 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
           this.toDate,
           null,
           null,
-          this.selectedDepartment?this.selectedDepartment:null,
-          this.selectedCameraId ? this.selectedCameraId : null
-          
+          this.selectedDepartment ? this.selectedDepartment.data : null,
+          this.selectedCameraId ? this.selectedCameraId.data : null
         )
         .subscribe(
           (Response: any) => {
             this.dataFetchStatus = "success";
             if (Response.success) {
               if (Response.message.length == 0) {
-                2
+                2;
                 this.tempdata = [];
                 this.violData = of([]);
 
@@ -1107,9 +1124,10 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.toDate,
                     this.page,
                     this.pageSize,
-                    this.selectedDepartment?this.selectedDepartment:null,
-                    this.selectedCameraId ? this.selectedCameraId : null
-                    
+                    this.selectedDepartment
+                      ? this.selectedDepartment.data
+                      : null,
+                    this.selectedCameraId ? this.selectedCameraId.data : null
                   )
                   .subscribe(
                     (Response: any) => {
@@ -1154,4 +1172,6 @@ export class RaViolationsComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.isalert = false;
   }
+
+  onChangeDetection(event: any) {}
 }

@@ -363,6 +363,7 @@ export class CameraSettingsComponent
       this.isFail = false;
     });
     this.GetCameraList();
+    this.GetLicenseDetails();
   }
 
   ngOnInit(): void {
@@ -806,6 +807,7 @@ export class CameraSettingsComponent
                 this.modalService.dismissAll();
               }, 1000);
               this.GetCameraList();
+              this.GetLicenseDetails();
             } else {
               this.isLoading = false;
               this.responseMessage = response.message;
@@ -999,6 +1001,7 @@ export class CameraSettingsComponent
     this.server.getCameras().subscribe(
       (response: any) => {
         container ? container.classList.remove("loading") : "";
+        this.dataFetchStatus = "success";
 
         if (response.success) {
           this.dataFetchStatus = "success";
@@ -1020,7 +1023,6 @@ export class CameraSettingsComponent
             };
           });
         } else {
-          this.dataFetchStatus = "fail";
           this.responseMessage = response.message;
           this.cameraImages = [];
           this.CameraList = [];
@@ -1690,28 +1692,26 @@ export class CameraSettingsComponent
     this.isFail = false;
     this.responseMessage = "";
     this.jobFileStatus = true;
-    console.log(this.formdata.get('file'), "in component");
+    console.log(this.formdata.get("file"), "in component");
   }
   OnAddMechJobsBySheet() {
     this.isLoading2 = true;
-  var formdata={'file':this.formdata.get('file')}
+    var formdata = { file: this.formdata.get("file") };
     this.server.AddMechJobByExcel(this.formdata).subscribe(
       (response: any) => {
         if (response.success) {
           this.isLoading2 = false;
-          this.GetCameraList()
+          this.GetCameraList();
           this.isSuccess = false;
           this.isFail = false;
           this.responseMessage = "";
-          this.mechJobsheet=null
-          this.formdata.delete('file')
+          this.mechJobsheet = null;
+          this.formdata.delete("file");
           setTimeout(() => {
             this.modalService.dismissAll();
-         
           }, 1000);
-
         } else {
-          this.isFail=true
+          this.isFail = true;
           this.responseMessage = response.message;
           this.isLoading2 = false;
         }

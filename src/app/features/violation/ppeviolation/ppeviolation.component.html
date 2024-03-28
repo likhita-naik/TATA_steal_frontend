@@ -369,7 +369,7 @@
                   <div class="d-flex justify-content-center align-items-center">
                     <div class="">
                       <img
-                        [src]="API + '/image/' + d.imagename[0]"
+                        [src]="API + '/image/'+analyticsType+'/' + d.imagename[0]"
                         loading="lazy"
                         class="image"
                         (click)="imageCarousal(d)"
@@ -654,7 +654,7 @@
             <div class="row">
               <div class="col-12">
                 <img
-                  [src]="API + '/image/' + currentViol.imagename"
+                  [src]="API + '/image/'+this.analyticsType+'/'+ currentViol.imagename"
                   alt=""
                   class="violImage"
                   width="100%"
@@ -720,7 +720,7 @@
           <div class="col-6 d-flex align-items-center">
             <div class="card-img-top">
               <img
-                [src]="API + '/image/' + editViol.imagename[0]"
+                [src]="API + '/image/'+analyticsType+'/'+ editViol.imagename[0]"
                 style="width: 100%; height: auto; object-fit: contain"
                 alt=""
               />

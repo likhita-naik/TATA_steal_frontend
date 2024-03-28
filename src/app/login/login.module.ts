@@ -15,8 +15,6 @@ const routes:Routes=[{path:'',canActivate:[AuthGuardLogin],component:LoginCompon
   imports: [
     RouterModule.forChild(routes),
     CommonModules,TabViewModule
-    
-    
   ],
   exports:[RouterModule]
 })

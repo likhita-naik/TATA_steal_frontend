@@ -1,11 +1,10 @@
-import { Component , ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component , OnInit} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Lightbox } from 'ngx-lightbox';
 import { UserManagementService } from './user-management.service';
 import { HttpHeaders } from '@angular/common/http';
-import { DatePipe } from "@angular/common";
+
 
 @Component({
   selector: 'app-user-management',
@@ -37,11 +36,10 @@ export class UserManagementComponent implements OnInit {
   )
   {
     this.jwtoken = localStorage.getItem('jwtoken')
-    
   }
 
   ngOnInit(){
-    this.ExistingUserDetails();
+    this.ExistingUserDetails()
   }
 
 
@@ -119,8 +117,7 @@ export class UserManagementComponent implements OnInit {
     var data:any = {
       email:this.deleteUserEmailId
     }
-    // console.log(data,'data of the email')
-    
+   
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
